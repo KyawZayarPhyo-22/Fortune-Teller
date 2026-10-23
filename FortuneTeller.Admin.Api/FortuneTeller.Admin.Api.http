@@ -1,0 +1,6 @@
+@FortuneTeller.Admin.Api_HostAddress = http://localhost:5134
+
+GET {{FortuneTeller.Admin.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,143 @@
+@page "/history"
+@inject FortuneClientService Client
+@inject NavigationManager Nav
+
+<div class="container py-4 max-w-1000 mx-auto">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-2"
+                  style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
+                ✦ Celestial Archive ✦
+            </span>
+            <h2 class="font-decorative gold-gradient-text h3 mb-0">READING HISTORY</h2>
+            <small class="text-secondary font-oracle">Past Divination Consultations Orchestrated by Astraea</small>
+        </div>
+        <div>
+            <a href="choose-reading" class="btn-cosmic-gold btn-sm">
+                <i class="bi bi-stars"></i> New Reading
+            </a>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <div class="fortune-glass-card p-3 mb-4">
+        <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-black bg-opacity-40 text-secondary border-secondary border-opacity-25">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control bg-black bg-opacity-40 text-light border-secondary border-opacity-25"
+                           placeholder="Search prophecy or question..."
+                           @bind="SearchText" @bind:event="oninput" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select class="form-select form-select-sm bg-black bg-opacity-40 text-light border-secondary border-opacity-25"
+                        @bind="TopicFilter">
+                    <option value="">All Topics</option>
+                    <option value="Love">Love</option>
+                    <option value="Education">Education</option>
+                    <option value="Relationship">Relationship</option>
+                    <option value="General">General</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-sm bg-black bg-opacity-40 text-light border-secondary border-opacity-25"
+                        @bind="TypeFilter">
+                    <option value="">All Methods</option>
+                    <option value="Tarot">Tarot Only</option>
+                    <option value="Palm">Palm Only</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- History List -->
+    @if (!FilteredHistory.Any())
+    {
+        <div class="fortune-glass-card p-5 text-center">
+            <span class="fs-1 text-secondary">📜</span>
+            <h4 class="font-oracle text-white mt-3">No Readings Recorded Yet</h4>
+            <p class="text-secondary small font-oracle">Perform your first consultation through the Reading Orchestrator.</p>
+            <a href="choose-reading" class="btn-cosmic-gold mt-2">Consult the Oracle</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            @foreach (var item in FilteredHistory)
+            {
+                <div class="col-12">
+                    <div class="fortune-glass-card p-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="fs-2">
+                                @(item.ReadingType == ReadingType.Tarot ? "🎴" : "✋")
+                            </span>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 small font-oracle">
+                                        @item.Topic
+                                    </span>
+                                    <span class="badge bg-purple bg-opacity-20 text-light small font-oracle">
+                                        @item.ReadingType
+                                    </span>
+                                    <small class="text-secondary" style="font-size: 0.75rem;">
+                                        @item.CreatedAt.ToString("MMM dd, yyyy · HH:mm")
+                                    </small>
+                                </div>
+                                <div class="text-light font-oracle">
+                                    @item.CoreProphecySnippet
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.OptionalQuestion))
+                                {
+                                    <small class="text-white-50 fst-italic">Q: "@item.OptionalQuestion"</small>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="text-end small font-oracle">
+                                <div class="text-warning fw-bold">Aura: @item.AuraEnergyScore%</div>
+                                <div class="text-secondary">Lucky #@item.LuckyNumber</div>
+                            </div>
+                            <button class="btn btn-sm btn-cosmic-purple" @onclick="() => ViewDetail(item.ReadingId)">
+                                View Prophecy <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<ReadingHistoryItemModel> AllHistory = new();
+    private string SearchText = "";
+    private string TopicFilter = "";
+    private string TypeFilter = "";
+
+    protected override void OnInitialized()
+    {
+        AllHistory = Client.GetHistory(50);
+    }
+
+    private IEnumerable<ReadingHistoryItemModel> FilteredHistory =>
+        AllHistory.Where(h =>
+            (string.IsNullOrEmpty(SearchText) ||
+             h.CoreProphecySnippet.Contains(SearchText, StringComparison.OrdinalIgnoreCase) ||
+             (h.OptionalQuestion != null && h.OptionalQuestion.Contains(SearchText, StringComparison.OrdinalIgnoreCase))) &&
+            (string.IsNullOrEmpty(TopicFilter) || h.Topic.ToString() == TopicFilter) &&
+            (string.IsNullOrEmpty(TypeFilter) || h.ReadingType.ToString() == TypeFilter));
+
+    private void ViewDetail(string id)
+    {
+        var reading = Client.GetReadingById(id);
+        if (reading != null)
+        {
+            Nav.NavigateTo($"reading-result");
+        }
+    }
+}

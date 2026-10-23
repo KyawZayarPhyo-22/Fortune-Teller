@@ -1,0 +1,216 @@
+@page "/palm-capture"
+@inject NavigationManager Nav
+@inject FortuneStateService State
+@inject IJSRuntime JS
+
+<div class="container py-4 max-w-850 mx-auto">
+    <!-- Stepper -->
+    <div class="wizard-stepper">
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Choose Path</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Consent</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item active">
+            <div class="step-bubble">3</div>
+            <span>Hand Photo</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item">
+            <div class="step-bubble">4</div>
+            <span>Topic & Inquiry</span>
+        </div>
+    </div>
+
+    <div class="fortune-glass-card p-4 p-md-5">
+        <div class="text-center mb-4">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-info mb-2"
+                  style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3);">
+                Step 2 · Biometric Hand Capture
+            </span>
+            <h2 class="font-decorative gold-gradient-text">TAKE OR SELECT HAND PHOTO</h2>
+            <p class="text-secondary font-oracle max-w-600 mx-auto">
+                Upload your hand photograph or choose an archetypal palm to begin in-memory line extraction.
+            </p>
+        </div>
+
+        <!-- Scanner Viewport / Preview -->
+        <div class="palm-scanner-box mb-4">
+            @if (!string.IsNullOrEmpty(PreviewImage))
+            {
+                <img src="@PreviewImage" alt="Palm Preview" style="width: 100%; height: 100%; object-fit: contain;" />
+                <div class="palm-scanner-laser"></div>
+                <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center text-info small" style="background: rgba(11, 8, 30, 0.85); font-family: var(--font-oracle);">
+                    <i class="bi bi-broadcast me-1"></i> Image ready for in-memory analysis (@PhotoSizeKb KB)
+                </div>
+            }
+            else
+            {
+                <div class="text-center p-4">
+                    <span style="font-size: 4rem; color: rgba(56, 189, 248, 0.5);">✋</span>
+                    <p class="text-white-50 mt-2 mb-0 font-oracle">No hand photo selected yet.</p>
+                    <small class="text-secondary">Upload a photo below or pick a celestial archetype.</small>
+                </div>
+            }
+        </div>
+
+        <!-- Upload & Presets -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-6">
+                <label class="form-label font-oracle text-light small"><i class="bi bi-cloud-arrow-up text-warning me-1"></i> Upload Hand Photo</label>
+                <InputFile OnChange="HandleFileSelected" class="form-control bg-dark text-light border-secondary" accept="image/*" />
+                <small class="text-secondary">Maximum allowed payload: 5 MB (Gateway enforced)</small>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label font-oracle text-light small"><i class="bi bi-magic text-info me-1"></i> Or Select Sample Hand Archetype</label>
+                <div class="d-flex flex-wrap gap-2">
+                    <button class="btn btn-sm btn-cosmic-purple" @onclick='() => LoadPreset("Water", "Intuitive Water Hand")'>
+                        💧 Water Hand
+                    </button>
+                    <button class="btn btn-sm btn-cosmic-purple" @onclick='() => LoadPreset("Fire", "Dynamic Fire Hand")'>
+                        🔥 Fire Hand
+                    </button>
+                    <button class="btn btn-sm btn-cosmic-purple" @onclick='() => LoadPreset("Earth", "Grounded Earth Hand")'>
+                        🌿 Earth Hand
+                    </button>
+                    <button class="btn btn-sm btn-cosmic-purple" @onclick='() => LoadPreset("Air", "Intellectual Air Hand")'>
+                        💨 Air Hand
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <div class="alert alert-danger bg-danger bg-opacity-20 border-danger text-danger font-oracle py-2">
+                <i class="bi bi-exclamation-triangle me-2"></i>@ErrorMessage
+            </div>
+        }
+
+        <div class="d-flex justify-content-between align-items-center mt-4">
+            <a href="palm-permission" class="btn-cosmic-outline">
+                <i class="bi bi-arrow-left"></i> Privacy Consent
+            </a>
+            <button class="btn-cosmic-gold px-4 py-2" @onclick="ProceedToTopic">
+                PREVIEW CONFIRMED · CHOOSE TOPIC <i class="bi bi-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string? PreviewImage;
+    private string? FileName;
+    private long PhotoSizeKb;
+    private string? ErrorMessage;
+
+    protected override void OnInitialized()
+    {
+        if (!State.UserConsentGiven)
+        {
+            Nav.NavigateTo("palm-permission");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(State.PalmImageBase64))
+        {
+            PreviewImage = State.PalmImageBase64;
+            FileName = State.PalmFileName;
+            PhotoSizeKb = (long)(PreviewImage.Length * 0.75 / 1024);
+        }
+        else
+        {
+            // Default preset
+            LoadPreset("Water", "Mystic Water Hand");
+        }
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        ErrorMessage = null;
+        var file = e.File;
+        if (file == null) return;
+
+        if (file.Size > DevCode.MaxPhotoSizeBytes)
+        {
+            ErrorMessage = $"Photo exceeds the {DevCode.MaxPhotoSizeBytes / (1024 * 1024)} MB gateway limit. Please choose a smaller image.";
+            return;
+        }
+
+        try
+        {
+            using var stream = file.OpenReadStream(maxAllowedSize: DevCode.MaxPhotoSizeBytes);
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            var base64 = Convert.ToBase64String(bytes);
+
+            PreviewImage = $"data:{file.ContentType};base64,{base64}";
+            FileName = file.Name;
+            PhotoSizeKb = bytes.Length / 1024;
+
+            State.PalmImageBase64 = PreviewImage;
+            State.PalmFileName = FileName;
+
+            await JS.InvokeVoidAsync("fortuneAudio.playChime");
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Could not load image: {ex.Message}";
+        }
+    }
+
+    private void LoadPreset(string archetype, string title)
+    {
+        ErrorMessage = null;
+        // Generate an esoteric SVG palm blueprint as embedded data URI
+        var svg = $@"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'>
+            <defs>
+                <linearGradient id='bgGrad' x1='0%' y1='0%' x2='100%' y2='100%'>
+                    <stop offset='0%' stop-color='#1a103c'/>
+                    <stop offset='100%' stop-color='#0a0618'/>
+                </linearGradient>
+            </defs>
+            <rect width='400' height='400' fill='url(#bgGrad)'/>
+            <!-- Palm Outline -->
+            <path d='M130,350 C110,300 80,240 80,180 C80,150 90,120 110,100 C120,90 140,110 150,130 C155,100 165,70 185,60 C195,55 205,75 210,110 C220,80 230,50 250,50 C265,50 270,80 265,120 C280,95 295,95 305,110 C315,130 300,180 280,240 C310,250 330,280 320,310 C300,340 260,360 210,360 Z' fill='none' stroke='#38bdf8' stroke-width='3' filter='drop-shadow(0 0 8px #38bdf8)'/>
+            <!-- Heart Line -->
+            <path d='M120,180 Q200,160 290,140' fill='none' stroke='#f43f5e' stroke-width='3' stroke-dasharray='4,2'/>
+            <text x='295' y='140' fill='#f43f5e' font-family='sans-serif' font-size='11'>Heart Line</text>
+            <!-- Head Line -->
+            <path d='M120,205 Q190,210 270,250' fill='none' stroke='#ffd166' stroke-width='3' stroke-dasharray='4,2'/>
+            <text x='275' y='255' fill='#ffd166' font-family='sans-serif' font-size='11'>Head Line</text>
+            <!-- Life Line -->
+            <path d='M120,205 Q170,250 160,340' fill='none' stroke='#10b981' stroke-width='3' stroke-dasharray='4,2'/>
+            <text x='165' y='340' fill='#10b981' font-family='sans-serif' font-size='11'>Life Line</text>
+            <!-- Fate Line -->
+            <path d='M210,350 L210,150' fill='none' stroke='#a855f7' stroke-width='2' stroke-dasharray='2,2'/>
+            <text x='215' y='160' fill='#a855f7' font-family='sans-serif' font-size='11'>Fate Line</text>
+            <text x='20' y='380' fill='#ffd166' font-family='serif' font-size='14'>✦ {title} ({archetype})</text>
+        </svg>";
+
+        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(svg));
+        PreviewImage = $"data:image/svg+xml;base64,{base64}";
+        FileName = $"{archetype}_Hand_Preset.svg";
+        PhotoSizeKb = 4;
+
+        State.PalmImageBase64 = PreviewImage;
+        State.PalmFileName = FileName;
+    }
+
+    private void ProceedToTopic()
+    {
+        if (string.IsNullOrEmpty(State.PalmImageBase64))
+        {
+            ErrorMessage = "Please select or upload a hand photo before proceeding.";
+            return;
+        }
+
+        Nav.NavigateTo("topic-select");
+    }
+}

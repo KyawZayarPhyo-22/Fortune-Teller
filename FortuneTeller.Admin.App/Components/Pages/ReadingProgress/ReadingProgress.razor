@@ -1,0 +1,139 @@
+@page "/reading-progress"
+@inject NavigationManager Nav
+@inject FortuneStateService State
+@inject FortuneClientService Client
+@inject IJSRuntime JS
+
+<div class="container py-5 max-w-750 mx-auto text-center">
+    <div class="fortune-glass-card p-4 p-md-5">
+        <!-- Mystical Divination Chamber -->
+        <div class="mb-4">
+            <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-3"
+                  style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
+                ✦ WebSocket Gateway & Orchestrator Pipeline ✦
+            </span>
+            <h2 class="font-decorative gold-gradient-text display-5">COMMUNING WITH DESTINY</h2>
+            <p class="text-secondary font-oracle small">
+                Transmitting via WebSocket Gateway · Reading Orchestrator In-Memory Execution
+            </p>
+        </div>
+
+        <!-- Animated Divination Spinner & Orb -->
+        <div class="my-4 position-relative d-inline-block">
+            <div class="divine-spinner"></div>
+            <div class="position-absolute top-50 start-50 translate-middle fs-2 text-warning">
+                @(State.ReadingType == ReadingType.Tarot ? "🎴" : "✋")
+            </div>
+        </div>
+
+        <!-- Live Progress Percentage -->
+        <div class="fs-4 font-oracle text-warning mb-2">
+            @CurrentPercent% Complete
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="aura-meter-track max-w-500 mx-auto mb-4">
+            <div class="aura-meter-fill" style="width: @CurrentPercent%;"></div>
+        </div>
+
+        <!-- Mystical Message Box -->
+        <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25 max-w-600 mx-auto mb-4 font-oracle text-light">
+            <i class="bi bi-stars text-warning me-2"></i>
+            <span>@CurrentStageMessage</span>
+        </div>
+
+        <!-- Live WebSocket Pipeline Steps List -->
+        <div class="text-start max-w-500 mx-auto small text-secondary">
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 15 ? "text-warning" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 30 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+                <span>WebSocket Gateway: Validate message, enforce 5MB size & rate limits</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 30 ? "text-warning" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 60 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+                <span>
+                    @(State.ReadingType == ReadingType.Tarot
+                        ? "Reading Orchestrator: Select spread and cards in memory"
+                        : "Reading Orchestrator: Analyze palm photo in volatile memory")
+                </span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 60 ? "text-warning" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 85 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+                <span>AI Reading Service: Generate prophecy for @State.Topic</span>
+            </div>
+
+            <div class="d-flex align-items-center gap-2 @(CurrentPercent >= 85 ? "text-warning" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 100 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+                <span>Format and check response: Seal celestial aura & emit result</span>
+            </div>
+        </div>
+
+        @if (HasError)
+        {
+            <div class="alert alert-danger bg-danger bg-opacity-20 border-danger text-danger mt-4 font-oracle">
+                <i class="bi bi-exclamation-triangle me-2"></i>@ErrorMessage
+                <div class="mt-2">
+                    <a href="choose-reading" class="btn btn-sm btn-outline-danger">Start Over</a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private int CurrentPercent = 10;
+    private string CurrentStageMessage = "Opening WebSocket gateway connection...";
+    private bool HasError = false;
+    private string? ErrorMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await RunDivinationStream();
+        }
+    }
+
+    private async Task RunDivinationStream()
+    {
+        try
+        {
+            var request = State.BuildRequest();
+            var stream = Client.StreamDivinationAsync(request);
+
+            await foreach (var msg in stream)
+            {
+                CurrentPercent = msg.ProgressPercent;
+                CurrentStageMessage = msg.MysticalMessage;
+
+                if (msg.IsError)
+                {
+                    HasError = true;
+                    ErrorMessage = msg.ErrorMessage;
+                    StateHasChanged();
+                    return;
+                }
+
+                if (msg.IsComplete && msg.Result != null)
+                {
+                    State.CurrentResult = msg.Result;
+                    StateHasChanged();
+
+                    try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
+                    await Task.Delay(700);
+                    Nav.NavigateTo("reading-result");
+                    return;
+                }
+
+                StateHasChanged();
+            }
+        }
+        catch (Exception ex)
+        {
+            HasError = true;
+            ErrorMessage = $"Oracle communication failed: {ex.Message}";
+            StateHasChanged();
+        }
+    }
+}

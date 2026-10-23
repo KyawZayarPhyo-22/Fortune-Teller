@@ -7,4 +7,9 @@
     <BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FortuneTeller.Domain\FortuneTeller.Domain.csproj" />
+    <ProjectReference Include="..\FortuneTeller.Share\FortuneTeller.Share.csproj" />
+  </ItemGroup>
+
 </Project>

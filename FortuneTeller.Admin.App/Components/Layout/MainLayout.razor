@@ -1,23 +1,72 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@inject IJSRuntime JS
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+<canvas id="starfield-canvas"></canvas>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+<div class="fortune-app-container">
+    <header class="celestial-navbar">
+        <a href="" class="celestial-brand">
+            <span class="brand-icon">🔮</span>
+            <div>
+                <div class="brand-title">ASTRAEA</div>
+                <div class="brand-subtitle">Celestial Fortune Teller</div>
+            </div>
+        </a>
 
-        <article class="content px-4">
-            @Body
-        </article>
+        <nav class="celestial-nav-links">
+            <NavLink class="celestial-nav-link" href="" Match="NavLinkMatch.All">
+                <i class="bi bi-house-door"></i> Home
+            </NavLink>
+            <NavLink class="celestial-nav-link" href="choose-reading">
+                <i class="bi bi-stars"></i> Divination
+            </NavLink>
+            <NavLink class="celestial-nav-link" href="history">
+                <i class="bi bi-clock-history"></i> History
+            </NavLink>
+            <NavLink class="celestial-nav-link" href="orchestrator-monitor">
+                <i class="bi bi-cpu"></i> Orchestrator
+            </NavLink>
+            <button class="btn-cosmic-outline py-1 px-3 fs-7" @onclick="PlayMysticChime" title="Tune Cosmic Resonance">
+                <i class="bi bi-soundwave"></i> 432 Hz
+            </button>
+        </nav>
+    </header>
+
+    <main class="flex-grow-1 p-3 p-md-4">
+        @Body
     </main>
+
+    <footer class="text-center py-4 text-muted border-top border-secondary border-opacity-10 small">
+        <div class="container">
+            <p class="mb-1 text-secondary">
+                ✦ Astraea Divination Architecture · WebSocket Gateway · In-Memory Orchestrator · AI Reading Engine ✦
+            </p>
+            <p class="mb-0 text-white-50">
+                Crafted with Blazor InteractiveServer, .NET 10 & Cosmic Wisdom
+            </p>
+        </div>
+    </footer>
 </div>
 
-<div id="blazor-error-ui" data-nosnippet>
-    An unhandled error has occurred.
-    <a href="." class="reload">Reload</a>
-    <span class="dismiss">🗙</span>
-</div>
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                await JS.InvokeVoidAsync("initStarfield", "starfield-canvas");
+            }
+            catch { }
+        }
+    }
+
+    private async Task PlayMysticChime()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("fortuneAudio.playChime");
+        }
+        catch { }
+    }
+}

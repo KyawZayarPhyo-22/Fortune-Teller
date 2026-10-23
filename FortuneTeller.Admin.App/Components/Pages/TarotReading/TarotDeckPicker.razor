@@ -1,0 +1,225 @@
+@page "/tarot-picker"
+@inject NavigationManager Nav
+@inject FortuneStateService State
+@inject FortuneClientService Client
+@inject IJSRuntime JS
+
+<div class="container py-4 max-w-1000 mx-auto">
+    <!-- Stepper -->
+    <div class="wizard-stepper">
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Path</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Spread</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item active">
+            <div class="step-bubble">3</div>
+            <span>Draw Cards</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item">
+            <div class="step-bubble">4</div>
+            <span>Topic</span>
+        </div>
+    </div>
+
+    <!-- Title -->
+    <div class="text-center mb-4">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-2"
+              style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
+            Step 2B · In-Memory Deck Selection
+        </span>
+        <h2 class="font-decorative gold-gradient-text">DRAW YOUR SACRED CARDS</h2>
+        <p class="text-secondary font-oracle max-w-600 mx-auto mb-2">
+            Selected Spread: <span class="text-warning fw-bold">@SpreadInfo.Title</span>
+            (Draw @SpreadInfo.CardCount card@(SpreadInfo.CardCount > 1 ? "s" : ""))
+        </p>
+        <div class="small text-white-50">
+            Selected: <span class="text-warning fw-bold">@DrawnCards.Count</span> of @SpreadInfo.CardCount
+        </div>
+    </div>
+
+    <!-- Active Drawn Cards Display -->
+    <div class="row g-3 justify-content-center my-4">
+        @for (int i = 0; i < SpreadInfo.CardCount; i++)
+        {
+            var posIndex = i;
+            var posName = i < SpreadInfo.Positions.Count ? SpreadInfo.Positions[i] : $"Position {i + 1}";
+            var hasDrawn = posIndex < DrawnCards.Count;
+            var card = hasDrawn ? DrawnCards[posIndex] : null;
+
+            <div class="col-6 col-md-4 col-lg-3 text-center">
+                <div class="small font-oracle text-secondary mb-2 text-truncate" title="@posName">
+                    @posName
+                </div>
+
+                <div class="tarot-card-container">
+                    <div class="tarot-card-inner @(hasDrawn ? "is-flipped" : "")">
+                        <!-- Front (Face-down in deck) -->
+                        <div class="tarot-card-front">
+                            <span class="fs-1 text-warning mb-2">🔮</span>
+                            <div class="small font-oracle text-warning">ASTRAEA</div>
+                            <small class="text-secondary" style="font-size: 0.65rem;">Tap Deck Below</small>
+                        </div>
+
+                        <!-- Back (Revealed card face) -->
+                        <div class="tarot-card-back">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge bg-dark text-warning border border-warning border-opacity-25" style="font-size: 0.7rem;">
+                                    #@(card?.Number ?? 0)
+                                </span>
+                                <span class="badge bg-purple text-light" style="font-size: 0.65rem;">
+                                    @(card?.Element ?? "Ether")
+                                </span>
+                            </div>
+
+                            <div class="my-2">
+                                <div class="tarot-symbol-glyph">@(card?.Symbol ?? "✨")</div>
+                                <h6 class="font-oracle text-warning text-truncate mt-2 mb-0">@(card?.Name ?? "Mystic")</h6>
+                                <small class="text-white-50" style="font-size: 0.7rem;">@(card?.Keywords ?? "")</small>
+                            </div>
+
+                            <div class="p-1 rounded bg-black bg-opacity-40 text-light" style="font-size: 0.65rem; line-height: 1.2;">
+                                @(card?.UprightMeaning ?? "")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Interactive Deck Fan / Draw Section -->
+    <div class="text-center p-4 rounded-4 mt-4" style="background: rgba(14, 10, 36, 0.7); border: 1px solid var(--cosmic-border);">
+        @if (DrawnCards.Count < SpreadInfo.CardCount)
+        {
+            <h5 class="font-oracle text-warning mb-3">
+                <i class="bi bi-hand-index-thumb"></i> Click a Card from the Astral Deck to Draw:
+            </h5>
+
+            <div class="d-flex justify-content-center flex-wrap gap-2 py-3 overflow-hidden">
+                @foreach (var availableCard in AvailableCardsSample)
+                {
+                    <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-50 text-center"
+                         style="width: 80px; height: 110px; cursor: pointer; transition: transform 0.2s;"
+                         @onclick="() => DrawSpecificCard(availableCard)">
+                        <div class="text-warning fs-3 mb-1">🎴</div>
+                        <div class="text-white font-oracle text-truncate" style="font-size: 0.65rem;">
+                            @availableCard.Name
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center gap-3">
+                <button class="btn btn-sm btn-cosmic-purple" @onclick="CosmicAutoDraw">
+                    <i class="bi bi-shuffle"></i> Cosmic Auto-Shuffle & Draw All
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="py-3">
+                <i class="bi bi-check-circle-fill text-warning fs-1"></i>
+                <h4 class="font-oracle text-warning mt-2">All Cards Drawn from Memory!</h4>
+                <p class="text-secondary small">Your spread is locked. Proceed to specify your topic and intention.</p>
+                <button class="btn btn-sm btn-cosmic-outline" @onclick="ResetDraw">
+                    <i class="bi bi-arrow-counterclockwise"></i> Redraw Spread
+                </button>
+            </div>
+        }
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-4">
+        <a href="tarot-spread" class="btn-cosmic-outline">
+            <i class="bi bi-arrow-left"></i> Change Spread
+        </a>
+        <button class="btn-cosmic-gold px-4 py-2 @(DrawnCards.Count < SpreadInfo.CardCount ? "disabled opacity-50" : "")"
+                @onclick="ProceedToTopic">
+            CHOOSE TOPIC & INQUIRY <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
+</div>
+
+@code {
+    private TarotSpreadInfoModel SpreadInfo = new();
+    private List<TarotCardModel> DrawnCards = new();
+    private List<TarotCardModel> AllCards = new();
+    private List<TarotCardModel> AvailableCardsSample = new();
+
+    protected override void OnInitialized()
+    {
+        SpreadInfo = Client.GetSpreadInfo(State.SpreadType);
+        AllCards = Client.GetAllTarotCards().ToList();
+
+        // Sample of cards for manual deck picking
+        var rng = new Random();
+        AvailableCardsSample = AllCards.OrderBy(_ => rng.Next()).Take(8).ToList();
+
+        if (State.SelectedCardIds.Count > 0)
+        {
+            foreach (var id in State.SelectedCardIds.Take(SpreadInfo.CardCount))
+            {
+                var card = AllCards.FirstOrDefault(c => c.Id == id);
+                if (card != null) DrawnCards.Add(card);
+            }
+        }
+    }
+
+    private async Task DrawSpecificCard(TarotCardModel card)
+    {
+        if (DrawnCards.Count >= SpreadInfo.CardCount) return;
+        if (DrawnCards.Any(c => c.Id == card.Id)) return;
+
+        DrawnCards.Add(card);
+        AvailableCardsSample.Remove(card);
+
+        try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
+        UpdateState();
+    }
+
+    private async Task CosmicAutoDraw()
+    {
+        var rng = new Random();
+        var remainingNeeded = SpreadInfo.CardCount - DrawnCards.Count;
+        var unselected = AllCards.Where(c => !DrawnCards.Any(d => d.Id == c.Id)).OrderBy(_ => rng.Next()).Take(remainingNeeded);
+
+        foreach (var card in unselected)
+        {
+            DrawnCards.Add(card);
+        }
+
+        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
+        UpdateState();
+    }
+
+    private void ResetDraw()
+    {
+        DrawnCards.Clear();
+        var rng = new Random();
+        AvailableCardsSample = AllCards.OrderBy(_ => rng.Next()).Take(8).ToList();
+        UpdateState();
+    }
+
+    private void UpdateState()
+    {
+        State.SelectedCardIds = DrawnCards.Select(c => c.Id).ToList();
+    }
+
+    private void ProceedToTopic()
+    {
+        if (DrawnCards.Count < SpreadInfo.CardCount)
+        {
+            // Auto draw if missing
+            CosmicAutoDraw().Wait();
+        }
+
+        UpdateState();
+        Nav.NavigateTo("topic-select");
+    }
+}

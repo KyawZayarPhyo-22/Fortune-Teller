@@ -1,6 +1,10 @@
 <Solution>
-  <Folder Name="/.Config/" />
-  <Folder Name="/Domain/" />
-  <Folder Name="/Share/" />
-  <Project Path="FortuneTeller.Admin.App/FortuneTeller.Admin.App.csproj" Id="8d8163e6-dec1-426a-9f12-d6d83dabf805" />
+  <Folder Name="/Domain/">
+    <Project Path="FortuneTeller.Domain/FortuneTeller.Domain.csproj" />
+  </Folder>
+  <Folder Name="/Share/">
+    <Project Path="FortuneTeller.Share/FortuneTeller.Share.csproj" />
+  </Folder>
+  <Project Path="FortuneTeller.Admin.Api/FortuneTeller.Admin.Api.csproj" />
+  <Project Path="FortuneTeller.Admin.App/FortuneTeller.Admin.App.csproj" />
 </Solution>

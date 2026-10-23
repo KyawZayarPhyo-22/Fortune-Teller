@@ -1,0 +1,143 @@
+@page "/review-choices"
+@inject NavigationManager Nav
+@inject FortuneStateService State
+@inject FortuneClientService Client
+@inject IJSRuntime JS
+
+<div class="container py-4 max-w-850 mx-auto">
+    <!-- Stepper -->
+    <div class="wizard-stepper">
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Path</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Method</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item completed">
+            <div class="step-bubble"><i class="bi bi-check"></i></div>
+            <span>Topic</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item active">
+            <div class="step-bubble">4</div>
+            <span>Review & Consult</span>
+        </div>
+    </div>
+
+    <!-- Title Header -->
+    <div class="text-center mb-5">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-2"
+              style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
+            Step 4 · Confirmation of Sacred Intent
+        </span>
+        <h2 class="font-decorative gold-gradient-text">REVIEW YOUR INQUIRY</h2>
+        <p class="text-secondary font-oracle max-w-600 mx-auto">
+            The celestial gateway stands ready to transmit your inquiry to the Reading Orchestrator.
+        </p>
+    </div>
+
+    <div class="fortune-glass-card p-4 p-md-5 mb-4">
+        <!-- Summary Matrix -->
+        <div class="row g-4 align-items-center mb-4">
+            <!-- Method Column -->
+            <div class="col-md-6 border-end-md border-secondary border-opacity-25 pe-md-4">
+                <div class="small font-oracle text-secondary text-uppercase mb-1">Divination Method</div>
+                <div class="d-flex align-items-center gap-3">
+                    <span class="fs-1 text-warning">
+                        @(State.ReadingType == ReadingType.Tarot ? "🎴" : "✋")
+                    </span>
+                    <div>
+                        <h4 class="font-oracle text-white mb-0">
+                            @(State.ReadingType == ReadingType.Tarot ? "Tarot Deck Divination" : "Palmistry Analysis")
+                        </h4>
+                        <small class="text-warning">
+                            @if (State.ReadingType == ReadingType.Tarot)
+                            {
+                                <span>Spread: @State.SpreadType (@State.SelectedCardIds.Count Cards in Memory)</span>
+                            }
+                            else
+                            {
+                                <span>Photo: @(State.PalmFileName ?? "Captured Hand") · In-Memory Ready</span>
+                            }
+                        </small>
+                    </div>
+                </div>
+
+                @if (State.ReadingType == ReadingType.Palm && !string.IsNullOrEmpty(State.PalmImageBase64))
+                {
+                    <div class="mt-3 text-center">
+                        <img src="@State.PalmImageBase64" alt="Palm" style="max-height: 120px; border-radius: 8px; border: 1px solid var(--astral-cyan);" />
+                    </div>
+                }
+            </div>
+
+            <!-- Topic Column -->
+            <div class="col-md-6 ps-md-4">
+                <div class="small font-oracle text-secondary text-uppercase mb-1">Sacred Focus Topic</div>
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <span class="badge px-3 py-2 fs-6 font-oracle" style="background: rgba(168, 85, 247, 0.25); border: 1px solid var(--amethyst-primary); color: #fff;">
+                        ✦ @State.Topic
+                    </span>
+                </div>
+
+                <div class="small font-oracle text-secondary text-uppercase mb-1">Your Personal Question</div>
+                <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25 text-white-50 font-oracle small">
+                    @if (!string.IsNullOrEmpty(State.OptionalQuestion))
+                    {
+                        <span>"</span>@State.OptionalQuestion<span>"</span>
+                    }
+                    else
+                    {
+                        <span class="fst-italic text-secondary">General cosmic alignment (no question specified)</span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- System Architecture Verification Checklist -->
+        <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 mb-4 small text-secondary">
+            <div class="row g-2">
+                <div class="col-sm-6 d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-success"></i> WebSocket Gateway Payload &lt; 5MB Verified
+                </div>
+                <div class="col-sm-6 d-flex align-items-center gap-2">
+                    <i class="bi bi-cpu text-info"></i> Reading Orchestrator In-Memory Ready
+                </div>
+                <div class="col-sm-6 d-flex align-items-center gap-2">
+                    <i class="bi bi-robot text-warning"></i> AI Reading Service Active
+                </div>
+                <div class="col-sm-6 d-flex align-items-center gap-2">
+                    <i class="bi bi-check2-all text-primary"></i> Response Formatter & Aura Validator Ready
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoke Button -->
+        <div class="text-center py-2">
+            <button class="btn-cosmic-gold fs-5 px-5 py-3 w-100 max-w-500 mx-auto" @onclick="InvokeOracle">
+                <i class="bi bi-stars"></i> INVOKE THE CELESTIAL ORACLE
+            </button>
+            <div class="small text-secondary font-oracle mt-2">
+                Transmits request via WebSocket Gateway to the Reading Orchestrator
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center">
+        <a href="topic-select" class="btn-cosmic-outline">
+            <i class="bi bi-arrow-left"></i> Edit Topic / Question
+        </a>
+    </div>
+</div>
+
+@code {
+    private async Task InvokeOracle()
+    {
+        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
+        Nav.NavigateTo("reading-progress");
+    }
+}

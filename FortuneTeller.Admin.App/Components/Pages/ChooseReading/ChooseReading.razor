@@ -1,0 +1,123 @@
+@page "/choose-reading"
+@inject NavigationManager Nav
+@inject FortuneStateService State
+@inject IJSRuntime JS
+
+<div class="container py-4 max-w-900 mx-auto">
+    <!-- Stepper -->
+    <div class="wizard-stepper">
+        <div class="step-item active">
+            <div class="step-bubble">1</div>
+            <span>Choose Path</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item">
+            <div class="step-bubble">2</div>
+            <span>Method Setup</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item">
+            <div class="step-bubble">3</div>
+            <span>Topic & Inquiry</span>
+        </div>
+        <div class="step-divider"></div>
+        <div class="step-item">
+            <div class="step-bubble">4</div>
+            <span>Review & Divination</span>
+        </div>
+    </div>
+
+    <!-- Title Header -->
+    <div class="text-center mb-5">
+        <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-2"
+              style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
+            Step 1 · The Crossroads of Divination
+        </span>
+        <h2 class="font-decorative gold-gradient-text display-5">CHOOSE YOUR DIVINATION PATH</h2>
+        <p class="text-secondary font-oracle max-w-600 mx-auto">
+            Will you consult the celestial archetypes of the Tarot or unlock the indelible life-lines woven upon your own palms?
+        </p>
+    </div>
+
+    <!-- Choices Grid -->
+    <div class="row g-4 justify-content-center">
+        <!-- Tarot Choice Card -->
+        <div class="col-md-6">
+            <div class="fortune-glass-card p-4 p-lg-5 text-center h-100 d-flex flex-column justify-content-between @(SelectedType == ReadingType.Tarot ? "border-warning shadow-lg" : "")"
+                 style="cursor: pointer; transition: transform 0.3s ease;"
+                 @onclick="() => SelectType(ReadingType.Tarot)">
+                <div>
+                    <div class="mb-4">
+                        <span style="font-size: 5rem; filter: drop-shadow(0 0 20px rgba(255, 209, 102, 0.6));">🎴</span>
+                    </div>
+                    <h3 class="font-oracle text-white h3 mb-2">Tarot Deck Reading</h3>
+                    <p class="text-white-50 mb-4">
+                        Consult 78 archetypal cards. The in-memory card orchestrator shuffles astral forces and draws upright or reversed omens for past, present, and destiny.
+                    </p>
+                    <ul class="text-start small text-secondary list-unstyled mx-auto max-w-300">
+                        <li class="mb-2"><i class="bi bi-check2-circle text-warning me-2"></i>Single Card, 3-Card, or 5-Card Spreads</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-warning me-2"></i>Interactive 3D Card Selection</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-warning me-2"></i>Major & Minor Arcana Interpretation</li>
+                    </ul>
+                </div>
+                <div class="mt-4">
+                    <button class="btn @(SelectedType == ReadingType.Tarot ? "btn-cosmic-gold" : "btn-cosmic-outline") w-100 py-3">
+                        <i class="bi bi-arrow-right-circle"></i> CHOOSE TAROT
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Palm Photo Choice Card -->
+        <div class="col-md-6">
+            <div class="fortune-glass-card p-4 p-lg-5 text-center h-100 d-flex flex-column justify-content-between @(SelectedType == ReadingType.Palm ? "border-info shadow-lg" : "")"
+                 style="cursor: pointer; transition: transform 0.3s ease;"
+                 @onclick="() => SelectType(ReadingType.Palm)">
+                <div>
+                    <div class="mb-4">
+                        <span style="font-size: 5rem; filter: drop-shadow(0 0 20px rgba(56, 189, 248, 0.6));">✋</span>
+                    </div>
+                    <h3 class="font-oracle text-white h3 mb-2">Palm Photo Analysis</h3>
+                    <p class="text-white-50 mb-4">
+                        Upload or snap a photo of your palm. The volatile in-memory analyzer examines line curves, mounts of Venus/Apollo, and elemental hand structure.
+                    </p>
+                    <ul class="text-start small text-secondary list-unstyled mx-auto max-w-300">
+                        <li class="mb-2"><i class="bi bi-check2-circle text-info me-2"></i>100% In-Memory Processing (Zero Storage)</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-info me-2"></i>Life, Heart, Head & Fate Lines</li>
+                        <li class="mb-2"><i class="bi bi-check2-circle text-info me-2"></i>Elemental Archetype (Fire/Water/Earth/Air)</li>
+                    </ul>
+                </div>
+                <div class="mt-4">
+                    <button class="btn @(SelectedType == ReadingType.Palm ? "btn-cosmic-gold" : "btn-cosmic-outline") w-100 py-3">
+                        <i class="bi bi-arrow-right-circle"></i> CHOOSE PALM READING
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private ReadingType SelectedType = ReadingType.Tarot;
+
+    protected override void OnInitialized()
+    {
+        SelectedType = State.ReadingType;
+    }
+
+    private async Task SelectType(ReadingType type)
+    {
+        SelectedType = type;
+        State.ReadingType = type;
+        try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
+
+        if (type == ReadingType.Tarot)
+        {
+            Nav.NavigateTo("tarot-spread");
+        }
+        else
+        {
+            Nav.NavigateTo("palm-permission");
+        }
+    }
+}
