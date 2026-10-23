@@ -6,71 +6,73 @@
 <div class="container py-4 max-w-1000 mx-auto">
     @if (Result == null)
     {
-        <div class="fortune-glass-card p-5 text-center">
-            <span class="fs-1 text-warning">🔮</span>
-            <h3 class="font-oracle text-white mt-3">No Active Reading Found</h3>
-            <p class="text-secondary small">Begin a new divination consultation to receive your prophecy.</p>
-            <a href="choose-reading" class="btn-cosmic-gold mt-3">Start a Reading</a>
+        <div class="neu-card p-5 text-center">
+            <div class="neu-icon-socket mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2.5rem;">
+                🔮
+            </div>
+            <h3 class="font-display fw-bold text-neu-primary mt-2">No Active Reading Found</h3>
+            <p class="font-body text-neu-muted small">Begin a new divination consultation to receive your prophecy.</p>
+            <a href="choose-reading" class="btn-neu-primary mt-3">Start a Reading</a>
         </div>
     }
     else
     {
         <!-- Oracle Banner -->
         <div class="text-center mb-5">
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3"
-                  style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--amethyst-primary);">
-                <span class="text-warning">✦</span>
-                <span class="font-oracle text-white small text-uppercase">@Result.OracleName</span>
-                <span class="text-warning">✦</span>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
+                <span class="text-neu-accent">✦</span>
+                <span class="font-display text-neu-muted small text-uppercase fw-bold">@Result.OracleName</span>
+                <span class="text-neu-accent">✦</span>
             </div>
 
-            <h1 class="font-decorative gold-gradient-text display-4 mb-2">THE ORACLE HAS SPOKEN</h1>
-            <p class="font-oracle text-white-50 max-w-700 mx-auto">
+            <h1 class="display-4 font-display fw-extrabold text-neu-primary mb-2">THE ORACLE HAS SPOKEN</h1>
+            <p class="font-body text-neu-muted max-w-700 mx-auto">
                 @Result.CelestialGreeting
             </p>
-            <div class="d-flex justify-content-center gap-2 font-oracle small">
-                <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-3 py-1">
+            <div class="d-flex justify-content-center gap-2 font-display small">
+                <span class="btn-neu-pill py-1 px-3">
                     Path: @Result.ReadingType
                 </span>
-                <span class="badge bg-purple bg-opacity-20 text-light border border-purple border-opacity-25 px-3 py-1">
+                <span class="btn-neu-pill py-1 px-3 text-neu-accent fw-bold">
                     Focus: @Result.Topic
                 </span>
-                <span class="badge bg-dark text-secondary px-3 py-1">
+                <span class="btn-neu-pill py-1 px-3 text-neu-muted">
                     @Result.CreatedAt.ToString("MMM dd, yyyy · HH:mm UTC")
                 </span>
             </div>
         </div>
 
         <!-- Master Prophecy Card -->
-        <div class="fortune-glass-card p-4 p-md-5 mb-4 position-relative">
-            <div class="d-flex align-items-center gap-3 mb-3">
-                <span class="fs-1" style="color: var(--gold-primary);">✨</span>
+        <div class="neu-card p-4 p-md-5 mb-4">
+            <div class="d-flex align-items-center gap-3 mb-4">
+                <div class="neu-icon-socket" style="width: 56px; height: 56px; font-size: 1.8rem; color: var(--neu-accent);">
+                    ✨
+                </div>
                 <div>
-                    <span class="small font-oracle text-secondary text-uppercase">Core Divine Prophecy</span>
-                    <h3 class="font-oracle text-warning mb-0">@Result.CoreProphecy</h3>
+                    <span class="small font-display text-neu-muted text-uppercase fw-bold">Core Divine Prophecy</span>
+                    <h3 class="font-display fw-bold text-neu-primary mb-0">@Result.CoreProphecy</h3>
                 </div>
             </div>
 
-            <hr class="border-secondary border-opacity-25 my-4" />
-
-            <div class="font-oracle text-light fs-5 mb-4" style="line-height: 1.8;">
+            <!-- Deep Inset Interpretation Well -->
+            <div class="neu-well-deep p-4 font-body text-neu-primary fs-5 mb-4" style="line-height: 1.8; border-radius: 20px;">
                 @Result.DetailedInterpretation
             </div>
 
-            <!-- Sacred Affirmation Callout -->
-            <div class="p-4 rounded-3 text-center my-4" style="background: rgba(255, 209, 102, 0.08); border: 1px dashed rgba(255, 209, 102, 0.4);">
-                <div class="small font-oracle text-warning text-uppercase mb-1">Sacred Affirmation to Anchor This Energy</div>
-                <div class="fs-4 font-decorative text-white">
+            <!-- Sacred Affirmation Well -->
+            <div class="neu-well p-4 text-center my-4" style="border-radius: 20px;">
+                <div class="small font-display text-neu-accent text-uppercase fw-bold mb-1">Sacred Affirmation</div>
+                <div class="fs-4 font-display fw-bold text-neu-primary">
                     " @Result.SacredAffirmation "
                 </div>
             </div>
 
             <!-- Cosmic Advice -->
-            <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25">
-                <div class="small font-oracle text-warning fw-bold mb-1">
-                    <i class="bi bi-compass"></i> Guidance from the Celestial Sphere:
+            <div class="neu-well p-3">
+                <div class="small font-display text-neu-accent fw-bold mb-1">
+                    <i class="bi bi-compass"></i> Guidance from the Sphere:
                 </div>
-                <div class="text-white-50 small font-oracle">
+                <div class="font-body text-neu-muted small">
                     @Result.CosmicAdvice
                 </div>
             </div>
@@ -79,13 +81,15 @@
         <!-- Modality Evidence: Cards or Palm Biometrics -->
         @if (Result.ReadingType == ReadingType.Tarot && Result.SelectedCards.Count > 0)
         {
-            <div class="fortune-glass-card p-4 mb-4">
+            <div class="neu-card p-4 mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h4 class="font-oracle text-white mb-0"><i class="bi bi-collection text-warning me-2"></i>Revealed Tarot Spread</h4>
-                        <small class="text-secondary font-oracle">Archetypes Manifested in Memory</small>
+                        <h4 class="font-display fw-bold text-neu-primary mb-0">
+                            <i class="bi bi-collection text-neu-accent me-2"></i>Revealed Tarot Spread
+                        </h4>
+                        <small class="font-body text-neu-muted">Archetypes Manifested in Memory</small>
                     </div>
-                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">
+                    <span class="btn-neu-pill small font-display">
                         @Result.SelectedCards.Count Cards Drawn
                     </span>
                 </div>
@@ -94,23 +98,25 @@
                     @foreach (var card in Result.SelectedCards)
                     {
                         <div class="col-md-4 col-sm-6 text-center">
-                            <div class="p-3 rounded-4 bg-black bg-opacity-40 border border-secondary border-opacity-30 h-100 d-flex flex-column justify-content-between">
+                            <div class="neu-card p-4 h-100 d-flex flex-column justify-content-between" style="border-radius: 24px;">
                                 <div>
-                                    <div class="small text-secondary font-oracle mb-2">@card.PositionName</div>
-                                    <div class="fs-1 my-2">@card.Card.Symbol</div>
-                                    <h5 class="font-oracle text-warning mb-1">
+                                    <div class="small font-display fw-semibold text-neu-muted mb-2">@card.PositionName</div>
+                                    <div class="neu-icon-socket mx-auto my-2" style="font-size: 2rem;">
+                                        @card.Card.Symbol
+                                    </div>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-1">
                                         @card.Card.Name
                                         @if (card.IsReversed)
                                         {
-                                            <span class="badge bg-danger bg-opacity-25 text-danger font-sans ms-1" style="font-size: 0.65rem;">Reversed</span>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger ms-1" style="font-size: 0.65rem;">Reversed</span>
                                         }
                                     </h5>
-                                    <span class="badge bg-dark text-secondary mb-2" style="font-size: 0.65rem;">
-                                        Element: @card.Card.Element · @card.Card.Arcana Arcana
+                                    <span class="btn-neu-pill py-0 px-2 small font-display text-neu-muted mb-2" style="font-size: 0.7rem;">
+                                        Element: @card.Card.Element · @card.Card.Arcana
                                     </span>
                                 </div>
-                                <div class="mt-2 text-start p-2 rounded bg-black bg-opacity-30 small text-white-50" style="font-size: 0.75rem;">
-                                    <strong>Meaning:</strong> @card.RevealedMeaning
+                                <div class="neu-well-sm mt-3 text-start p-2 small font-body text-neu-muted" style="font-size: 0.75rem; line-height: 1.4;">
+                                    <strong class="text-neu-primary">Meaning:</strong> @card.RevealedMeaning
                                 </div>
                             </div>
                         </div>
@@ -121,110 +127,112 @@
         else if (Result.ReadingType == ReadingType.Palm && Result.PalmAnalysis != null)
         {
             var palm = Result.PalmAnalysis;
-            <div class="fortune-glass-card p-4 mb-4">
+            <div class="neu-card p-4 mb-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <div>
-                        <h4 class="font-oracle text-white mb-0"><i class="bi bi-hand-index-thumb text-info me-2"></i>In-Memory Palmistry Extraction</h4>
-                        <small class="text-secondary font-oracle">Biometric Contours & Esoteric Markings</small>
+                        <h4 class="font-display fw-bold text-neu-primary mb-0">
+                            <i class="bi bi-hand-index-thumb text-neu-teal me-2"></i>Palmistry Biometric Analysis
+                        </h4>
+                        <small class="font-body text-neu-muted">In-Memory Line Contours & Markings</small>
                     </div>
-                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                    <span class="btn-neu-pill small font-display text-neu-teal fw-bold">
                         @palm.HandArchetype
                     </span>
                 </div>
 
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                            <div class="text-danger font-oracle small fw-bold mb-1"><i class="bi bi-heart me-1"></i>Heart Line</div>
-                            <p class="small text-white-50 mb-0">@palm.HeartLineInterpretation</p>
+                        <div class="neu-well p-3 h-100">
+                            <div class="font-display text-neu-accent small fw-bold mb-1"><i class="bi bi-heart me-1"></i>Heart Line</div>
+                            <p class="font-body small text-neu-muted mb-0">@palm.HeartLineInterpretation</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                            <div class="text-warning font-oracle small fw-bold mb-1"><i class="bi bi-lightbulb me-1"></i>Head Line</div>
-                            <p class="small text-white-50 mb-0">@palm.HeadLineInterpretation</p>
+                        <div class="neu-well p-3 h-100">
+                            <div class="font-display text-neu-teal small fw-bold mb-1"><i class="bi bi-lightbulb me-1"></i>Head Line</div>
+                            <p class="font-body small text-neu-muted mb-0">@palm.HeadLineInterpretation</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                            <div class="text-success font-oracle small fw-bold mb-1"><i class="bi bi-activity me-1"></i>Life Line</div>
-                            <p class="small text-white-50 mb-0">@palm.LifeLineInterpretation</p>
+                        <div class="neu-well p-3 h-100">
+                            <div class="font-display text-neu-primary small fw-bold mb-1"><i class="bi bi-activity me-1"></i>Life Line</div>
+                            <p class="font-body small text-neu-muted mb-0">@palm.LifeLineInterpretation</p>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                            <div class="text-primary font-oracle small fw-bold mb-1"><i class="bi bi-signpost-split me-1"></i>Fate Line</div>
-                            <p class="small text-white-50 mb-0">@palm.FateLineInterpretation</p>
+                        <div class="neu-well p-3 h-100">
+                            <div class="font-display text-neu-accent small fw-bold mb-1"><i class="bi bi-signpost-split me-1"></i>Fate Line</div>
+                            <p class="font-body small text-neu-muted mb-0">@palm.FateLineInterpretation</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25 mt-3">
+                <div class="neu-well p-3 mt-3">
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div class="small font-oracle text-secondary">
-                            <strong class="text-warning">Mounts:</strong> @palm.MountsAnalysis
+                        <div class="small font-display text-neu-muted">
+                            <strong class="text-neu-primary">Mounts:</strong> @palm.MountsAnalysis
                         </div>
-                        <div class="small font-oracle text-info">
-                            <strong class="text-info">Sacred Symbol:</strong> @palm.DivineSymbolFound
+                        <div class="small font-display text-neu-teal">
+                            <strong>Symbol Found:</strong> @palm.DivineSymbolFound
                         </div>
                     </div>
                 </div>
             </div>
         }
 
-        <!-- Celestial Energy & Numerology Matrix -->
+        <!-- Tactile Numerology & Aura Matrix -->
         <div class="row g-3 mb-5">
             <div class="col-md-3 col-6">
-                <div class="fortune-glass-card p-3 text-center h-100">
-                    <small class="text-secondary font-oracle text-uppercase">Aura Energy</small>
-                    <div class="display-6 font-decorative text-warning my-1">@Result.AuraEnergyScore%</div>
-                    <div class="aura-meter-track mt-2">
-                        <div class="aura-meter-fill" style="width: @Result.AuraEnergyScore%;"></div>
+                <div class="neu-card p-3 text-center h-100">
+                    <small class="font-display text-neu-muted text-uppercase">Aura Energy</small>
+                    <div class="display-6 font-display fw-extrabold text-neu-accent my-1">@Result.AuraEnergyScore%</div>
+                    <div class="neu-meter-track mt-2">
+                        <div class="neu-meter-fill" style="width: @Result.AuraEnergyScore%;"></div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-3 col-6">
-                <div class="fortune-glass-card p-3 text-center h-100">
-                    <small class="text-secondary font-oracle text-uppercase">Aura Frequency</small>
-                    <div class="fs-4 font-oracle mt-2" style="color: @Result.AuraColorHex;">
+                <div class="neu-card p-3 text-center h-100">
+                    <small class="font-display text-neu-muted text-uppercase">Aura Frequency</small>
+                    <div class="fs-4 font-display fw-bold text-neu-accent mt-2">
                         ✦ @Result.AuraColor
                     </div>
-                    <small class="text-white-50">Resonance Sealed</small>
+                    <small class="font-body text-neu-muted">Resonance Sealed</small>
                 </div>
             </div>
 
             <div class="col-md-3 col-6">
-                <div class="fortune-glass-card p-3 text-center h-100">
-                    <small class="text-secondary font-oracle text-uppercase">Sacred Number</small>
-                    <div class="display-6 font-decorative text-warning my-1">#@Result.LuckyNumber</div>
-                    <small class="text-white-50">Karmic Multiplier</small>
+                <div class="neu-card p-3 text-center h-100">
+                    <small class="font-display text-neu-muted text-uppercase">Sacred Number</small>
+                    <div class="display-6 font-display fw-extrabold text-neu-teal my-1">#@Result.LuckyNumber</div>
+                    <small class="font-body text-neu-muted">Karmic Multiplier</small>
                 </div>
             </div>
 
             <div class="col-md-3 col-6">
-                <div class="fortune-glass-card p-3 text-center h-100">
-                    <small class="text-secondary font-oracle text-uppercase">Auspicious Gemstone</small>
-                    <div class="fs-5 font-oracle text-info mt-2">
+                <div class="neu-card p-3 text-center h-100">
+                    <small class="font-display text-neu-muted text-uppercase">Auspicious Gemstone</small>
+                    <div class="fs-5 font-display fw-bold text-neu-primary mt-2">
                         @Result.AuspiciousGemstone
                     </div>
-                    <small class="text-white-50">Talisman of Power</small>
+                    <small class="font-body text-neu-muted">Talisman of Power</small>
                 </div>
             </div>
         </div>
 
         <!-- Next Actions (New Reading / Close) -->
-        <div class="fortune-glass-card p-4 text-center">
-            <h4 class="font-oracle text-white mb-2">Next Celestial Action</h4>
-            <p class="text-secondary small font-oracle mb-4">
+        <div class="neu-card p-4 text-center">
+            <h4 class="font-display fw-bold text-neu-primary mb-1">Next Celestial Action</h4>
+            <p class="font-body text-neu-muted small mb-4">
                 Will you consult the oracle on another inquiry or conclude this sacred session?
             </p>
 
             <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <button class="btn-cosmic-gold px-5 py-3 fs-5" @onclick="StartNewReading">
+                <button class="btn-neu-primary px-5 py-3 fs-5" @onclick="StartNewReading">
                     <i class="bi bi-arrow-repeat"></i> START A NEW READING
                 </button>
-                <button class="btn-cosmic-outline px-4 py-3 fs-5" @onclick="EndSession">
+                <button class="btn-neu px-4 py-3 fs-5" @onclick="EndSession">
                     <i class="bi bi-x-circle"></i> CLOSE / END SESSION
                 </button>
             </div>
@@ -233,14 +241,16 @@
         @if (ShowEndModal)
         {
             <div class="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
-                 style="background: rgba(7, 5, 16, 0.85); backdrop-filter: blur(12px); z-index: 9999;">
-                <div class="fortune-glass-card p-5 text-center max-w-500 mx-3">
-                    <span class="fs-1 text-warning mb-3 d-inline-block">🕊️</span>
-                    <h3 class="font-decorative gold-gradient-text mb-2">PEACE GO WITH YOU</h3>
-                    <p class="font-oracle text-light mb-4">
+                 style="background: rgba(61, 72, 82, 0.4); backdrop-filter: blur(8px); z-index: 9999;">
+                <div class="neu-card p-5 text-center max-w-500 mx-3" style="box-shadow: var(--shadow-extruded-hover);">
+                    <div class="neu-icon-socket mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2.5rem; color: var(--neu-accent);">
+                        🕊️
+                    </div>
+                    <h3 class="font-display fw-extrabold text-neu-primary mb-2">PEACE GO WITH YOU</h3>
+                    <p class="font-body text-neu-muted mb-4">
                         May the blessings of Astraea illuminate your footsteps and the celestial stars ever align in your favor.
                     </p>
-                    <button class="btn-cosmic-gold w-100 py-3" @onclick='() => Nav.NavigateTo("")'>
+                    <button class="btn-neu-primary w-100 py-3" @onclick='() => Nav.NavigateTo("")'>
                         Return to Celestial Sanctuary
                     </button>
                 </div>

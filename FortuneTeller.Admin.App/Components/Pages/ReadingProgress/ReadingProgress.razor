@@ -5,52 +5,52 @@
 @inject IJSRuntime JS
 
 <div class="container py-5 max-w-750 mx-auto text-center">
-    <div class="fortune-glass-card p-4 p-md-5">
-        <!-- Mystical Divination Chamber -->
+    <div class="neu-card p-4 p-md-5">
+        <!-- Header -->
         <div class="mb-4">
-            <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-3"
-                  style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
-                ✦ WebSocket Gateway & Orchestrator Pipeline ✦
-            </span>
-            <h2 class="font-decorative gold-gradient-text display-5">COMMUNING WITH DESTINY</h2>
-            <p class="text-secondary font-oracle small">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
+                <span class="text-neu-accent">✦</span>
+                <span class="font-display text-neu-muted small text-uppercase fw-bold">WebSocket Pipeline</span>
+                <span class="text-neu-accent">✦</span>
+            </div>
+            <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">COMMUNING WITH DESTINY</h2>
+            <p class="font-body text-neu-muted small">
                 Transmitting via WebSocket Gateway · Reading Orchestrator In-Memory Execution
             </p>
         </div>
 
-        <!-- Animated Divination Spinner & Orb -->
-        <div class="my-4 position-relative d-inline-block">
-            <div class="divine-spinner"></div>
-            <div class="position-absolute top-50 start-50 translate-middle fs-2 text-warning">
+        <!-- Soft UI Divination Spinner -->
+        <div class="neu-spinner">
+            <div class="neu-spinner-ring">
                 @(State.ReadingType == ReadingType.Tarot ? "🎴" : "✋")
             </div>
         </div>
 
-        <!-- Live Progress Percentage -->
-        <div class="fs-4 font-oracle text-warning mb-2">
+        <!-- Live Percentage -->
+        <div class="fs-4 font-display fw-extrabold text-neu-primary mb-2">
             @CurrentPercent% Complete
         </div>
 
-        <!-- Progress Bar -->
-        <div class="aura-meter-track max-w-500 mx-auto mb-4">
-            <div class="aura-meter-fill" style="width: @CurrentPercent%;"></div>
+        <!-- Inset Meter Progress Bar -->
+        <div class="neu-meter-track max-w-500 mx-auto mb-4">
+            <div class="neu-meter-fill" style="width: @CurrentPercent%;"></div>
         </div>
 
         <!-- Mystical Message Box -->
-        <div class="p-3 rounded-3 bg-black bg-opacity-40 border border-secondary border-opacity-25 max-w-600 mx-auto mb-4 font-oracle text-light">
-            <i class="bi bi-stars text-warning me-2"></i>
+        <div class="neu-well p-3 max-w-600 mx-auto mb-4 font-display text-neu-primary">
+            <i class="bi bi-stars text-neu-accent me-2"></i>
             <span>@CurrentStageMessage</span>
         </div>
 
         <!-- Live WebSocket Pipeline Steps List -->
-        <div class="text-start max-w-500 mx-auto small text-secondary">
-            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 15 ? "text-warning" : "opacity-40")">
-                <i class="bi @(CurrentPercent >= 30 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
-                <span>WebSocket Gateway: Validate message, enforce 5MB size & rate limits</span>
+        <div class="text-start max-w-500 mx-auto small text-neu-muted font-display">
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 15 ? "text-neu-accent fw-bold" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 30 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
+                <span>WebSocket Gateway: Validate message, enforce 5MB & rate limits</span>
             </div>
 
-            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 30 ? "text-warning" : "opacity-40")">
-                <i class="bi @(CurrentPercent >= 60 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 30 ? "text-neu-accent fw-bold" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 60 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
                 <span>
                     @(State.ReadingType == ReadingType.Tarot
                         ? "Reading Orchestrator: Select spread and cards in memory"
@@ -58,23 +58,23 @@
                 </span>
             </div>
 
-            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 60 ? "text-warning" : "opacity-40")">
-                <i class="bi @(CurrentPercent >= 85 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
+            <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 60 ? "text-neu-accent fw-bold" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 85 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
                 <span>AI Reading Service: Generate prophecy for @State.Topic</span>
             </div>
 
-            <div class="d-flex align-items-center gap-2 @(CurrentPercent >= 85 ? "text-warning" : "opacity-40")">
-                <i class="bi @(CurrentPercent >= 100 ? "bi-check-circle-fill text-success" : "bi-circle")"></i>
-                <span>Format and check response: Seal celestial aura & emit result</span>
+            <div class="d-flex align-items-center gap-2 @(CurrentPercent >= 85 ? "text-neu-accent fw-bold" : "opacity-40")">
+                <i class="bi @(CurrentPercent >= 100 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
+                <span>Format and check response: Seal aura & emit result</span>
             </div>
         </div>
 
         @if (HasError)
         {
-            <div class="alert alert-danger bg-danger bg-opacity-20 border-danger text-danger mt-4 font-oracle">
+            <div class="neu-well p-3 text-danger font-display small mt-4">
                 <i class="bi bi-exclamation-triangle me-2"></i>@ErrorMessage
                 <div class="mt-2">
-                    <a href="choose-reading" class="btn btn-sm btn-outline-danger">Start Over</a>
+                    <a href="choose-reading" class="btn-neu-pill">Start Over</a>
                 </div>
             </div>
         }
@@ -121,7 +121,7 @@
                     StateHasChanged();
 
                     try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
-                    await Task.Delay(700);
+                    await Task.Delay(600);
                     Nav.NavigateTo("reading-result");
                     return;
                 }

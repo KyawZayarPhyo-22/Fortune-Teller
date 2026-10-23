@@ -1,544 +1,718 @@
 /* ============================================================
-   ASTRAEA CELESTIAL FORTUNE TELLER DESIGN SYSTEM
-   Theme: Cosmic Velvet, Starlight Gold & Astral Divination
+   ASTRAEA HYBRID DESIGN SYSTEM (MYSTIC CHAMBER + NEUMORPHIC GLASS)
+   Harmonized Palette: Celestial Gold (#F59E0B) & Astral Teal (#14B8A6)
+   Atmosphere: Ambient Fortune Teller Divination Chamber Image + Glassmorphic Soft UI
    ============================================================ */
 
 :root {
-    --cosmic-void: #070510;
-    --cosmic-dark: #0e0a22;
-    --cosmic-surface: rgba(24, 18, 54, 0.75);
-    --cosmic-card: rgba(30, 22, 68, 0.85);
-    --cosmic-border: rgba(184, 150, 255, 0.22);
-    --cosmic-border-hover: rgba(255, 215, 0, 0.55);
+    /* Color Tokens */
+    --neu-base: rgba(18, 24, 36, 0.68);
+    --neu-foreground: #F8FAFC;
+    --neu-muted: #94A3B8;
 
-    --gold-primary: #ffd166;
-    --gold-glow: #f59e0b;
-    --gold-light: #fff3c4;
-    --gold-shadow: rgba(245, 158, 11, 0.35);
+    /* Celestial Gold & Astral Teal Accents */
+    --neu-gold: #F59E0B;
+    --neu-gold-light: #FBBF24;
+    --neu-gold-glow: rgba(245, 158, 11, 0.4);
 
-    --amethyst-primary: #a855f7;
-    --amethyst-light: #d8b4fe;
-    --amethyst-glow: rgba(168, 85, 247, 0.4);
+    --neu-teal: #14B8A6;
+    --neu-teal-light: #2DD4BF;
+    --neu-teal-glow: rgba(20, 184, 166, 0.4);
 
-    --astral-cyan: #38bdf8;
-    --astral-cyan-glow: rgba(56, 189, 248, 0.3);
+    --neu-accent: var(--neu-gold);
+    --neu-accent-light: var(--neu-gold-light);
+    --neu-accent-secondary: var(--neu-teal);
+    --neu-placeholder: #64748B;
 
-    --rose-quartz: #f43f5e;
-    --emerald-light: #10b981;
+    /* Typography Tokens */
+    --font-display: 'Plus Jakarta Sans', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
 
-    --font-oracle: 'Cinzel', serif;
-    --font-decorative: 'Cinzel Decorative', serif;
-    --font-body: 'Outfit', sans-serif;
+    /* Radius Tokens */
+    --radius-card: 32px;
+    --radius-btn: 16px;
+    --radius-inner: 12px;
+    --radius-pill: 9999px;
 }
 
+/* Global Reset & Body Setup */
 * {
     box-sizing: border-box;
 }
 
-body.fortune-body {
-    background-color: var(--cosmic-void);
-    color: #e2e8f0;
+body.neu-body {
+    background-color: #080B11;
+    background-image: 
+        radial-gradient(circle at 50% 25%, rgba(20, 184, 166, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 80% 75%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(8, 11, 17, 0.58) 0%, rgba(8, 11, 17, 0.8) 100%),
+        url('/images/fortune-bg.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    color: var(--neu-foreground);
     font-family: var(--font-body);
+    font-weight: 400;
     margin: 0;
     padding: 0;
     min-height: 100vh;
     overflow-x: hidden;
-    position: relative;
-    background-image:
-        radial-gradient(circle at 15% 15%, rgba(168, 85, 247, 0.15) 0%, transparent 45%),
-        radial-gradient(circle at 85% 80%, rgba(245, 158, 11, 0.12) 0%, transparent 45%),
-        radial-gradient(circle at 50% 50%, rgba(56, 189, 248, 0.08) 0%, transparent 55%);
-    background-attachment: fixed;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Background Canvas Starfield */
-#starfield-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-    z-index: 0;
+/* Typography Utility Classes */
+.font-display {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
 }
 
-/* Typography */
-.font-oracle {
-    font-family: var(--font-oracle);
-    letter-spacing: 0.06em;
+.font-body {
+    font-family: var(--font-body);
 }
 
-.font-decorative {
-    font-family: var(--font-decorative);
-    letter-spacing: 0.08em;
+.text-neu-primary {
+    color: var(--neu-foreground) !important;
 }
 
-.gold-gradient-text {
-    background: linear-gradient(135deg, #fff3c4 0%, #ffd166 40%, #f59e0b 80%, #d97706 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 25px rgba(255, 209, 102, 0.3);
+.text-neu-muted {
+    color: var(--neu-muted) !important;
 }
 
-.amethyst-gradient-text {
-    background: linear-gradient(135deg, #f3e8ff 0%, #d8b4fe 40%, #a855f7 80%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.text-neu-gold {
+    color: var(--neu-gold) !important;
 }
 
-/* Layout */
-.fortune-app-container {
-    position: relative;
-    z-index: 1;
+.text-neu-teal {
+    color: var(--neu-teal) !important;
+}
+
+.text-neu-accent {
+    color: var(--neu-accent) !important;
+}
+
+/* Layout Shell with Dynamic Ambient Chamber Backgrounds */
+.neu-app-shell {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background-size: cover;
+    background-position: center center;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    transition: background-image 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.6s ease;
 }
 
-/* Top Celestial Header */
-.celestial-navbar {
-    background: rgba(14, 10, 34, 0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--cosmic-border);
-    padding: 0.9rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+/* Home / Neutral Chamber */
+.neu-app-shell.bg-fortune-chamber {
+    background-color: #080B11;
+    background-image: 
+        radial-gradient(circle at 50% 25%, rgba(20, 184, 166, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 80% 75%, rgba(245, 158, 11, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(8, 11, 17, 0.58) 0%, rgba(8, 11, 17, 0.82) 100%),
+        url('/images/fortune-bg.jpg');
 }
 
-.celestial-brand {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    text-decoration: none;
+/* Dedicated Celestial Tarot Chamber (Glowing Arc of Arcana Cards + Golden Astrolabe) */
+.neu-app-shell.bg-tarot-chamber {
+    background-color: #080B11;
+    background-image: 
+        radial-gradient(circle at 50% 20%, rgba(245, 158, 11, 0.25) 0%, transparent 60%),
+        radial-gradient(circle at 85% 70%, rgba(217, 119, 6, 0.2) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(8, 11, 17, 0.55) 0%, rgba(8, 11, 17, 0.8) 100%),
+        url('/images/tarot-bg.jpg');
 }
 
-.brand-icon {
-    font-size: 1.8rem;
-    filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.7));
-    animation: gentle-float 4s ease-in-out infinite alternate;
+/* Dedicated Astral Palmistry Chamber (Cosmic Glowing Teal Palm + Biometric Contour Lines) */
+.neu-app-shell.bg-palm-chamber {
+    background-color: #080B11;
+    background-image: 
+        radial-gradient(circle at 50% 30%, rgba(20, 184, 166, 0.28) 0%, transparent 60%),
+        radial-gradient(circle at 20% 70%, rgba(13, 148, 136, 0.2) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(8, 11, 17, 0.52) 0%, rgba(8, 11, 17, 0.8) 100%),
+        url('/images/palm-bg.jpg');
 }
 
-.brand-title {
-    font-family: var(--font-decorative);
-    font-size: 1.4rem;
-    font-weight: 700;
-    color: var(--gold-light);
-    letter-spacing: 0.1em;
-}
+/* ============================================================
+   HYBRID SURFACES & CONTAINERS (FROSTED SOFT UI)
+   ============================================================ */
 
-.brand-subtitle {
-    font-size: 0.75rem;
-    color: var(--amethyst-light);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-}
-
-.celestial-nav-links {
-    display: flex;
-    gap: 1.25rem;
-    align-items: center;
-}
-
-.celestial-nav-link {
-    color: #cbd5e1;
-    text-decoration: none;
-    font-size: 0.95rem;
-    padding: 0.45rem 0.9rem;
-    border-radius: 999px;
-    transition: all 0.25s ease;
-    border: 1px solid transparent;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-}
-
-.celestial-nav-link:hover,
-.celestial-nav-link.active {
-    color: var(--gold-light);
-    background: rgba(168, 85, 247, 0.18);
-    border-color: var(--cosmic-border-hover);
-    box-shadow: 0 0 14px rgba(255, 209, 102, 0.2);
-}
-
-/* Wizard Flow Stepper */
-.wizard-stepper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 1.5rem auto 2.5rem;
-    max-width: 850px;
-    padding: 0.75rem 1.5rem;
-    background: rgba(20, 15, 45, 0.6);
-    backdrop-filter: blur(12px);
-    border-radius: 999px;
-    border: 1px solid var(--cosmic-border);
-}
-
-.step-item {
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    color: #64748b;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.step-item.active {
-    color: var(--gold-primary);
-    font-weight: 600;
-}
-
-.step-item.completed {
-    color: var(--amethyst-light);
-}
-
-.step-bubble {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.78rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-.step-item.active .step-bubble {
-    background: var(--gold-primary);
-    color: #1a103c;
-    border-color: var(--gold-primary);
-    box-shadow: 0 0 12px var(--gold-shadow);
-    font-weight: 700;
-}
-
-.step-item.completed .step-bubble {
-    background: rgba(168, 85, 247, 0.3);
-    border-color: var(--amethyst-primary);
-    color: #fff;
-}
-
-.step-divider {
-    width: 24px;
-    height: 1px;
-    background: rgba(255, 255, 255, 0.12);
-}
-
-/* Glassmorphic Fortune Cards */
-.fortune-glass-card {
-    background: var(--cosmic-card);
-    backdrop-filter: blur(16px);
-    border: 1px solid var(--cosmic-border);
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+/* 32px Frosted Glass Containers & Cards */
+.neu-card {
+    background: rgba(18, 24, 36, 0.68);
+    backdrop-filter: blur(24px) saturate(150%);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    border-radius: var(--radius-card);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65),
+                inset 0 1px 1px rgba(255, 255, 255, 0.18),
+                inset 0 -1px 3px rgba(0, 0, 0, 0.6);
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    overflow: hidden;
 }
 
-.fortune-glass-card:hover {
-    border-color: var(--cosmic-border-hover);
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6), 0 0 20px var(--gold-shadow);
+.neu-card-lift:hover {
+    transform: translateY(-4px);
+    border-color: rgba(245, 158, 11, 0.45);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.75),
+                0 0 30px rgba(245, 158, 11, 0.25),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
 }
 
-.fortune-glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(255, 209, 102, 0.6), transparent);
+/* Inset Wells for Deep Nested Depth */
+.neu-well {
+    background: rgba(8, 12, 20, 0.6);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: var(--radius-btn);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.7),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.04);
 }
 
-/* Cosmic Buttons */
-.btn-cosmic-gold {
-    background: linear-gradient(135deg, #ffd166 0%, #f59e0b 100%);
-    color: #0b081e;
-    font-weight: 600;
-    font-family: var(--font-oracle);
-    letter-spacing: 0.05em;
-    border: none;
-    padding: 0.75rem 1.75rem;
-    border-radius: 999px;
-    box-shadow: 0 4px 18px rgba(245, 158, 11, 0.4);
-    transition: all 0.25s ease;
+.neu-well-deep {
+    background: rgba(5, 8, 14, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: var(--radius-btn);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: inset 6px 6px 16px rgba(0, 0, 0, 0.85),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.03);
+}
+
+.neu-well-sm {
+    background: rgba(10, 14, 22, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: var(--radius-inner);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.5),
+                inset -1px -1px 3px rgba(255, 255, 255, 0.05);
+}
+
+/* Drilled Icon Socket (Nested Depth: Inset Deep) */
+.neu-icon-socket {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: rgba(9, 13, 22, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.8),
+                inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+    color: var(--neu-gold);
+    transition: transform 0.3s ease-out;
+}
+
+.neu-icon-socket-teal {
+    color: var(--neu-teal) !important;
+}
+
+/* Concentric Tactile Rings */
+.neu-concentric-outer {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(20, 26, 38, 0.65);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5),
+                inset 0 1px 2px rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    transition: transform 0.5s ease-out;
+}
+
+.neu-concentric-inner {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: rgba(8, 11, 18, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 5px 5px 14px rgba(0, 0, 0, 0.85),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    transition: transform 0.5s ease-out;
+}
+
+/* ============================================================
+   BUTTONS (CELESTIAL GOLD & ASTRAL TEAL)
+   ============================================================ */
+
+/* Base Tactile Glass Button */
+.btn-neu {
+    background: rgba(24, 32, 46, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: var(--neu-foreground);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: var(--radius-btn);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    padding: 0.85rem 1.85rem;
+    min-height: 48px;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    transition: all 0.3s ease-out;
+    outline: none;
 }
 
-.btn-cosmic-gold:hover {
-    background: linear-gradient(135deg, #ffe494 0%, #fbbf24 100%);
-    box-shadow: 0 6px 24px rgba(245, 158, 11, 0.6);
+.btn-neu:hover {
+    background: rgba(30, 40, 58, 0.8);
+    border-color: rgba(255, 255, 255, 0.25);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
-    color: #0b081e;
+    color: #ffffff;
 }
 
-.btn-cosmic-purple {
-    background: rgba(168, 85, 247, 0.2);
-    border: 1px solid var(--amethyst-primary);
-    color: var(--amethyst-light);
-    font-weight: 500;
-    font-family: var(--font-oracle);
-    padding: 0.75rem 1.75rem;
-    border-radius: 999px;
-    transition: all 0.25s ease;
+.btn-neu:active,
+.btn-neu.active {
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.7);
+    transform: translateY(0.5px);
+    color: var(--neu-gold);
+}
+
+/* Celestial Gold Primary Button */
+.btn-neu-gold,
+.btn-neu-primary {
+    background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    color: #ffffff !important;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-btn);
+    box-shadow: 0 10px 25px rgba(217, 119, 6, 0.5),
+                0 0 20px rgba(245, 158, 11, 0.35),
+                inset 0 1px 2px rgba(255, 255, 255, 0.4);
+    padding: 0.9rem 2.2rem;
+    min-height: 48px;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    transition: all 0.3s ease-out;
+    outline: none;
 }
 
-.btn-cosmic-purple:hover {
-    background: rgba(168, 85, 247, 0.35);
-    border-color: #d8b4fe;
-    box-shadow: 0 0 16px var(--amethyst-glow);
+.btn-neu-gold:hover,
+.btn-neu-primary:hover {
+    background: linear-gradient(135deg, #FBBF24 0%, #E28704 100%);
+    box-shadow: 0 14px 32px rgba(217, 119, 6, 0.65),
+                0 0 28px rgba(251, 191, 36, 0.5),
+                inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    color: #ffffff;
+}
+
+.btn-neu-gold:active,
+.btn-neu-primary:active {
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.2);
+    transform: translateY(0.5px);
+}
+
+/* Astral Teal Button */
+.btn-neu-teal {
+    background: linear-gradient(135deg, #14B8A6 0%, #0D9488 100%);
+    color: #ffffff !important;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1rem;
+    border-radius: var(--radius-btn);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 10px 25px rgba(13, 148, 136, 0.5),
+                0 0 20px rgba(20, 184, 166, 0.35),
+                inset 0 1px 2px rgba(255, 255, 255, 0.4);
+    padding: 0.9rem 2.2rem;
+    min-height: 48px;
+    transition: all 0.3s ease-out;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    outline: none;
+}
+
+.btn-neu-teal:hover {
+    background: linear-gradient(135deg, #2DD4BF 0%, #0F766E 100%);
+    box-shadow: 0 14px 32px rgba(13, 148, 136, 0.65),
+                0 0 28px rgba(45, 212, 191, 0.5),
+                inset 0 1px 3px rgba(255, 255, 255, 0.5);
     color: #ffffff;
     transform: translateY(-2px);
 }
 
-.btn-cosmic-outline {
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: #cbd5e1;
-    font-family: var(--font-oracle);
-    padding: 0.65rem 1.5rem;
+.btn-neu-teal:active {
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.4),
+                inset -2px -2px 6px rgba(255, 255, 255, 0.2);
+    transform: translateY(0.5px);
+}
+
+/* Small Tactile Pill Buttons */
+.btn-neu-pill {
+    border-radius: var(--radius-pill);
+    padding: 0.45rem 1.1rem;
+    font-size: 0.85rem;
+    min-height: 38px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 20, 30, 0.65);
+    backdrop-filter: blur(10px);
+    color: var(--neu-foreground);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    transition: all 0.25s ease-out;
+}
+
+.btn-neu-pill:hover {
+    border-color: var(--neu-gold);
+    color: var(--neu-gold);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45),
+                0 0 14px rgba(245, 158, 11, 0.25);
+    transform: translateY(-1px);
+}
+
+.btn-neu-pill:active,
+.btn-neu-pill.active {
+    background: rgba(10, 14, 22, 0.85);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.7);
+    color: var(--neu-gold);
+    font-weight: 700;
+}
+
+/* ============================================================
+   INPUTS & FORMS
+   ============================================================ */
+
+.neu-input {
+    background: rgba(8, 12, 20, 0.75);
+    color: var(--neu-foreground);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-btn);
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.7);
+    padding: 0.85rem 1.25rem;
+    width: 100%;
+    outline: none;
+    transition: all 0.3s ease-out;
+}
+
+.neu-input:focus {
+    border-color: var(--neu-gold);
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.7),
+                0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+.neu-textarea {
+    background: rgba(8, 12, 20, 0.75);
+    color: var(--neu-foreground);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-btn);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.75);
+    padding: 1rem 1.25rem;
+    width: 100%;
+    outline: none;
+    transition: all 0.3s ease-out;
+    resize: vertical;
+}
+
+.neu-textarea:focus {
+    border-color: var(--neu-gold);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.75),
+                0 0 16px rgba(245, 158, 11, 0.35);
+}
+
+/* Checkbox */
+.neu-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.neu-checkbox-box {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: rgba(8, 12, 20, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.25s ease-out;
+    color: var(--neu-teal);
+    font-size: 1rem;
+}
+
+.neu-checkbox-box.checked {
+    background: rgba(20, 184, 166, 0.2);
+    border-color: var(--neu-teal);
+    box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.7),
+                0 0 12px rgba(20, 184, 166, 0.4);
+    color: #ffffff;
+}
+
+/* ============================================================
+   STEPPER WIZARD (FROSTED HYBRID MOLDED TRACK)
+   ============================================================ */
+
+.neu-stepper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    margin: 1.5rem auto 2.5rem;
+    max-width: 850px;
+    padding: 0.75rem 1.75rem;
+    background: rgba(12, 17, 26, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-pill);
+}
+
+.neu-step-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--neu-muted);
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease-out;
+}
+
+.neu-step-item.active {
+    color: var(--neu-gold);
+    font-weight: 700;
+}
+
+.neu-step-item.completed {
+    color: var(--neu-teal);
+}
+
+.neu-step-bubble {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    background: rgba(16, 22, 34, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    color: var(--neu-muted);
+    transition: all 0.3s ease-out;
+}
+
+.neu-step-item.active .neu-step-bubble {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: var(--neu-gold);
+    box-shadow: 0 0 16px rgba(245, 158, 11, 0.4),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    color: var(--neu-gold);
+}
+
+.neu-step-item.completed .neu-step-bubble {
+    background: rgba(20, 184, 166, 0.2);
+    border-color: var(--neu-teal);
+    box-shadow: 0 0 14px rgba(20, 184, 166, 0.35);
+    color: var(--neu-teal);
+}
+
+.neu-step-divider {
+    width: 28px;
+    height: 3px;
     border-radius: 999px;
-    transition: all 0.25s ease;
-    cursor: pointer;
-    text-decoration: none;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
-.btn-cosmic-outline:hover {
-    border-color: var(--gold-primary);
-    color: var(--gold-light);
-    box-shadow: 0 0 12px var(--gold-shadow);
-}
+/* ============================================================
+   SPECIALIZED COMPONENTS (GOLD & TEAL)
+   ============================================================ */
 
-/* Tarot Card 3D Component */
-.tarot-card-container {
-    perspective: 1000px;
-    width: 170px;
+/* 3D Tactile Tarot Cards */
+.neu-tarot-card {
+    width: 175px;
     height: 275px;
-    margin: 0.5rem auto;
-}
-
-.tarot-card-inner {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    border-radius: 20px;
+    background: rgba(16, 22, 34, 0.72);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+    padding: 1rem 0.85rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     text-align: center;
-    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    transform-style: preserve-3d;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
+    position: relative;
+    user-select: none;
 }
 
-.tarot-card-inner.is-flipped {
-    transform: rotateY(180deg);
+.neu-tarot-card:hover {
+    border-color: var(--neu-gold);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.75),
+                0 0 24px rgba(245, 158, 11, 0.35),
+                inset 0 1px 2px rgba(255, 255, 255, 0.3);
+    transform: translateY(-6px) scale(1.02);
 }
 
-.tarot-card-front,
-.tarot-card-back {
-    position: absolute;
+.neu-tarot-card.selected {
+    border-color: var(--neu-gold);
+    background: rgba(245, 158, 11, 0.12);
+    box-shadow: inset 4px 4px 12px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.neu-card-back-pattern {
     width: 100%;
     height: 100%;
-    -webkit-backface-visibility: hidden;
-    backface-visibility: hidden;
     border-radius: 14px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-}
-
-.tarot-card-front {
-    background: linear-gradient(145deg, #1d1544 0%, #0d0a21 100%);
-    border: 2px solid var(--gold-primary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1rem;
+    background: radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.12) 0%, rgba(20, 184, 166, 0.06) 60%, transparent 100%);
 }
 
-.tarot-card-front::after {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border: 1px dashed rgba(255, 209, 102, 0.4);
-    border-radius: 8px;
-    pointer-events: none;
-}
-
-.tarot-card-back {
-    background: linear-gradient(135deg, #241952 0%, #110d29 100%);
-    border: 2px solid var(--gold-primary);
-    transform: rotateY(180deg);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 1rem 0.8rem;
-}
-
-.tarot-card-back::after {
-    content: '';
-    position: absolute;
-    inset: 5px;
-    border: 1px solid rgba(255, 209, 102, 0.3);
-    border-radius: 9px;
-    pointer-events: none;
-}
-
-.tarot-symbol-glyph {
-    font-size: 2.8rem;
-    filter: drop-shadow(0 0 12px rgba(255, 209, 102, 0.8));
-    animation: gentle-pulse 3s infinite alternate;
-}
-
-/* Palm Scanner UI */
-.palm-scanner-box {
+/* Palm Scanner Well */
+.neu-scanner-well {
     position: relative;
     width: 100%;
     max-width: 380px;
     height: 380px;
     margin: 0 auto;
-    border-radius: 20px;
-    border: 2px dashed rgba(56, 189, 248, 0.4);
-    background: rgba(14, 10, 36, 0.6);
+    border-radius: var(--radius-card);
+    background: rgba(8, 12, 20, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 6px 6px 18px rgba(0, 0, 0, 0.85);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.palm-scanner-laser {
+.neu-scanner-laser {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, transparent, #38bdf8, #ffd166, #38bdf8, transparent);
-    box-shadow: 0 0 15px #38bdf8, 0 0 30px #38bdf8;
-    animation: scan-vertical 2.5s ease-in-out infinite alternate;
+    background: linear-gradient(90deg, transparent, var(--neu-teal), var(--neu-teal-light), transparent);
+    box-shadow: 0 0 18px var(--neu-teal);
+    animation: neu-scan 2.8s ease-in-out infinite alternate;
     pointer-events: none;
 }
 
-/* Animations */
-@keyframes scan-vertical {
-    0% {
-        top: 5%;
-        opacity: 0.3;
-    }
-    50% {
-        opacity: 1;
-    }
-    100% {
-        top: 92%;
-        opacity: 0.3;
-    }
+@keyframes neu-scan {
+    0% { top: 6%; opacity: 0.3; }
+    50% { opacity: 1; }
+    100% { top: 92%; opacity: 0.3; }
 }
 
-@keyframes gentle-float {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-8px);
-    }
-}
-
-@keyframes gentle-pulse {
-    0% {
-        transform: scale(0.96);
-        filter: drop-shadow(0 0 8px rgba(255, 209, 102, 0.5));
-    }
-    100% {
-        transform: scale(1.04);
-        filter: drop-shadow(0 0 18px rgba(255, 209, 102, 0.9));
-    }
-}
-
-@keyframes pulse-ring {
-    0% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(0.95);
-        opacity: 0.7;
-    }
-}
-
-.pulse-ring {
-    animation: pulse-ring 3s infinite ease-in-out;
-}
-
-/* Aura Energy Bar */
-.aura-meter-track {
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 999px;
-    height: 12px;
+/* Inset Meter: Celestial Gold to Astral Teal Gradient */
+.neu-meter-track {
+    background: rgba(6, 9, 15, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.8);
+    border-radius: var(--radius-pill);
+    height: 18px;
     overflow: hidden;
     position: relative;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    padding: 3px;
 }
 
-.aura-meter-fill {
+.neu-meter-fill {
     height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #a855f7, #ec4899, #ffd166);
-    box-shadow: 0 0 12px rgba(255, 209, 102, 0.6);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(90deg, var(--neu-gold) 0%, #EAB308 50%, var(--neu-teal) 100%);
+    box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
     transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Divination Step Progress Spinner */
-.divine-spinner {
-    width: 70px;
-    height: 70px;
-    border: 3px solid rgba(255, 209, 102, 0.2);
-    border-top: 3px solid var(--gold-primary);
-    border-right: 3px solid var(--amethyst-primary);
+/* Spinner */
+.neu-spinner {
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
-    animation: spin 1.4s linear infinite;
+    background: rgba(18, 24, 36, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin: 1.5rem auto;
-    filter: drop-shadow(0 0 12px var(--gold-shadow));
+    position: relative;
+    animation: neu-float 3s ease-in-out infinite alternate;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+.neu-spinner-ring {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(8, 11, 18, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 3px 3px 8px rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--neu-gold);
 }
 
-/* Responsive adjustments */
+@keyframes neu-float {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px); }
+}
+
+/* Responsive Rules */
 @media (max-width: 768px) {
-    .celestial-navbar {
-        flex-direction: column;
-        gap: 0.8rem;
-        padding: 0.8rem 1rem;
-    }
-
-    .wizard-stepper {
+    .neu-stepper {
         flex-wrap: wrap;
-        border-radius: 16px;
-        padding: 0.6rem;
+        border-radius: var(--radius-btn);
+        padding: 0.75rem;
     }
 
-    .tarot-card-container {
-        width: 140px;
-        height: 230px;
+    .neu-card {
+        border-radius: 24px;
+    }
+
+    .neu-tarot-card {
+        width: 145px;
+        height: 240px;
     }
 }

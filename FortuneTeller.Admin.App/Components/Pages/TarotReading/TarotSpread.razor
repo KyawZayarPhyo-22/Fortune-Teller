@@ -4,63 +4,66 @@
 @inject FortuneClientService Client
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-900 mx-auto">
-    <!-- Stepper -->
-    <div class="wizard-stepper">
-        <div class="step-item completed">
-            <div class="step-bubble"><i class="bi bi-check"></i></div>
-            <span>Choose Path</span>
+<div class="container py-4 max-w-950 mx-auto">
+    <!-- Neumorphic Stepper -->
+    <div class="neu-stepper">
+        <div class="neu-step-item completed">
+            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
+            <span>Path</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item active">
-            <div class="step-bubble">2</div>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item active">
+            <div class="neu-step-bubble">2</div>
             <span>Select Spread</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item">
-            <div class="step-bubble">3</div>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item">
+            <div class="neu-step-bubble">3</div>
             <span>Draw Cards</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item">
-            <div class="step-bubble">4</div>
-            <span>Topic & Inquiry</span>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item">
+            <div class="neu-step-bubble">4</div>
+            <span>Topic</span>
         </div>
     </div>
 
-    <!-- Title -->
+    <!-- Title Header -->
     <div class="text-center mb-5">
-        <span class="badge rounded-pill px-3 py-1 text-uppercase font-oracle text-warning mb-2"
-              style="background: rgba(255, 209, 102, 0.1); border: 1px solid rgba(255, 209, 102, 0.3);">
-            Step 2 · The Sacred Astral Spreads
-        </span>
-        <h2 class="font-decorative gold-gradient-text">SELECT YOUR TAROT SPREAD</h2>
-        <p class="text-secondary font-oracle max-w-600 mx-auto">
-            Choose how many celestial lenses you wish to invoke to view your destiny.
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
+            <span class="text-neu-accent">✦</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 2 · Sacred Spread Configuration</span>
+            <span class="text-neu-accent">✦</span>
+        </div>
+        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-2">SELECT YOUR TAROT SPREAD</h2>
+        <p class="font-body text-neu-muted max-w-600 mx-auto">
+            Choose the depth of the inquiry to cast upon the in-memory card orchestrator.
         </p>
     </div>
 
     <div class="row g-4">
         <!-- 1 Card Spread -->
         <div class="col-md-4">
-            <div class="fortune-glass-card p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.SingleCard ? "border-warning" : "")"
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.SingleCard ? "neu-well-deep" : "")"
                  style="cursor: pointer;"
                  @onclick="() => SelectSpread(TarotSpreadType.SingleCard)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-warning bg-opacity-20 text-warning font-oracle">1 Card</span>
-                        <span class="fs-4">👁️</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="btn-neu-pill small font-display">1 Card</span>
+                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            👁️
+                        </div>
                     </div>
-                    <h4 class="font-oracle text-white mb-2">Oracle's Eye</h4>
-                    <p class="small text-white-50 mb-3">
-                        A focused beam of cosmic clarity. Perfect for immediate questions, daily guidance, or rapid alignment.
+                    <h4 class="font-display fw-bold text-neu-primary mb-2">Oracle's Eye</h4>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
+                        A focused beam of clarity for rapid insight, daily truth, or singular decisions.
                     </p>
-                    <div class="p-2 rounded bg-black bg-opacity-30 small text-secondary">
-                        <strong>Position:</strong> The Core Revelation
+                    <div class="neu-well p-3 small text-neu-muted font-display">
+                        <strong class="text-neu-primary">Position:</strong> The Core Revelation
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.SingleCard ? "btn-cosmic-gold" : "btn-cosmic-outline") w-100">
+                    <button class="btn @(SelectedSpread == TarotSpreadType.SingleCard ? "btn-neu-primary" : "btn-neu") w-100">
                         Select Single Card
                     </button>
                 </div>
@@ -69,24 +72,26 @@
 
         <!-- 3 Cards Spread -->
         <div class="col-md-4">
-            <div class="fortune-glass-card p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.ThreeCards ? "border-warning" : "")"
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.ThreeCards ? "neu-well-deep" : "")"
                  style="cursor: pointer;"
                  @onclick="() => SelectSpread(TarotSpreadType.ThreeCards)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-warning text-dark fw-bold font-oracle">3 Cards · Recommended</span>
-                        <span class="fs-4">⏳</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="btn-neu-pill small font-display text-neu-accent fw-bold">3 Cards · Recommended</span>
+                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            ⏳
+                        </div>
                     </div>
-                    <h4 class="font-oracle text-white mb-2">Trinity of Time</h4>
-                    <p class="small text-white-50 mb-3">
-                        Weaves past root causes, current active energies, and future outcomes into a seamless divine narrative.
+                    <h4 class="font-display fw-bold text-neu-primary mb-2">Trinity of Time</h4>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
+                        Connects past root causes, current active forces, and the resulting future destiny.
                     </p>
-                    <div class="p-2 rounded bg-black bg-opacity-30 small text-secondary">
-                        <strong>Positions:</strong> Past · Present · Destiny
+                    <div class="neu-well p-3 small text-neu-muted font-display">
+                        <strong class="text-neu-primary">Positions:</strong> Past · Present · Destiny
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.ThreeCards ? "btn-cosmic-gold" : "btn-cosmic-outline") w-100">
+                    <button class="btn @(SelectedSpread == TarotSpreadType.ThreeCards ? "btn-neu-primary" : "btn-neu") w-100">
                         Select 3-Card Trinity
                     </button>
                 </div>
@@ -95,24 +100,26 @@
 
         <!-- 5 Cards Spread -->
         <div class="col-md-4">
-            <div class="fortune-glass-card p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.FiveCards ? "border-warning" : "")"
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.FiveCards ? "neu-well-deep" : "")"
                  style="cursor: pointer;"
                  @onclick="() => SelectSpread(TarotSpreadType.FiveCards)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="badge bg-warning bg-opacity-20 text-warning font-oracle">5 Cards</span>
-                        <span class="fs-4">⭐</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <span class="btn-neu-pill small font-display">5 Cards</span>
+                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                            ⭐
+                        </div>
                     </div>
-                    <h4 class="font-oracle text-white mb-2">Celestial Pentagram</h4>
-                    <p class="small text-white-50 mb-3">
-                        An elemental cross analyzing Spirit, Shadow Obstacles, Divine Allies, Subconscious Truth, and Ultimate Fate.
+                    <h4 class="font-display fw-bold text-neu-primary mb-2">Celestial Pentagram</h4>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
+                        An elemental cross analyzing Spirit, Hidden Obstacles, Divine Allies, Subconscious Truth, and Fate.
                     </p>
-                    <div class="p-2 rounded bg-black bg-opacity-30 small text-secondary">
-                        <strong>Positions:</strong> 5 Elemental Gateways
+                    <div class="neu-well p-3 small text-neu-muted font-display">
+                        <strong class="text-neu-primary">Positions:</strong> 5 Elemental Gateways
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.FiveCards ? "btn-cosmic-gold" : "btn-cosmic-outline") w-100">
+                    <button class="btn @(SelectedSpread == TarotSpreadType.FiveCards ? "btn-neu-primary" : "btn-neu") w-100">
                         Select Pentagram
                     </button>
                 </div>
@@ -120,12 +127,13 @@
         </div>
     </div>
 
+    <!-- Navigation Actions -->
     <div class="d-flex justify-content-between align-items-center mt-5">
-        <a href="choose-reading" class="btn-cosmic-outline">
-            <i class="bi bi-arrow-left"></i> Back to Method
+        <a href="choose-reading" class="btn-neu">
+            <i class="bi bi-arrow-left"></i> Back to Path
         </a>
-        <button class="btn-cosmic-gold px-4 py-2" @onclick="ProceedToCardDraw">
-            PROCEED TO DRAW CARDS <i class="bi bi-arrow-right"></i>
+        <button class="btn-neu-primary px-4 py-2" @onclick="ProceedToCardDraw">
+            DRAW CARDS <i class="bi bi-arrow-right"></i>
         </button>
     </div>
 </div>

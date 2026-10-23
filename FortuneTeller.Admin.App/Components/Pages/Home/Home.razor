@@ -1,146 +1,165 @@
 @page "/"
+@page "/choose-reading"
+@using FortuneTeller.Share.Readings
 @inject NavigationManager Nav
 @inject FortuneStateService State
-@inject FortuneClientService Client
 @inject IJSRuntime JS
 
-<div class="container py-4 text-center">
-    <!-- Hero Section -->
-    <div class="py-5">
-        <div class="mb-4">
-            <span class="badge rounded-pill px-3 py-2 text-uppercase font-oracle"
-                  style="background: rgba(168, 85, 247, 0.2); border: 1px solid var(--amethyst-primary); color: var(--gold-light); font-size: 0.85rem;">
-                ✦ Sacred Esoteric Intelligence ✦
+<div class="initial-screen-container">
+    <!-- Header -->
+    <div class="text-center mb-3 mb-md-4">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
+            <span class="text-neu-accent">✦</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold" style="letter-spacing: 0.1em; font-size: 0.75rem;">
+                Astraea Divination Chamber
             </span>
+            <span class="text-neu-accent">✦</span>
         </div>
 
-        <h1 class="display-3 font-decorative gold-gradient-text mb-3" style="font-weight: 900;">
-            THE CELESTIAL ORACLE
+        <h1 class="font-display fw-extrabold text-neu-primary mb-1 display-6">
+            CHOOSE YOUR READING
         </h1>
-        <p class="lead text-light opacity-75 max-w-700 mx-auto mb-5 font-oracle" style="font-size: 1.25rem;">
-            Consult the ancient stars through Tarot divination or discover the indelible map of your soul etched into your palm lines.
+        <p class="font-body text-neu-muted small max-w-500 mx-auto mb-0">
+            Select Tarot or Palm Photo to begin your divination consultation
         </p>
-
-        <!-- Mystical Crystal Orb -->
-        <div class="my-5 position-relative d-inline-block">
-            <div class="rounded-circle pulse-ring d-flex align-items-center justify-content-center mx-auto"
-                 style="width: 190px; height: 190px; background: radial-gradient(circle at 35% 35%, rgba(255, 209, 102, 0.9) 0%, rgba(168, 85, 247, 0.8) 50%, rgba(15, 10, 36, 0.95) 100%); box-shadow: 0 0 50px rgba(168, 85, 247, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.5); cursor: pointer;"
-                 @onclick="StartReading">
-                <span style="font-size: 4.5rem; filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.9));">🔮</span>
-            </div>
-            <div class="mt-3 text-secondary small font-oracle">Click the Sacred Orb to Awaken the Oracle</div>
-        </div>
-
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <button class="btn-cosmic-gold fs-5 px-5 py-3" @onclick="StartReading">
-                <i class="bi bi-stars"></i> START A READING
-            </button>
-            <a href="history" class="btn-cosmic-purple fs-5 px-4 py-3">
-                <i class="bi bi-clock-history"></i> Reading Archive
-            </a>
-        </div>
     </div>
 
-    <!-- Divination Modalities Feature Cards -->
-    <div class="row g-4 mt-4 text-start">
-        <div class="col-md-6">
-            <div class="fortune-glass-card p-4 h-100" style="cursor: pointer;" @onclick="StartTarot">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <span class="fs-1" style="color: var(--gold-primary);">🎴</span>
-                    <div>
-                        <h3 class="font-oracle text-white h4 mb-0">Tarot Divination</h3>
-                        <small class="text-secondary font-oracle">78 Sacred Cards · In-Memory Spreads</small>
+    <!-- The Two Direct Neumorphic Cards -->
+    <div class="row g-3 g-md-4 justify-content-center w-100 max-w-850">
+        <!-- Tarot Card -->
+        <div class="col-sm-6 col-md-5">
+            <div class="neu-card neu-card-lift p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between option-card"
+                 style="cursor: pointer;"
+                 @onclick="SelectTarot">
+                <div>
+                    <!-- Concentric Depth Icon Ring -->
+                    <div class="compact-concentric-outer mb-3">
+                        <div class="compact-concentric-inner text-neu-accent">
+                            🎴
+                        </div>
                     </div>
+
+                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">Tarot Reading</h2>
+                    <p class="font-body text-neu-muted small mb-3" style="line-height: 1.5; font-size: 0.85rem;">
+                        Consult 78 archetypal cards in memory. Unveil the threads of time across past, present, and destiny.
+                    </p>
                 </div>
-                <p class="text-white-50">
-                    Draw from the Major & Minor Arcana. Unveil hidden influences, emotional crossroads, and karmic destiny through the Trinity of Time or Celestial Pentagram.
-                </p>
-                <div class="d-flex justify-content-between align-items-center mt-3 text-warning">
-                    <span class="small font-oracle">Explore Spread & Cards ➔</span>
-                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25">Instant Draw</span>
+                <div>
+                    <button class="btn-neu-primary w-100 py-2 fs-6" @onclick="SelectTarot" @onclick:stopPropagation="true">
+                        <i class="bi bi-stars"></i> CHOOSE TAROT
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="fortune-glass-card p-4 h-100" style="cursor: pointer;" @onclick="StartPalm">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                    <span class="fs-1" style="color: var(--astral-cyan);">✋</span>
-                    <div>
-                        <h3 class="font-oracle text-white h4 mb-0">Palmistry Analysis</h3>
-                        <small class="text-secondary font-oracle">In-Memory Biometric Reading · Privacy First</small>
+        <!-- Palm Photo Card -->
+        <div class="col-sm-6 col-md-5">
+            <div class="neu-card neu-card-lift p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between option-card"
+                 style="cursor: pointer;"
+                 @onclick="SelectPalm">
+                <div>
+                    <!-- Concentric Depth Icon Ring -->
+                    <div class="compact-concentric-outer mb-3">
+                        <div class="compact-concentric-inner text-neu-teal">
+                            ✋
+                        </div>
                     </div>
-                </div>
-                <p class="text-white-50">
-                    Your palm is the celestial blueprint of your vitality. Ephemeral in-memory image processing maps your Life, Heart, Head, and Fate lines with zero permanent storage.
-                </p>
-                <div class="d-flex justify-content-between align-items-center mt-3 text-info">
-                    <span class="small font-oracle">Capture & Scan Hand ➔</span>
-                    <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">Ephemeral</span>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- System Architecture Banner -->
-    <div class="mt-5 p-4 rounded-4" style="background: rgba(20, 15, 45, 0.5); border: 1px dashed var(--cosmic-border);">
-        <div class="row align-items-center">
-            <div class="col-lg-3 text-center text-lg-start mb-3 mb-lg-0">
-                <span class="text-uppercase small font-oracle" style="color: var(--gold-primary);">SYSTEM STATUS</span>
-                <h5 class="text-white font-oracle mb-0">Orchestrator Online</h5>
-            </div>
-            <div class="col-lg-9">
-                <div class="d-flex flex-wrap justify-content-center justify-content-lg-end gap-3 text-center small text-white-50">
-                    <div class="px-3 py-2 rounded-3 bg-black bg-opacity-25 border border-secondary border-opacity-25">
-                        <div class="text-warning fw-bold">@Stats.TotalReadingsProcessed</div>
-                        <div>Readings Done</div>
-                    </div>
-                    <div class="px-3 py-2 rounded-3 bg-black bg-opacity-25 border border-secondary border-opacity-25">
-                        <div class="text-info fw-bold">@DevCode.RateLimitPerMinute req/m</div>
-                        <div>Gateway Rate Limit</div>
-                    </div>
-                    <div class="px-3 py-2 rounded-3 bg-black bg-opacity-25 border border-secondary border-opacity-25">
-                        <div class="text-success fw-bold">@(DevCode.MaxPhotoSizeBytes / (1024 * 1024)) MB</div>
-                        <div>Max Photo Size</div>
-                    </div>
-                    <div class="px-3 py-2 rounded-3 bg-black bg-opacity-25 border border-secondary border-opacity-25">
-                        <div class="text-primary fw-bold">In-Memory</div>
-                        <div>Zero Data Leak</div>
-                    </div>
+                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">Palm Photo</h2>
+                    <p class="font-body text-neu-muted small mb-3" style="line-height: 1.5; font-size: 0.85rem;">
+                        In-memory biometric analysis of life, heart, head, and fate contours with zero permanent storage.
+                    </p>
+                </div>
+                <div>
+                    <button class="btn-neu-teal w-100 py-2 fs-6" @onclick="SelectPalm" @onclick:stopPropagation="true">
+                        <i class="bi bi-hand-index-thumb"></i> CHOOSE PALM
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+    .initial-screen-container {
+        height: 100vh;
+        max-height: 100vh;
+        width: 100%;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 1rem;
+        background: transparent;
+    }
+
+    .option-card {
+        min-height: 310px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .option-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .compact-concentric-outer {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: rgba(22, 28, 40, 0.75);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55),
+                    inset 0 1px 2px rgba(255, 255, 255, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+        transition: transform 0.4s ease-out;
+    }
+
+    .compact-concentric-inner {
+        width: 68px;
+        height: 68px;
+        border-radius: 50%;
+        background: rgba(8, 11, 18, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: inset 4px 4px 12px rgba(0, 0, 0, 0.85),
+                    inset -2px -2px 6px rgba(255, 255, 255, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.2rem;
+        transition: transform 0.4s ease-out;
+    }
+
+    .option-card:hover .compact-concentric-outer {
+        transform: scale(1.06);
+        border-color: rgba(245, 158, 11, 0.5);
+        box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 20px rgba(245, 158, 11, 0.25);
+    }
+
+    .option-card:hover .compact-concentric-inner {
+        transform: rotate(8deg);
+    }
+</style>
+
 @code {
-    private OrchestratorStatsModel Stats = new();
-
-    protected override void OnInitialized()
+    private async Task SelectTarot()
     {
-        Stats = Client.GetStats();
-    }
-
-    private async Task StartReading()
-    {
-        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
-        State.Reset();
-        Nav.NavigateTo("choose-reading");
-    }
-
-    private async Task StartTarot()
-    {
-        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
         State.Reset();
         State.ReadingType = ReadingType.Tarot;
+        try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
         Nav.NavigateTo("tarot-spread");
     }
 
-    private async Task StartPalm()
+    private async Task SelectPalm()
     {
-        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
         State.Reset();
         State.ReadingType = ReadingType.Palm;
+        try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
         Nav.NavigateTo("palm-permission");
     }
 }

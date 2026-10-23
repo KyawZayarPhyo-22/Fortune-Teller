@@ -3,101 +3,115 @@
 @inject FortuneStateService State
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-800 mx-auto">
-    <!-- Stepper -->
-    <div class="wizard-stepper">
-        <div class="step-item completed">
-            <div class="step-bubble"><i class="bi bi-check"></i></div>
-            <span>Choose Path</span>
+<div class="container py-4 max-w-850 mx-auto">
+    <!-- Neumorphic Stepper -->
+    <div class="neu-stepper">
+        <div class="neu-step-item completed">
+            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
+            <span>Path</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item active">
-            <div class="step-bubble">2</div>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item active">
+            <div class="neu-step-bubble">2</div>
             <span>Privacy & Consent</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item">
-            <div class="step-bubble">3</div>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item">
+            <div class="neu-step-bubble">3</div>
             <span>Capture Photo</span>
         </div>
-        <div class="step-divider"></div>
-        <div class="step-item">
-            <div class="step-bubble">4</div>
+        <div class="neu-step-divider"></div>
+        <div class="neu-step-item">
+            <div class="neu-step-bubble">4</div>
             <span>Topic</span>
         </div>
     </div>
 
-    <div class="fortune-glass-card p-4 p-md-5">
+    <div class="neu-card p-4 p-md-5">
         <div class="text-center mb-4">
-            <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(56, 189, 248, 0.15); border: 1px solid var(--astral-cyan);">
-                <i class="bi bi-shield-check fs-1 text-info"></i>
+            <div class="neu-icon-socket mb-3" style="width: 72px; height: 72px; font-size: 2.2rem; color: var(--neu-teal);">
+                <i class="bi bi-shield-check"></i>
             </div>
-            <h2 class="font-decorative gold-gradient-text">PALM PHOTO PRIVACY & PROTOCOL</h2>
-            <p class="text-secondary font-oracle">
-                Transparency and sanctity of your biometric data are our inviolable law.
+            <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-2">PALM PHOTO PRIVACY</h2>
+            <p class="font-body text-neu-muted max-w-600 mx-auto">
+                Review the volatile in-memory processing guarantees before submitting your hand photo.
             </p>
         </div>
 
         <div class="row g-4 my-2">
             <div class="col-md-6">
-                <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                    <h5 class="font-oracle text-info mb-2"><i class="bi bi-memory me-2"></i>Volatile In-Memory Only</h5>
-                    <p class="small text-white-50 mb-0">
-                        Your hand image is received directly into server volatile RAM memory via WebSocket / API, processed by the memory analyzer, and instantly purged. No files are ever saved to disk or external databases.
+                <div class="neu-well p-4 h-100">
+                    <h5 class="font-display fw-bold text-neu-teal mb-2">
+                        <i class="bi bi-memory me-2"></i>Volatile In-Memory Only
+                    </h5>
+                    <p class="font-body small text-neu-muted mb-0" style="line-height: 1.6;">
+                        Your hand photo is ingested into server volatile RAM memory, analyzed in-memory, and immediately discarded. No files are persisted to disk or databases.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                    <h5 class="font-oracle text-warning mb-2"><i class="bi bi-speedometer2 me-2"></i>Gateway Enforced Limits</h5>
-                    <p class="small text-white-50 mb-0">
-                        The WebSocket Gateway automatically enforces a maximum payload limit of 5 MB and rate-limits requests to ensure safe, secure processing.
+                <div class="neu-well p-4 h-100">
+                    <h5 class="font-display fw-bold text-neu-teal mb-2">
+                        <i class="bi bi-speedometer2 me-2"></i>Gateway Enforced Limits
+                    </h5>
+                    <p class="font-body small text-neu-muted mb-0" style="line-height: 1.6;">
+                        The WebSocket Gateway automatically enforces a 5 MB payload limit and rate-limits connections to guarantee system security.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                    <h5 class="font-oracle text-success mb-2"><i class="bi bi-eye-slash me-2"></i>No Biometric Identity Stored</h5>
-                    <p class="small text-white-50 mb-0">
-                        Only extracted esoteric traits (such as Heart Line curvature and elemental palm archetype) are interpreted by the AI Reading Service.
+                <div class="neu-well p-4 h-100">
+                    <h5 class="font-display fw-bold text-neu-primary mb-2">
+                        <i class="bi bi-fingerprint me-2"></i>No Biometric Stored
+                    </h5>
+                    <p class="font-body small text-neu-muted mb-0" style="line-height: 1.6;">
+                        Only extracted esoteric line curves (Heart, Head, Life, Fate) are delivered to the AI Reading Service for prophecy formulation.
                     </p>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="p-3 rounded-3 bg-black bg-opacity-30 border border-secondary border-opacity-25 h-100">
-                    <h5 class="font-oracle text-primary mb-2"><i class="bi bi-lightbulb me-2"></i>Best Photo Guidelines</h5>
-                    <p class="small text-white-50 mb-0">
-                        Hold your dominant hand flat in good lighting against a plain background. Ensure major palm creases are clearly visible for highest clarity.
+                <div class="neu-well p-4 h-100">
+                    <h5 class="font-display fw-bold text-neu-primary mb-2">
+                        <i class="bi bi-lightbulb me-2"></i>Best Photo Practice
+                    </h5>
+                    <p class="font-body small text-neu-muted mb-0" style="line-height: 1.6;">
+                        Hold your dominant hand flat in soft natural lighting against a plain surface for optimal line curvature detection.
                     </p>
                 </div>
             </div>
         </div>
 
-        <!-- Consent Checkbox -->
-        <div class="p-4 my-4 rounded-3" style="background: rgba(168, 85, 247, 0.1); border: 1px solid var(--cosmic-border);">
-            <div class="form-check d-flex align-items-center gap-3">
-                <input class="form-check-input fs-4" type="checkbox" id="consentCheck" @bind="UserConsent" style="cursor: pointer;" />
-                <label class="form-check-label text-light font-oracle" for="consentCheck" style="cursor: pointer;">
+        <!-- Tactile Consent Checkbox -->
+        <div class="neu-well-deep p-4 my-4" @onclick="ToggleConsent" style="cursor: pointer;">
+            <div class="neu-checkbox-wrapper">
+                <div class="neu-checkbox-box @(UserConsent ? "checked" : "")">
+                    @if (UserConsent)
+                    {
+                        <i class="bi bi-check-lg fw-bold"></i>
+                    }
+                </div>
+                <div class="font-display text-neu-primary small fw-semibold">
                     I grant permission for my hand photo to be analyzed in volatile memory for the sole purpose of this fortune reading.
-                </label>
+                </div>
             </div>
         </div>
 
         @if (!string.IsNullOrEmpty(ErrorMessage))
         {
-            <div class="alert alert-danger bg-danger bg-opacity-20 border-danger text-danger font-oracle py-2">
-                <i class="bi bi-exclamation-triangle me-2"></i>@ErrorMessage
+            <div class="neu-well p-3 text-danger font-display small mb-3">
+                <i class="bi bi-exclamation-circle me-2"></i>@ErrorMessage
             </div>
         }
 
+        <!-- Actions -->
         <div class="d-flex justify-content-between align-items-center mt-4">
-            <a href="choose-reading" class="btn-cosmic-outline">
-                <i class="bi bi-arrow-left"></i> Back
+            <a href="choose-reading" class="btn-neu">
+                <i class="bi bi-arrow-left"></i> Back to Path
             </a>
-            <button class="btn-cosmic-gold px-4 py-2" @onclick="ProceedToCapture">
+            <button class="btn-neu-teal px-4 py-2" @onclick="ProceedToCapture">
                 AGREE & PROCEED TO PHOTO <i class="bi bi-arrow-right"></i>
             </button>
         </div>
@@ -111,6 +125,12 @@
     protected override void OnInitialized()
     {
         UserConsent = State.UserConsentGiven;
+    }
+
+    private void ToggleConsent()
+    {
+        UserConsent = !UserConsent;
+        if (UserConsent) ErrorMessage = null;
     }
 
     private void ProceedToCapture()
