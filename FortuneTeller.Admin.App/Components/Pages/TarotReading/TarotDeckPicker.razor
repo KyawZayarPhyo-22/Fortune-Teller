@@ -4,204 +4,480 @@
 @inject FortuneClientService Client
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-1000 mx-auto">
-    <!-- Stepper -->
-    <div class="neu-stepper">
-        <div class="neu-step-item completed">
-            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Path</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item completed">
-            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Spread</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item active">
-            <div class="neu-step-bubble">3</div>
-            <span>Draw Cards</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item">
-            <div class="neu-step-bubble">4</div>
-            <span>Topic</span>
-        </div>
-    </div>
-
-    <!-- Title -->
+<div class="container py-4 max-w-1100 mx-auto position-relative">
+    <!-- Header -->
     <div class="text-center mb-4">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
             <span class="text-neu-accent">✦</span>
-            <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 2B · In-Memory Deck Selection</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold">တာရော့ ကတ်ရွေးချယ်ခန်း</span>
             <span class="text-neu-accent">✦</span>
         </div>
-        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">DRAW YOUR CARDS</h2>
-        <p class="font-body text-neu-muted max-w-600 mx-auto mb-2">
-            Selected Spread: <span class="text-neu-accent fw-bold font-display">@SpreadInfo.Title</span>
-            (Draw @SpreadInfo.CardCount card@(SpreadInfo.CardCount > 1 ? "s" : ""))
+        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">@SpreadInfo.Title</h2>
+        <p class="font-body text-neu-muted max-w-700 mx-auto mb-2">
+            @SpreadInfo.Description
         </p>
-        <div class="small font-display text-neu-muted">
-            Selected: <span class="text-neu-accent fw-bold">@DrawnCards.Count</span> of @SpreadInfo.CardCount
+        <div class="d-flex justify-content-center align-items-center gap-3 font-display">
+            <span class="btn-neu-pill py-1 px-3 @(DrawnCards.Count == SpreadInfo.CardCount ? "text-neu-teal fw-bold" : "text-neu-accent")">
+                <i class="bi bi-collection me-1"></i> ရွေးချယ်ပြီး: <strong>@DrawnCards.Count</strong> / @SpreadInfo.CardCount ကတ်
+            </span>
+            <button class="btn-neu-pill py-1 px-3 text-neu-gold" @onclick="ShuffleAndCutDeck" disabled="@IsShuffling">
+                <i class="bi bi-shuffle me-1"></i> ကတ်များကို ပြန်လည်မွှေနှောက်၍ ခွဲမည်
+            </button>
         </div>
     </div>
 
-    <!-- Active Drawn Cards Display -->
-    <div class="row g-3 justify-content-center my-4">
-        @for (int i = 0; i < SpreadInfo.CardCount; i++)
-        {
-            var posIndex = i;
-            var posName = i < SpreadInfo.Positions.Count ? SpreadInfo.Positions[i] : $"Position {i + 1}";
-            var hasDrawn = posIndex < DrawnCards.Count;
-            var card = hasDrawn ? DrawnCards[posIndex] : null;
-
-            <div class="col-6 col-md-4 col-lg-3 text-center">
-                <div class="small font-display fw-semibold text-neu-muted mb-2 text-truncate" title="@posName">
-                    @posName
-                </div>
-
-                <div class="neu-tarot-card mx-auto @(hasDrawn ? "selected" : "")">
-                    @if (hasDrawn && card != null)
-                    {
-                        <!-- Revealed Card Face -->
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="btn-neu-pill py-0 px-2 small font-display text-neu-accent fw-bold" style="font-size: 0.7rem;">
-                                #@card.Number
-                            </span>
-                            <span class="btn-neu-pill py-0 px-2 small font-display" style="font-size: 0.65rem;">
-                                @card.Element
-                            </span>
-                        </div>
-
-                        <div class="my-2">
-                            <div class="neu-icon-socket mx-auto mb-2" style="font-size: 2rem;">
-                                @card.Symbol
-                            </div>
-                            <h6 class="font-display fw-bold text-neu-primary text-truncate mb-0">@card.Name</h6>
-                            <small class="text-neu-muted font-body" style="font-size: 0.7rem;">@card.Keywords</small>
-                        </div>
-
-                        <div class="neu-well-sm p-2 text-neu-muted font-body" style="font-size: 0.7rem; line-height: 1.3;">
-                            @card.UprightMeaning
-                        </div>
-                    }
-                    else
-                    {
-                        <!-- Face-down Card Back Pattern -->
-                        <div class="neu-card-back-pattern">
-                            <div class="neu-icon-socket mb-2" style="width: 52px; height: 52px; font-size: 1.6rem;">
-                                🔮
-                            </div>
-                            <div class="font-display fw-bold text-neu-muted small">ASTRAEA</div>
-                            <small class="text-neu-muted" style="font-size: 0.65rem;">Tap Deck Below</small>
-                        </div>
-                    }
-                </div>
+    <!-- Shuffling & Cutting Deck Ritual Animation Overlay -->
+    @if (IsShuffling)
+    {
+        <div class="shuffle-overlay text-center p-5 neu-card mx-auto my-4 max-w-600" style="border-radius: 28px; border: 2px solid rgba(245, 158, 11, 0.5); box-shadow: 0 0 50px rgba(0,0,0,0.8), 0 0 30px rgba(245, 158, 11, 0.3);">
+            <div class="shuffle-deck-container mb-4">
+                <div class="shuffle-deck-pack pack-left"></div>
+                <div class="shuffle-deck-pack pack-center"></div>
+                <div class="shuffle-deck-pack pack-right"></div>
             </div>
-        }
+            <h4 class="font-display fw-bold text-neu-gold mb-1">တာရော့ ကတ် ၇၈ ကတ်လုံးကို မွှေနှောက်၍ ခွဲနေပါသည်...</h4>
+            <p class="font-body text-neu-muted small mb-0">ကံကြမ္မာ စွမ်းအင်များနှင့် ထပ်တူကျစေရန် တာရော့ကတ်များကို စနစ်တကျ မွှေနှောက်ခွဲခြမ်းနေသည်</p>
+        </div>
+    }
+
+    <!-- Spread Positions & Chosen Cards Display Tray -->
+    <div class="neu-card p-3 p-md-4 mb-4" style="border-radius: 24px;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="font-display fw-bold text-neu-primary mb-0">
+                <i class="bi bi-star-fill text-neu-gold me-2"></i>ကံကြမ္မာ ဖြန့်ခင်းမှု အနေအထားများ
+            </h5>
+            @if (DrawnCards.Count > 0)
+            {
+                <button class="btn-neu-pill py-1 px-2 small text-danger font-display" @onclick="ResetDraw">
+                    <i class="bi bi-arrow-counterclockwise"></i> ပြန်လည်ရွေးမည်
+                </button>
+            }
+        </div>
+
+        <div class="row g-3 justify-content-center">
+            @for (int i = 0; i < SpreadInfo.CardCount; i++)
+            {
+                var posIndex = i;
+                var posName = i < SpreadInfo.Positions.Count ? SpreadInfo.Positions[i] : $"နေရာ {i + 1}";
+                var hasCard = posIndex < DrawnCards.Count;
+                var card = hasCard ? DrawnCards[posIndex] : null;
+
+                <div class="@GetGridColumnClass(SpreadInfo.CardCount) text-center">
+                    <div class="small font-display fw-bold text-neu-accent mb-2 text-truncate" title="@posName" style="font-size: 0.78rem;">
+                        @posName
+                    </div>
+
+                    <div class="tarot-card-slot mx-auto @(hasCard ? "filled" : "empty")">
+                        @if (hasCard && card != null)
+                        {
+                            <!-- Realistic Revealed Card Face with Genuine Rider-Waite Artwork -->
+                            <div class="real-tarot-card-face">
+                                <div class="real-tarot-card-wrapper">
+                                    <img src="@card.ImageUrl" alt="@card.Name" class="real-tarot-img" />
+                                    <div class="card-bottom-banner">
+                                        <div class="card-name-en">@card.Name</div>
+                                        <div class="card-name-my">@card.BurmeseName</div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <!-- Empty Slot Placeholder -->
+                            <div class="empty-slot-content">
+                                <div class="neu-icon-socket mb-2" style="width: 44px; height: 44px; font-size: 1.3rem; opacity: 0.5;">
+                                    ✦
+                                </div>
+                                <div class="font-display fw-bold small text-neu-muted">ကတ် @(posIndex + 1)</div>
+                                <small class="text-neu-muted" style="font-size: 0.65rem;">အောက်မှ ကတ်ရွေးပါ</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 
-    <!-- Tactile In-Memory Deck Drawer -->
-    <div class="neu-card p-4 mt-4">
-        @if (DrawnCards.Count < SpreadInfo.CardCount)
-        {
-            <div class="text-center mb-3">
-                <h5 class="font-display fw-bold text-neu-primary mb-1">
-                    <i class="bi bi-hand-index-thumb text-neu-accent"></i> Click an Archetype to Draw from Memory:
-                </h5>
-                <small class="text-neu-muted font-body">Volatile in-memory card deck</small>
+    <!-- Completion / Action Panel -->
+    @if (DrawnCards.Count >= SpreadInfo.CardCount)
+    {
+        <div class="neu-card p-4 text-center my-4 completion-panel animate-fade-in" style="border-radius: 26px; border: 2px solid var(--neu-teal); background: rgba(14, 22, 38, 0.95); box-shadow: 0 10px 40px rgba(20, 184, 166, 0.3);">
+            <div class="neu-icon-socket mx-auto mb-3" style="width: 65px; height: 65px; font-size: 2.2rem; color: var(--neu-teal);">
+                ✨
+            </div>
+            <h3 class="font-display fw-extrabold text-neu-primary mb-1">ကတ်များ အားလုံး စုံလင်စွာ ရွေးချယ်ပြီးပါပြီ!</h3>
+            <p class="font-body text-neu-muted small max-w-600 mx-auto mb-3">
+                ကံကြမ္မာ စွမ်းအင်များနှင့် ထပ်တူကျသော တာရော့ကတ်များ စုံလင်သွားပါပြီ။ AI ဗေဒင်ပညာရှင်မှ ကံကြမ္မာဟောကိန်းကို တိုက်ရိုက် ထုတ်ဖော်ပေးတော့မည်။
+            </p>
+
+            <!-- Optional Topic / Question Quick Select -->
+            <div class="d-flex flex-wrap justify-content-center gap-2 mb-4 max-w-700 mx-auto">
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.General ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.General)">
+                    အထွေထွေ
+                </button>
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.Love ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.Love)">
+                    💖 အချစ်ရေး
+                </button>
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.CareerBusiness ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.CareerBusiness)">
+                    💼 စီးပွား / အလုပ်
+                </button>
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.Finance ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.Finance)">
+                    🪙 ငွေကြေး
+                </button>
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.Education ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.Education)">
+                    🎓 ပညာရေး
+                </button>
+                <button class="btn-neu-pill @(SelectedTopic == ReadingTopic.PersonalGrowth ? "active-topic" : "")" @onclick="() => SetTopic(ReadingTopic.PersonalGrowth)">
+                    🌟 ကိုယ်ရည်ကိုယ်သွေး
+                </button>
             </div>
 
-            <!-- Inset Card Well -->
-            <div class="neu-well-deep p-3 d-flex justify-content-center flex-wrap gap-2 mb-3">
-                @foreach (var availableCard in AvailableCardsSample)
+            <!-- Optional Specific Question Input -->
+            <div class="max-w-600 mx-auto mb-4">
+                <input type="text" class="neu-input w-100 p-3 text-center" 
+                       placeholder="မေးမြန်းလိုသည့် တိကျသော မေးခွန်းရှိပါက ရေးသားနိုင်ပါသည် (ရွေးချယ်နိုင်သည်)..." 
+                       @bind="OptionalQuestion" />
+            </div>
+
+            <button class="btn btn-neu-primary px-5 py-3 fs-5 fw-bold" @onclick="ProceedToOracle">
+                <i class="bi bi-stars me-2"></i> ကံကြမ္မာ ဟောကြားချက် ရယူမည် <i class="bi bi-arrow-right ms-2"></i>
+            </button>
+        </div>
+    }
+
+    <!-- 78 Cards Authentic Interactive Deck Carpet -->
+    @if (!IsShuffling && DrawnCards.Count < SpreadInfo.CardCount)
+    {
+        <div class="neu-card p-4 mt-4" style="border-radius: 26px;">
+            <div class="text-center mb-4">
+                <h4 class="font-display fw-bold text-neu-primary mb-1">
+                    <i class="bi bi-hand-index-thumb text-neu-gold me-2"></i>တာရော့ကတ် ၇၈ ကတ်လုံးမှ သင်နှစ်သက်ရာကို နှိပ်၍ ဆွဲယူပါ
+                </h4>
+                <p class="font-body text-neu-muted small mb-0">
+                    ကတ်တစ်ခုချင်းစီသည် မတူကွဲပြားသော စကြဝဠာစွမ်းအင်များကို ကိုယ်စားပြုပါသည်။ စိတ်ကို ငြိမ်သက်စွာထားပြီး ကတ်ကို ရွေးချယ်ပါ
+                </p>
+            </div>
+
+            <!-- The 78-Card Deck Grid -->
+            <div class="deck-78-container">
+                @foreach (var card in ShuffledDeck)
                 {
-                    <div class="neu-card p-2 text-center"
-                         style="width: 85px; height: 110px; cursor: pointer; border-radius: 14px; transition: transform 0.2s ease-out;"
-                         @onclick="() => DrawSpecificCard(availableCard)">
-                        <div class="neu-icon-socket mx-auto mb-1" style="width: 38px; height: 38px; font-size: 1.2rem;">
-                            @availableCard.Symbol
-                        </div>
-                        <div class="font-display fw-bold text-neu-primary text-truncate" style="font-size: 0.7rem;">
-                            @availableCard.Name
+                    var isSelected = DrawnCards.Any(c => c.Id == card.Id);
+                    <div class="tarot-card-item @(isSelected ? "selected-drawn" : "")"
+                         @onclick="() => DrawCard(card)">
+                        <div class="card-inner">
+                            <!-- Authentic Back Design -->
+                            <div class="card-back-ornate">
+                                <div class="card-back-border-outer">
+                                    <div class="card-back-border-inner">
+                                        <div class="card-back-mandala">
+                                            <div class="mandala-star">✦</div>
+                                            <div class="mandala-sun">☀️</div>
+                                            <div class="mandala-moon">🌙</div>
+                                        </div>
+                                        <div class="card-back-logo">ASTRAEA</div>
+                                        <div class="card-back-code">TAROT</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 }
             </div>
 
-            <div class="text-center">
-                <button class="btn-neu" @onclick="CosmicAutoDraw">
-                    <i class="bi bi-shuffle text-neu-accent"></i> Auto-Shuffle & Draw All
+            <div class="text-center mt-4">
+                <button class="btn-neu-pill py-2 px-4 text-neu-accent" @onclick="CosmicAutoDrawRemaining">
+                    <i class="bi bi-stars me-1"></i> အလိုအလျောက် ကျန်ရှိကတ်များကို မွှေနှောက်ရွေးချယ်မည်
                 </button>
             </div>
-        }
-        else
-        {
-            <div class="text-center py-2">
-                <div class="neu-icon-socket mx-auto mb-3" style="width: 60px; height: 60px; font-size: 2rem; color: var(--neu-accent-secondary);">
-                    <i class="bi bi-check2-circle"></i>
-                </div>
-                <h4 class="font-display fw-bold text-neu-primary mb-1">All Cards Drawn in Memory!</h4>
-                <p class="font-body text-neu-muted small mb-3">Your spread configuration is locked. Proceed to specify your inquiry.</p>
-                <button class="btn-neu-pill" @onclick="ResetDraw">
-                    <i class="bi bi-arrow-counterclockwise"></i> Redraw Spread
-                </button>
-            </div>
-        }
-    </div>
+        </div>
+    }
 
-    <!-- Actions -->
+    <!-- Back Navigation -->
     <div class="d-flex justify-content-between align-items-center mt-4">
         <a href="tarot-spread" class="btn-neu">
-            <i class="bi bi-arrow-left"></i> Change Spread
+            <i class="bi bi-arrow-left me-1"></i> ဖြန့်ခင်းမှုပုံစံ ပြန်ရွေးမည်
         </a>
-        <button class="btn-neu-primary px-4 py-2 @(DrawnCards.Count < SpreadInfo.CardCount ? "disabled opacity-50" : "")"
-                @onclick="ProceedToTopic">
-            CHOOSE TOPIC & INQUIRY <i class="bi bi-arrow-right"></i>
-        </button>
     </div>
 </div>
+
+<style>
+    /* 78-Card Deck Container */
+    .deck-78-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        max-height: 520px;
+        overflow-y: auto;
+        padding: 16px;
+        background: rgba(7, 11, 18, 0.6);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.8);
+    }
+
+    .tarot-card-item {
+        width: 68px;
+        height: 112px;
+        perspective: 1000px;
+        cursor: pointer;
+        transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+        border-radius: 10px;
+    }
+
+    .tarot-card-item:hover:not(.selected-drawn) {
+        transform: translateY(-8px) scale(1.08);
+        z-index: 10;
+    }
+
+    .tarot-card-item.selected-drawn {
+        opacity: 0.25;
+        filter: grayscale(80%);
+        pointer-events: none;
+        transform: scale(0.92);
+    }
+
+    .card-inner {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        border-radius: 10px;
+    }
+
+    /* Ornate Card Back */
+    .card-back-ornate {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(ellipse at 50% 50%, #1e1b4b 0%, #0f172a 70%, #020617 100%);
+        border-radius: 10px;
+        border: 1.5px solid rgba(212, 175, 55, 0.8);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(212, 175, 55, 0.2);
+        padding: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-back-border-outer {
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(245, 158, 11, 0.5);
+        border-radius: 7px;
+        padding: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-back-border-inner {
+        width: 100%;
+        height: 100%;
+        border: 1px dashed rgba(245, 158, 11, 0.35);
+        border-radius: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 50% 50%, rgba(20, 184, 166, 0.15) 0%, transparent 80%);
+    }
+
+    .card-back-mandala {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        font-size: 0.8rem;
+    }
+
+    .card-back-logo {
+        font-family: var(--font-display);
+        font-size: 0.55rem;
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: #f59e0b;
+        margin-top: 2px;
+    }
+
+    .card-back-code {
+        font-size: 0.45rem;
+        color: rgba(255, 255, 255, 0.4);
+        letter-spacing: 0.5px;
+    }
+
+    /* Slots and Revealed Face */
+    .tarot-card-slot {
+        width: 155px;
+        height: 260px;
+        border-radius: 16px;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .tarot-card-slot.empty {
+        background: rgba(14, 22, 38, 0.5);
+        border: 2px dashed rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .tarot-card-slot.filled {
+        background: transparent;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Real Tarot Card Face with Actual Rider-Waite Illustration */
+    .real-tarot-card-face {
+        width: 100%;
+        height: 100%;
+        border: 2px solid #d4af37;
+        border-radius: 16px;
+        overflow: hidden;
+        position: relative;
+        background: #0f172a;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.9);
+    }
+
+    .real-tarot-card-wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .real-tarot-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .card-bottom-banner {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(0deg, rgba(7, 11, 18, 0.95) 0%, rgba(7, 11, 18, 0.85) 75%, transparent 100%);
+        padding: 10px 6px 6px;
+        text-align: center;
+        border-top: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .card-name-en {
+        font-family: var(--font-display);
+        font-size: 0.78rem;
+        font-weight: 800;
+        color: #fef08a;
+        line-height: 1.2;
+    }
+
+    .card-name-my {
+        font-size: 0.72rem;
+        color: #38bdf8;
+        font-weight: bold;
+    }
+
+    /* Shuffle Animation */
+    .shuffle-deck-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        height: 80px;
+        align-items: center;
+    }
+
+    .shuffle-deck-pack {
+        width: 50px;
+        height: 75px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1e1b4b 0%, #0f172a 100%);
+        border: 2px solid #d4af37;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
+        animation: shuffle-riffle 1.2s ease-in-out infinite;
+    }
+
+    .pack-left { animation-delay: 0s; }
+    .pack-center { animation-delay: 0.2s; }
+    .pack-right { animation-delay: 0.4s; }
+
+    @@keyframes shuffle-riffle {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(8deg); }
+    }
+
+    @@keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .active-topic {
+        background: var(--neu-teal) !important;
+        color: #000 !important;
+        font-weight: bold !important;
+    }
+</style>
 
 @code {
     private TarotSpreadInfoModel SpreadInfo = new();
     private List<TarotCardModel> DrawnCards = new();
     private List<TarotCardModel> AllCards = new();
-    private List<TarotCardModel> AvailableCardsSample = new();
+    private List<TarotCardModel> ShuffledDeck = new();
+    private bool IsShuffling = false;
+    private ReadingTopic SelectedTopic = ReadingTopic.General;
+    private string OptionalQuestion = "";
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         SpreadInfo = Client.GetSpreadInfo(State.SpreadType);
         AllCards = Client.GetAllTarotCards().ToList();
 
-        var rng = new Random();
-        AvailableCardsSample = AllCards.OrderBy(_ => rng.Next()).Take(8).ToList();
-
-        if (State.SelectedCardIds.Count > 0)
+        if (State.Topic != 0)
         {
-            foreach (var id in State.SelectedCardIds.Take(SpreadInfo.CardCount))
-            {
-                var card = AllCards.FirstOrDefault(c => c.Id == id);
-                if (card != null) DrawnCards.Add(card);
-            }
+            SelectedTopic = State.Topic;
         }
+
+        await ShuffleAndCutDeck();
     }
 
-    private async Task DrawSpecificCard(TarotCardModel card)
+    private async Task ShuffleAndCutDeck()
+    {
+        IsShuffling = true;
+        StateHasChanged();
+
+        try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
+
+        var rng = new Random();
+        ShuffledDeck = AllCards.OrderBy(_ => rng.Next()).ToList();
+
+        await Task.Delay(1100);
+        IsShuffling = false;
+        StateHasChanged();
+    }
+
+    private async Task DrawCard(TarotCardModel card)
     {
         if (DrawnCards.Count >= SpreadInfo.CardCount) return;
         if (DrawnCards.Any(c => c.Id == card.Id)) return;
 
         DrawnCards.Add(card);
-        AvailableCardsSample.Remove(card);
 
         try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
+
+        if (DrawnCards.Count == SpreadInfo.CardCount)
+        {
+            try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
+        }
+
         UpdateState();
     }
 
-    private async Task CosmicAutoDraw()
+    private async Task CosmicAutoDrawRemaining()
     {
         var rng = new Random();
-        var remainingNeeded = SpreadInfo.CardCount - DrawnCards.Count;
-        var unselected = AllCards.Where(c => !DrawnCards.Any(d => d.Id == c.Id)).OrderBy(_ => rng.Next()).Take(remainingNeeded);
+        var needed = SpreadInfo.CardCount - DrawnCards.Count;
+        var unselected = ShuffledDeck.Where(c => !DrawnCards.Any(d => d.Id == c.Id)).Take(needed).ToList();
 
         foreach (var card in unselected)
         {
@@ -215,9 +491,13 @@
     private void ResetDraw()
     {
         DrawnCards.Clear();
-        var rng = new Random();
-        AvailableCardsSample = AllCards.OrderBy(_ => rng.Next()).Take(8).ToList();
         UpdateState();
+    }
+
+    private void SetTopic(ReadingTopic topic)
+    {
+        SelectedTopic = topic;
+        State.Topic = topic;
     }
 
     private void UpdateState()
@@ -225,14 +505,28 @@
         State.SelectedCardIds = DrawnCards.Select(c => c.Id).ToList();
     }
 
-    private void ProceedToTopic()
+    private void ProceedToOracle()
     {
-        if (DrawnCards.Count < SpreadInfo.CardCount)
+        State.SelectedCardIds = DrawnCards.Select(c => c.Id).ToList();
+        State.ReadingType = ReadingType.Tarot;
+        State.Topic = SelectedTopic;
+        if (!string.IsNullOrWhiteSpace(OptionalQuestion))
         {
-            CosmicAutoDraw().Wait();
+            State.OptionalQuestion = OptionalQuestion.Trim();
         }
 
-        UpdateState();
-        Nav.NavigateTo("topic-select");
+        Nav.NavigateTo("reading-progress");
+    }
+
+    private string GetGridColumnClass(int count)
+    {
+        return count switch
+        {
+            1 => "col-12",
+            3 => "col-md-4 col-sm-6",
+            5 => "col-lg-2 col-md-4 col-6",
+            10 => "col-lg-2 col-md-3 col-6",
+            _ => "col-md-4 col-6"
+        };
     }
 }

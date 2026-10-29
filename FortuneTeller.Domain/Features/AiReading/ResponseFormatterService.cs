@@ -9,40 +9,40 @@ public class ResponseFormatterService
 {
     private static readonly (string Name, string Hex)[] AuraPalette = new[]
     {
-        ("Amethyst Violet", "#a855f7"),
-        ("Celestial Gold", "#f59e0b"),
-        ("Astral Emerald", "#10b981"),
-        ("Cosmic Sapphire", "#3b82f6"),
-        ("Rose Quartz", "#f43f5e"),
-        ("Starfire Indigo", "#6366f1"),
-        ("Moonstone Cyan", "#06b6d4")
+        ("ခရမ်းရောင် အိုရာ", "#a855f7"),
+        ("ရွှေဝါရောင် အိုရာ", "#f59e0b"),
+        ("မြစိမ်းရောင် အိုရာ", "#10b981"),
+        ("နီလာပြာရောင် အိုရာ", "#3b82f6"),
+        ("ပန်းရောင် အိုရာ", "#f43f5e"),
+        ("မိုးပြာရောင် အိုရာ", "#6366f1"),
+        ("လရောင်စိမ်း အိုရာ", "#06b6d4")
     };
 
     private static readonly string[] Gemstones = new[]
     {
-        "Lapis Lazuli (Wisdom & Truth)",
-        "Amethyst (Spiritual Protection)",
-        "Citrine (Abundance & Sun Energy)",
-        "Moldavite (Rapid Transformation)",
-        "Rose Quartz (Unconditional Devotion)",
-        "Black Tourmaline (Aura Shielding)",
-        "Labradorite (Awakening Magic)"
+        "မြကျောက် (ဉာဏ်ပညာနှင့် သစ္စာတရား)",
+        "သီဟိုဠ် နီလာခရမ်း (စိတ်ဝိညာဉ် အကာအကွယ်)",
+        "ရွှေဝါကျောက် (ကြွယ်ဝချမ်းသာမှုနှင့် နေမင်းစွမ်းအင်)",
+        "ပတ္တမြား (လျင်မြန်သော ကံကြမ္မာအပြောင်းအလဲ)",
+        "နှင်းဆီကျောက်သလင်း (မေတ္တာနှင့် သစ္စာတရား)",
+        "နက်မှောင်သော ကျောက်မျက် (မကောင်းဆိုးဝါး အကာအကွယ်)",
+        "လရောင်ကျောက် (လျှို့ဝှက်ဆန်းကြယ်သော စွမ်းအင်)"
     };
 
     private static readonly string[] Transits = new[]
     {
-        "Jupiter trine the Ascendant in the House of Illumination",
-        "The New Moon entering the Celestial Sanctuary",
-        "Venus conjunct Neptune in the Realm of Divine Vision",
-        "Mercury aligning with the North Node of Destiny",
-        "Sun illuminated at the Zenith of Personal Power"
+        "ကြာသပတေးဂြိုဟ်၏ မင်္ဂလာအလင်းတန်း လွှမ်းခြုံမှု",
+        "လဆန်းစ ကြယ်တာရာများ စုဆုံညီညွတ်မှု",
+        "သောကြာဂြိုဟ်နှင့် နက်ပကျွန်းဂြိုဟ်တို့၏ ကံမြင့်မားမှု",
+        "ဗုဒ္ဓဟူးဂြိုဟ်၏ အောင်မြင်သော ကံကြမ္မာလမ်းကြောင်း",
+        "နေမင်း၏ အမြင့်မားဆုံး စွမ်းအင်စက်ဝန်း"
     };
 
     public ReadingResponseModel FormatAndCheckResponse(
         ReadingRequestModel request,
         List<SelectedCardModel> cards,
         PalmReadingModel? palmAnalysis,
-        (string CoreProphecy, string DetailedInterpretation, string CosmicAdvice, string SacredAffirmation) aiSynthesis)
+        AiSynthesisResult aiSynthesis)
     {
         var rng = new Random();
         var aura = AuraPalette[rng.Next(AuraPalette.Length)];
@@ -55,12 +55,16 @@ public class ResponseFormatterService
             ReadingType = request.ReadingType,
             Topic = request.Topic,
             OptionalQuestion = request.OptionalQuestion,
-            OracleName = DevCode.DefaultAiOracleName,
-            CelestialGreeting = "Greetings, beloved traveler between realms. The cosmic veil parts before your inquiry.",
+            OracleName = "အက်စ်ထရီယာ ဗေဒင်ပညာရှင်",
+            CelestialGreeting = "မင်္ဂလာပါ၊ ကံကြမ္မာခရီးသည်။ သင်၏မေးခွန်းအတွက် စကြဝဠာ၏ လျှို့ဝှက်ချက် ကုလားကာများ ပွင့်လှစ်သွားပါပြီ။",
             CoreProphecy = aiSynthesis.CoreProphecy,
             DetailedInterpretation = aiSynthesis.DetailedInterpretation,
             CosmicAdvice = aiSynthesis.CosmicAdvice,
             SacredAffirmation = aiSynthesis.SacredAffirmation,
+            PersonalityInsight = aiSynthesis.PersonalityInsight,
+            OpportunitiesAndChallenges = aiSynthesis.OpportunitiesAndChallenges,
+            MindfulGuidance = aiSynthesis.MindfulGuidance,
+            EthicalDisclaimer = "✦ ကျင့်ဝတ်သိက္ခာနှင့် ဘေးကင်းရေး သတိပေးချက်: အက်စ်ထရီယာ၏ ကံကြမ္မာဟောကြားမှုများသည် ဘဝခရီးလမ်းအတွက် အပြုသဘောဆောင် လမ်းညွှန်ချက်နှင့် စိတ်ခွန်အားပေးရန်သာ ဖြစ်ပါသည်။ ဆေးပညာဆိုင်ရာ ရောဂါအမည်သတ်မှတ်ခြင်း၊ ကံစမ်းမဲ/လောင်းကစားဂဏန်းများ၊ သေချာပေါက်ဖြစ်မည်ဟု အာမခံသော ဘေးအန္တရာယ်နှင့် ခြိမ်းခြောက်စွပ်စွဲချက်များ၊ ကျိန်စာအောက်လမ်း ခြောက်လှန့်မှုများကို လုံးဝရှောင်ကြဉ်ပြီး မိမိ၏ ကံကြမ္မာအစစ်အမှန်သည် မိမိ၏ လက်ရှိကြိုးစားအားထုတ်မှုနှင့် ကောင်းမွန်သော ဆုံးဖြတ်ချက်များပေါ်တွင်သာ တည်မှီပါသည်။",
             AuraColor = aura.Name,
             AuraColorHex = aura.Hex,
             AuraEnergyScore = rng.Next(88, 100),
@@ -68,7 +72,8 @@ public class ResponseFormatterService
             AuspiciousGemstone = Gemstones[rng.Next(Gemstones.Length)],
             AstrologicalTransit = Transits[rng.Next(Transits.Length)],
             SelectedCards = cards,
-            PalmAnalysis = palmAnalysis
+            PalmAnalysis = palmAnalysis,
+            TarotSteps = aiSynthesis.TarotSteps
         };
 
         // Self-check validation

@@ -11,16 +11,16 @@
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
             <span class="text-neu-accent">✦</span>
             <span class="font-display text-neu-muted small text-uppercase fw-bold" style="letter-spacing: 0.1em; font-size: 0.75rem;">
-                Astraea Divination Chamber
+                အက်စ်ထရီယာ နက္ခတ်ဗေဒင်နန်းတော်
             </span>
             <span class="text-neu-accent">✦</span>
         </div>
 
         <h1 class="font-display fw-extrabold text-neu-primary mb-1 display-6">
-            CHOOSE YOUR READING
+            ဗေဒင်ဟောကြားမှု ပုံစံရွေးချယ်ပါ
         </h1>
         <p class="font-body text-neu-muted small max-w-500 mx-auto mb-0">
-            Select Tarot or Palm Photo to begin your divination consultation
+            တာရော့ကတ် သို့မဟုတ် လက်ဝါးလက္ခဏာဓာတ်ပုံ ရွေးချယ်၍ ကံကြမ္မာကို စတင်ဟောကြားပါ
         </p>
     </div>
 
@@ -39,14 +39,14 @@
                         </div>
                     </div>
 
-                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">Tarot Reading</h2>
+                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">တာရော့ ဗေဒင်</h2>
                     <p class="font-body text-neu-muted small mb-3" style="line-height: 1.5; font-size: 0.85rem;">
-                        Consult 78 archetypal cards in memory. Unveil the threads of time across past, present, and destiny.
+                        တာရော့ကတ် ၇၈ ကတ်ဖြင့် အတိတ်၊ ပစ္စုပ္ပန်၊ အနာဂတ် ကံကြမ္မာကြိုးမျှင်များကို ဖွင့်လှစ်ကြည့်ရှုပါ။
                     </p>
                 </div>
                 <div>
                     <button class="btn-neu-primary w-100 py-2 fs-6" @onclick="SelectTarot" @onclick:stopPropagation="true">
-                        <i class="bi bi-stars"></i> CHOOSE TAROT
+                        <i class="bi bi-stars"></i> တာရော့ဖြင့် ဟောမည်
                     </button>
                 </div>
             </div>
@@ -65,14 +65,14 @@
                         </div>
                     </div>
 
-                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">Palm Photo</h2>
+                    <h2 class="font-display fw-bold text-neu-primary h4 mb-1">လက်ဝါးလက္ခဏာ ဗေဒင်</h2>
                     <p class="font-body text-neu-muted small mb-3" style="line-height: 1.5; font-size: 0.85rem;">
-                        In-memory biometric analysis of life, heart, head, and fate contours with zero permanent storage.
+                        အသက်၊ နှလုံး၊ ဦးခေါင်းနှင့် ကံကြမ္မာ လမ်းကြောင်းများကို တိုက်ရိုက် ခွဲခြမ်းစိတ်ဖြာ ဟောကြားပေးပါသည်။
                     </p>
                 </div>
                 <div>
                     <button class="btn-neu-teal w-100 py-2 fs-6" @onclick="SelectPalm" @onclick:stopPropagation="true">
-                        <i class="bi bi-hand-index-thumb"></i> CHOOSE PALM
+                        <i class="bi bi-hand-index-thumb"></i> လက်ဝါးဖြင့် ဟောမည်
                     </button>
                 </div>
             </div>
@@ -149,6 +149,7 @@
 @code {
     private async Task SelectTarot()
     {
+        try { await JS.InvokeVoidAsync("fortuneCamera.clearPalmCache"); } catch { }
         State.Reset();
         State.ReadingType = ReadingType.Tarot;
         try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
@@ -157,9 +158,11 @@
 
     private async Task SelectPalm()
     {
+        try { await JS.InvokeVoidAsync("fortuneCamera.clearPalmCache"); } catch { }
         State.Reset();
         State.ReadingType = ReadingType.Palm;
+        State.UserConsentGiven = true;
         try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
-        Nav.NavigateTo("palm-permission");
+        Nav.NavigateTo("palm-capture");
     }
 }

@@ -6,9 +6,12 @@ public class TarotCardModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
+    public string BurmeseName { get; set; } = string.Empty;
+    public string RomanNumeral { get; set; } = string.Empty;
     public string Arcana { get; set; } = "Major"; // Major or Minor
     public string Suit { get; set; } = "None"; // Wands, Cups, Swords, Pentacles, None
     public int Number { get; set; }
+    public string ImageUrl { get; set; } = string.Empty;
     public string UprightMeaning { get; set; } = string.Empty;
     public string ReversedMeaning { get; set; } = string.Empty;
     public string Element { get; set; } = "Ether"; // Fire, Water, Air, Earth, Ether

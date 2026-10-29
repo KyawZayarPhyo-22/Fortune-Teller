@@ -3,16 +3,16 @@
 @inject FortuneStateService State
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-1000 mx-auto">
+<div class="container pt-5 pb-4 max-w-1000 mx-auto" style="margin-top: 15px;">
     @if (Result == null)
     {
         <div class="neu-card p-5 text-center">
             <div class="neu-icon-socket mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2.5rem;">
                 🔮
             </div>
-            <h3 class="font-display fw-bold text-neu-primary mt-2">No Active Reading Found</h3>
-            <p class="font-body text-neu-muted small">Begin a new divination consultation to receive your prophecy.</p>
-            <a href="choose-reading" class="btn-neu-primary mt-3">Start a Reading</a>
+            <h3 class="font-display fw-bold text-neu-primary mt-2">ဟောကြားထားသော ဗေဒင်ရလဒ် မရှိသေးပါ</h3>
+            <p class="font-body text-neu-muted small">ကံကြမ္မာဟောကိန်းကို ရယူရန် ဗေဒင်အသစ်တစ်ခု စတင်ဆောင်ရွက်ပေးပါ။</p>
+            <a href="choose-reading" class="btn-neu-primary mt-3">ဗေဒင် စတင်ဟောမည်</a>
         </div>
     }
     else
@@ -21,159 +21,535 @@
         <div class="text-center mb-5">
             <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
                 <span class="text-neu-accent">✦</span>
-                <span class="font-display text-neu-muted small text-uppercase fw-bold">@Result.OracleName</span>
+                <span class="font-display text-neu-muted small text-uppercase fw-bold">အက်စ်ထရီယာ ဗေဒင်ပညာရှင်</span>
                 <span class="text-neu-accent">✦</span>
             </div>
 
-            <h1 class="display-4 font-display fw-extrabold text-neu-primary mb-2">THE ORACLE HAS SPOKEN</h1>
+            <h1 class="display-4 font-display fw-extrabold text-neu-primary mb-2">ကံကြမ္မာ ဟောကြားချက် ထွက်ပေါ်လာပါပြီ</h1>
             <p class="font-body text-neu-muted max-w-700 mx-auto">
                 @Result.CelestialGreeting
             </p>
             <div class="d-flex justify-content-center gap-2 font-display small">
                 <span class="btn-neu-pill py-1 px-3">
-                    Path: @Result.ReadingType
+                    နည်းလမ်း: @(Result.ReadingType == ReadingType.Tarot ? "တာရော့" : "လက်ဝါးလက္ခဏာ")
                 </span>
                 <span class="btn-neu-pill py-1 px-3 text-neu-accent fw-bold">
-                    Focus: @Result.Topic
+                    ကဏ္ဍ: @GetBurmeseTopicName(Result.Topic)
                 </span>
                 <span class="btn-neu-pill py-1 px-3 text-neu-muted">
-                    @Result.CreatedAt.ToString("MMM dd, yyyy · HH:mm UTC")
+                    @Result.CreatedAt.ToString("yyyy ခုနှစ်၊ MMM dd ရက်")
                 </span>
             </div>
         </div>
 
-        <!-- Master Prophecy Card -->
-        <div class="neu-card p-4 p-md-5 mb-4">
-            <div class="d-flex align-items-center gap-3 mb-4">
-                <div class="neu-icon-socket" style="width: 56px; height: 56px; font-size: 1.8rem; color: var(--neu-accent);">
-                    ✨
-                </div>
-                <div>
-                    <span class="small font-display text-neu-muted text-uppercase fw-bold">Core Divine Prophecy</span>
-                    <h3 class="font-display fw-bold text-neu-primary mb-0">@Result.CoreProphecy</h3>
-                </div>
-            </div>
-
-            <!-- Deep Inset Interpretation Well -->
-            <div class="neu-well-deep p-4 font-body text-neu-primary fs-5 mb-4" style="line-height: 1.8; border-radius: 20px;">
-                @Result.DetailedInterpretation
-            </div>
-
-            <!-- Sacred Affirmation Well -->
-            <div class="neu-well p-4 text-center my-4" style="border-radius: 20px;">
-                <div class="small font-display text-neu-accent text-uppercase fw-bold mb-1">Sacred Affirmation</div>
-                <div class="fs-4 font-display fw-bold text-neu-primary">
-                    " @Result.SacredAffirmation "
-                </div>
-            </div>
-
-            <!-- Cosmic Advice -->
-            <div class="neu-well p-3">
-                <div class="small font-display text-neu-accent fw-bold mb-1">
-                    <i class="bi bi-compass"></i> Guidance from the Sphere:
-                </div>
-                <div class="font-body text-neu-muted small">
-                    @Result.CosmicAdvice
-                </div>
-            </div>
-        </div>
-
-        <!-- Modality Evidence: Cards or Palm Biometrics -->
-        @if (Result.ReadingType == ReadingType.Tarot && Result.SelectedCards.Count > 0)
+        @if (Result.ReadingType == ReadingType.Palm && Result.PalmAnalysis != null)
         {
-            <div class="neu-card p-4 mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div>
-                        <h4 class="font-display fw-bold text-neu-primary mb-0">
-                            <i class="bi bi-collection text-neu-accent me-2"></i>Revealed Tarot Spread
-                        </h4>
-                        <small class="font-body text-neu-muted">Archetypes Manifested in Memory</small>
+            var palm = Result.PalmAnalysis;
+            <!-- PALM SHOWCASE & DEEP LINE-BY-LINE ANALYSIS AT THE VERY TOP -->
+            <div class="neu-card p-4 p-md-5 mb-4">
+                <!-- Hero Section: Captured Hand Photo & Archetype Summary -->
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4 justify-content-between mb-4 pb-4 border-bottom border-secondary border-opacity-25">
+                    @if (!string.IsNullOrEmpty(State.PalmImageBase64))
+                    {
+                        <div style="width: 230px; height: 270px; flex-shrink: 0; border-radius: 24px; overflow: hidden; border: 2px solid rgba(20, 184, 166, 0.5); box-shadow: 0 0 30px rgba(20, 184, 166, 0.3); background: rgba(7, 11, 18, 0.85); backdrop-filter: blur(20px);">
+                            <img src="@State.PalmImageBase64" alt="Captured Palm Photo" style="width: 100%; height: 100%; object-fit: contain; background: transparent;" />
+                        </div>
+                    }
+                    <div class="flex-grow-1 text-center text-md-start">
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
+                            <span class="text-neu-teal">✋</span>
+                            <span class="font-display text-neu-teal small text-uppercase fw-bold">လက်ဝါးလက္ခဏာ စစ်ဆေးချက်</span>
+                        </div>
+                        <h2 class="font-display fw-extrabold text-neu-primary mb-2">@palm.HandArchetype</h2>
+                        <p class="font-body text-neu-muted mb-3" style="line-height: 1.8; font-size: 0.95rem;">
+                            @palm.ElementalDescription
+                        </p>
+                        <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start mb-2">
+                            <span class="btn-neu-pill small text-neu-teal fw-bold">
+                                <i class="bi bi-eye me-1"></i> လမ်းကြောင်းထင်ရှားမှု: @palm.LineClarityPercentage%
+                            </span>
+                            <span class="btn-neu-pill small text-neu-accent">
+                                <i class="bi bi-lightning-charge me-1"></i> ပင်မစွမ်းအင်: @palm.PrimaryEnergyCenter
+                            </span>
+                            @if (!string.IsNullOrEmpty(palm.DivineSymbolFound))
+                            {
+                                <span class="btn-neu-pill small text-neu-gold">
+                                    <i class="bi bi-star-fill me-1"></i> @palm.DivineSymbolFound
+                                </span>
+                            }
+                        </div>
+                        @if (palm.ProminentMarkings != null && palm.ProminentMarkings.Count > 0)
+                        {
+                            <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-md-start mt-2">
+                                @foreach (var mark in palm.ProminentMarkings)
+                                {
+                                    <span class="badge bg-secondary bg-opacity-25 text-neu-muted font-display" style="font-size: 0.75rem;">
+                                        ✦ @mark
+                                    </span>
+                                }
+                            </div>
+                        }
                     </div>
-                    <span class="btn-neu-pill small font-display">
-                        @Result.SelectedCards.Count Cards Drawn
+                </div>
+
+                <!-- Section Title: Deep Palm Lines Explanation -->
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <div class="neu-icon-socket" style="width: 44px; height: 44px; font-size: 1.4rem; color: var(--neu-teal);">
+                        📜
+                    </div>
+                    <div>
+                        <h4 class="font-display fw-bold text-neu-primary mb-0">လက်ဝါးလမ်းကြောင်းများ အသေးစိတ် ခွဲခြမ်းစိတ်ဖြာချက်</h4>
+                        <small class="font-body text-neu-muted">အသက်၊ နှလုံး၊ ဦးခေါင်း၊ ကံကြမ္မာ၊ နေမင်း၊ ဗုဒ္ဓဟူး လမ်းကြောင်းများနှင့် ကုန်းမို့များ စစ်ဆေးချက်</small>
+                    </div>
+                </div>
+
+                <!-- The Deep Palm Lines Grid -->
+                <div class="row g-4">
+                    <!-- 1. Heart Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid #f43f5e;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">💖</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">နှလုံးလမ်းကြောင်း (Heart Line)</h5>
+                                </div>
+                                <span class="badge bg-danger bg-opacity-10 text-danger font-display small">မေတ္တာရေးရာ</span>
+                            </div>
+                            <div class="small font-display text-neu-accent mb-2">အချစ်ရေး၊ စိတ်ခံစားမှုဖော်ပြပုံ၊ သစ္စာတရားနှင့် လက်တွဲဖော်အပေါ် မျှော်လင့်ချက်</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.HeartLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 2. Head Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid var(--neu-teal);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">💡</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">ဦးခေါင်းလမ်းကြောင်း (Head Line)</h5>
+                                </div>
+                                <span class="badge bg-info bg-opacity-10 text-info font-display small">ဉာဏ်ပညာ</span>
+                            </div>
+                            <div class="small font-display text-neu-teal mb-2">ထိုးထွင်းဉာဏ်၊ သင်ယူမှုစတိုင်၊ ဆင်ခြင်တုံတရားနှင့် ဆုံးဖြတ်ချက်ချမှတ်ပုံ</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.HeadLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 3. Life Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid #10b981;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">🌿</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">အသက်လမ်းကြောင်း (Life Line)</h5>
+                                </div>
+                                <span class="badge bg-success bg-opacity-10 text-success font-display small">ဘဝစွမ်းအင်</span>
+                            </div>
+                            <div class="small font-display text-success mb-2">ဇွဲလုံ့လ၊ စိတ်ခွန်အား၊ ဘဝအပြောင်းအလဲများနှင့် ကြံ့ကြံ့ခံနိုင်စွမ်း</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.LifeLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 4. Fate Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid var(--neu-accent);">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">🧭</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">ကံကြမ္မာလမ်းကြောင်း (Fate Line)</h5>
+                                </div>
+                                <span class="badge bg-primary bg-opacity-10 text-primary font-display small">Career Path</span>
+                            </div>
+                            <div class="small font-display text-neu-accent mb-2">အလုပ်အကိုင်၊ စီးပွားရေး၊ ဘဝတိုးတက်မှုနှင့် ကိုယ်ပိုင်ကြိုးပမ်းမှုဖြင့် အောင်မြင်ခြင်း</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.FateLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 5. Sun Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid #f59e0b;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">☀️</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">နေမင်းလမ်းကြောင်း (Sun Line)</h5>
+                                </div>
+                                <span class="badge bg-warning bg-opacity-10 text-warning font-display small">ထင်ပေါ်ကျော်ကြားမှု</span>
+                            </div>
+                            <div class="small font-display text-warning mb-2">နာမည်ဂုဏ်သတင်း၊ အသိအမှတ်ပြုခံရမှုနှင့် အောင်မြင်သော ကံကြမ္မာ</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.SunLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 6. Mercury Line -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 20px; border-left: 4px solid #06b6d4;">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.3rem;">💎</span>
+                                    <h5 class="font-display fw-bold text-neu-primary mb-0">ဗုဒ္ဓဟူးလမ်းကြောင်း (Mercury Line)</h5>
+                                </div>
+                                <span class="badge bg-info bg-opacity-10 text-info font-display small">ဓနဥစ္စာနှင့် ဆက်ဆံရေး</span>
+                            </div>
+                            <div class="small font-display text-info mb-2">ကူးသန်းရောင်းဝယ်မှု၊ စကားပြောဆိုဆက်ဆံရေးနှင့် ငွေကြေးစီမံခန့်ခွဲမှု</div>
+                            <p class="font-body text-neu-muted small mb-0" style="line-height: 1.8;">
+                                @palm.MercuryLineInterpretation
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 7. Mounts Analysis -->
+                    <div class="col-12">
+                        <div class="neu-well p-4" style="border-radius: 20px;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span style="font-size: 1.3rem;">⛰️</span>
+                                <h5 class="font-display fw-bold text-neu-primary mb-0">လက်ဝါးကုန်းမို့များ ခွဲခြမ်းစိတ်ဖြာချက် (Mounts Analysis)</h5>
+                            </div>
+                            <div class="small font-display text-neu-muted mb-2">ကြာသပတေး၊ သောကြာ၊ နေ၊ စနေ၊ ဗုဒ္ဓဟူး၊ လကုန်းမို့များ၏ စွမ်းအင်သဘာဝ</div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.8;">
+                                @palm.MountsAnalysis
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- 8. Divine Symbol & Mystic Cross -->
+                    <div class="col-12">
+                        <div class="neu-well-deep p-4 text-center" style="border-radius: 20px; border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <div class="small font-display text-neu-gold text-uppercase fw-bold mb-1">တွေ့ရှိသော မင်္ဂလာသင်္ကေတနှင့် ဆဌမအာရုံ အမှတ်အသား</div>
+                            <h4 class="font-display fw-bold text-neu-primary mb-2">✦ @palm.DivineSymbolFound ✦</h4>
+                            <p class="font-body text-neu-muted small mb-0 max-w-700 mx-auto" style="line-height: 1.7;">
+                                သင်၏ ပင်မစွမ်းအင်ဗဟိုချက် ဖြစ်သော <strong>@palm.PrimaryEnergyCenter</strong> နှင့် ဤမင်္ဂလာသင်္ကေတတို့ ပေါင်းစပ်မှုကြောင့် ဘဝခရီးတွင် အလိုလို ကြိုတင်သိမြင်နိုင်စွမ်းနှင့် ဘေးအန္တရာယ်မှ ကာကွယ်ပေးသော စွမ်းအင်များကို ရရှိစေပါသည်။
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (Result.ReadingType == ReadingType.Tarot)
+        {
+            var steps = Result.TarotSteps ?? new TarotStepDataModel();
+
+            <!-- ======================================================== -->
+            <!-- အဆင့် ၁ — အသုံးပြုသူရွေးထားတဲ့ကတ်များ (Selected Tarot Cards) -->
+            <!-- ======================================================== -->
+            <div class="neu-card p-4 p-md-5 mb-4" style="border-radius: 26px;">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="step-num-badge">၁</div>
+                        <div>
+                            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-1 neu-well-sm">
+                                <span class="text-neu-accent">✦</span>
+                                <span class="font-display text-neu-muted small text-uppercase fw-bold">အဆင့် ၁</span>
+                            </div>
+                            <h3 class="font-display fw-extrabold text-neu-primary mb-0">
+                                အသုံးပြုသူ ရွေးချယ်ထားသော ကတ်များ
+                            </h3>
+                            <small class="font-body text-neu-muted">ရွေးချယ်ထားသော တာရော့ကတ်များ၏ မူလရုပ်သွင်၊ အဆင့်နှင့် အနေအထား</small>
+                        </div>
+                    </div>
+                    <span class="btn-neu-pill small font-display text-neu-gold">
+                        <i class="bi bi-collection me-1"></i> စုစုပေါင်း @Result.SelectedCards.Count ကတ် ရွေးချယ်ထားသည်
                     </span>
                 </div>
 
-                <div class="row g-3 justify-content-center">
+                <div class="row g-4 justify-content-center">
                     @foreach (var card in Result.SelectedCards)
                     {
-                        <div class="col-md-4 col-sm-6 text-center">
-                            <div class="neu-card p-4 h-100 d-flex flex-column justify-content-between" style="border-radius: 24px;">
+                        <div class="@(Result.SelectedCards.Count == 1 ? "col-md-5 col-10" : (Result.SelectedCards.Count <= 3 ? "col-lg-4 col-md-6 col-10" : (Result.SelectedCards.Count <= 5 ? "col-lg-4 col-md-6 col-12" : "col-xl-3 col-lg-4 col-md-6 col-6"))) text-center">
+                            <div class="tarot-art-card p-3 h-100 d-flex flex-column justify-content-between">
                                 <div>
-                                    <div class="small font-display fw-semibold text-neu-muted mb-2">@card.PositionName</div>
-                                    <div class="neu-icon-socket mx-auto my-2" style="font-size: 2rem;">
-                                        @card.Card.Symbol
+                                    <div class="small font-display fw-bold text-neu-accent mb-2 text-truncate" title="@card.PositionName" style="font-size: 0.8rem;">
+                                        @card.PositionName
                                     </div>
-                                    <h5 class="font-display fw-bold text-neu-primary mb-1">
-                                        @card.Card.Name
-                                        @if (card.IsReversed)
-                                        {
-                                            <span class="badge bg-danger bg-opacity-10 text-danger ms-1" style="font-size: 0.65rem;">Reversed</span>
-                                        }
-                                    </h5>
-                                    <span class="btn-neu-pill py-0 px-2 small font-display text-neu-muted mb-2" style="font-size: 0.7rem;">
-                                        Element: @card.Card.Element · @card.Card.Arcana
-                                    </span>
+                                    
+                                    <!-- Authentic Rider-Waite Card Showcase Frame -->
+                                    <div class="card-art-frame mb-3">
+                                        <div class="d-flex justify-content-between align-items-center px-2 py-1 mb-2 border-bottom border-secondary border-opacity-25">
+                                            <span class="card-roman-text">@card.Card.RomanNumeral</span>
+                                            <span class="badge bg-secondary bg-opacity-30 text-neu-muted font-display" style="font-size: 0.65rem;">
+                                                @card.Card.Element · @card.Card.Arcana
+                                            </span>
+                                        </div>
+
+                                        <div class="card-image-wrapper mx-auto mb-2">
+                                            <img src="@card.Card.ImageUrl" alt="@card.Card.Name" class="card-authentic-img" />
+                                        </div>
+
+                                        <h5 class="font-display fw-bold text-neu-primary mb-0" style="font-size: 0.95rem;">
+                                            @card.Card.Name
+                                        </h5>
+                                        <div class="text-neu-gold font-display fw-bold small mb-2">
+                                            @card.Card.BurmeseName
+                                        </div>
+
+                                        <div class="mb-1">
+                                            @if (card.IsReversed)
+                                            {
+                                                <span class="badge bg-danger bg-opacity-25 text-danger font-display px-2 py-1" style="font-size: 0.72rem; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                                    <i class="bi bi-arrow-down-up me-1"></i> ပြောင်းပြန် (Reversed)
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-success bg-opacity-25 text-success font-display px-2 py-1" style="font-size: 0.72rem; border: 1px solid rgba(16, 185, 129, 0.4);">
+                                                    <i class="bi bi-arrow-up me-1"></i> အဖြောင့် (Upright)
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="neu-well-sm mt-3 text-start p-2 small font-body text-neu-muted" style="font-size: 0.75rem; line-height: 1.4;">
-                                    <strong class="text-neu-primary">Meaning:</strong> @card.RevealedMeaning
+
+                                <div class="neu-well-sm text-start p-2 small font-body text-neu-muted" style="font-size: 0.76rem; line-height: 1.5; border-radius: 12px;">
+                                    <strong class="text-neu-primary font-display">ကံကြမ္မာ အနက်:</strong> @card.RevealedMeaning
                                 </div>
                             </div>
                         </div>
                     }
                 </div>
             </div>
-        }
-        else if (Result.ReadingType == ReadingType.Palm && Result.PalmAnalysis != null)
-        {
-            var palm = Result.PalmAnalysis;
-            <div class="neu-card p-4 mb-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
+
+            <!-- ======================================================== -->
+            <!-- အဆင့် ၂ — ကတ်တစ်ကတ်ချင်းစီရဲ့ အဓိပ္ပာယ် (Card Meanings) -->
+            <!-- ======================================================== -->
+            <div class="neu-card p-4 p-md-5 mb-4" style="border-radius: 26px;">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div class="step-num-badge">၂</div>
                     <div>
-                        <h4 class="font-display fw-bold text-neu-primary mb-0">
-                            <i class="bi bi-hand-index-thumb text-neu-teal me-2"></i>Palmistry Biometric Analysis
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-1 neu-well-sm">
+                            <span class="text-neu-teal">✦</span>
+                            <span class="font-display text-neu-teal small text-uppercase fw-bold">အဆင့် ၂</span>
+                        </div>
+                        <h3 class="font-display fw-extrabold text-neu-primary mb-0">
+                            ကတ်တစ်ကတ်ချင်းစီရဲ့ အဓိပ္ပာယ်
+                        </h3>
+                        <small class="font-body text-neu-muted">ကတ်အမည်၊ အဖြောင့်/ပြောင်းပြန် အနေအထား၊ အပြုသဘောနှင့် သတိပြုရန် အဓိပ္ပာယ်များ</small>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-4">
+                    @foreach (var detail in steps.CardDetails)
+                    {
+                        <div class="neu-card p-4" style="border-radius: 20px; border: 1.5px solid rgba(212, 175, 55, 0.3); background: rgba(13, 19, 34, 0.85);">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 50px; height: 80px; border-radius: 8px; overflow: hidden; border: 1.5px solid #d4af37; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+                                        <img src="@detail.ImageUrl" alt="@detail.CardNameEn" style="width: 100%; height: 100%; object-fit: cover;" />
+                                    </div>
+                                    <div>
+                                        <div class="small font-display text-neu-accent fw-bold">@detail.PositionName</div>
+                                        <h4 class="font-display fw-extrabold text-neu-primary mb-0">
+                                            @detail.CardNameEn (@detail.CardNameMy)
+                                        </h4>
+                                        <div class="small font-display text-neu-muted">
+                                            ရောမဂဏန်း: <span class="text-neu-gold fw-bold">@detail.RomanNumeral</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    @if (detail.IsReversed)
+                                    {
+                                        <span class="badge bg-danger bg-opacity-25 text-danger font-display px-3 py-2 fs-6 rounded-pill" style="border: 1px solid rgba(239, 68, 68, 0.5);">
+                                            <i class="bi bi-arrow-down-up me-1"></i> ပြောင်းပြန် အနေအထား (Reversed)
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-success bg-opacity-25 text-success font-display px-3 py-2 fs-6 rounded-pill" style="border: 1px solid rgba(16, 185, 129, 0.5);">
+                                            <i class="bi bi-arrow-up me-1"></i> အဖြောင့် အနေအထား (Upright)
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+
+                            <div class="row g-3">
+                                <!-- အပြုသဘော အဓိပ္ပာယ် -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100" style="background: rgba(16, 185, 129, 0.08); border-left: 4px solid #10b981; border: 1px solid rgba(16, 185, 129, 0.2);">
+                                        <div class="d-flex align-items-center gap-2 mb-2 font-display text-success fw-bold">
+                                            <i class="bi bi-sun-fill" style="font-size: 1.1rem;"></i>
+                                            <span>အပြုသဘော အဓိပ္ပာယ် (Positive / Light Meaning)</span>
+                                        </div>
+                                        <p class="font-body text-neu-primary small mb-0" style="line-height: 1.8;">
+                                            @detail.PositiveMeaning
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <!-- သတိပြုရန် အဓိပ္ပာယ် -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100" style="background: rgba(245, 158, 11, 0.08); border-left: 4px solid #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2);">
+                                        <div class="d-flex align-items-center gap-2 mb-2 font-display text-warning fw-bold">
+                                            <i class="bi bi-shield-exclamation" style="font-size: 1.1rem;"></i>
+                                            <span>သတိပြုရန် အဓိပ္ပာယ် (Cautionary / Shadow Meaning)</span>
+                                        </div>
+                                        <p class="font-body text-neu-primary small mb-0" style="line-height: 1.8;">
+                                            @detail.CautionaryMeaning
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- အဆင့် ၃ — မေးခွန်းနဲ့ ကတ်နေရာကို ပေါင်းစပ်ခြင်း (Synthesis) -->
+            <!-- ======================================================== -->
+            <div class="neu-card p-4 p-md-5 mb-4" style="border-radius: 26px;">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div class="step-num-badge">၃</div>
+                    <div>
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-1 neu-well-sm">
+                            <span class="text-neu-gold">✦</span>
+                            <span class="font-display text-neu-gold small text-uppercase fw-bold">အဆင့် ၃</span>
+                        </div>
+                        <h3 class="font-display fw-extrabold text-neu-primary mb-0">
+                            မေးခွန်းနဲ့ ကတ်နေရာကို ပေါင်းစပ်ခြင်း
+                        </h3>
+                        <small class="font-body text-neu-muted">
+                            ကဏ္ဍ: <strong class="text-neu-accent">@GetBurmeseTopicName(Result.Topic)</strong> | @(!string.IsNullOrEmpty(Result.OptionalQuestion) ? $"မေးမြန်းချက်: \"{Result.OptionalQuestion}\"" : "ဘဝကံကြမ္မာ လမ်းညွှန်ချက်")
+                        </small>
+                    </div>
+                </div>
+
+                <div class="neu-well p-3 rounded-4 mb-4" style="border-left: 4px solid var(--neu-accent);">
+                    <div class="small font-display text-neu-accent fw-bold mb-1">
+                        <i class="bi bi-info-circle me-1"></i> ကဏ္ဍအလိုက် အဓိပ္ပာယ်ဖွင့်ဆိုချက် မူဘောင်:
+                    </div>
+                    <div class="font-body text-neu-muted small">
+                        ရွေးချယ်ထားသော တာရော့ကတ်များ၏ နေရာအလိုက် စွမ်းအင်သဘာဝများကို <strong>@GetBurmeseTopicName(Result.Topic)</strong> ဆိုင်ရာ အခြေအနေ၊ စိန်ခေါ်မှုနှင့် အကျိုးရလဒ်များနှင့် တိုက်ရိုက် ချိတ်ဆက်ပေါင်းစပ်၍ ဖော်ပြပေးထားပါသည်။
+                    </div>
+                </div>
+
+                <div class="d-flex flex-column gap-3">
+                    @foreach (var pos in steps.PositionSyntheses)
+                    {
+                        <div class="neu-card p-3 p-md-4 rounded-4" style="background: rgba(14, 22, 38, 0.7); border: 1px solid rgba(255, 255, 255, 0.08);">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-2 border-bottom border-secondary border-opacity-25">
+                                <span class="badge bg-primary bg-opacity-20 text-neu-accent font-display px-3 py-1 fs-6">
+                                    <i class="bi bi-geo-alt me-1"></i> @pos.PositionName
+                                </span>
+                                <span class="font-display text-neu-gold fw-bold small">
+                                    ✦ ကျရောက်သောကတ်: @pos.CardName
+                                </span>
+                            </div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.85;">
+                                @pos.SynthesisText
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- ======================================================== -->
+            <!-- အဆင့် ၄ — နောက်ဆုံးဟောချက် ထုတ်ပေးခြင်း (Final Verdict) -->
+            <!-- ======================================================== -->
+            <div class="neu-card p-4 p-md-5 mb-4" style="border-radius: 26px;">
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                    <div class="step-num-badge">၄</div>
+                    <div>
+                        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-1 neu-well-sm">
+                            <span class="text-danger">✦</span>
+                            <span class="font-display text-danger small text-uppercase fw-bold">အဆင့် ၄</span>
+                        </div>
+                        <h3 class="font-display fw-extrabold text-neu-primary mb-0">
+                            နောက်ဆုံးဟောချက် ထုတ်ပေးခြင်း
+                        </h3>
+                        <small class="font-body text-neu-muted">လက်ရှိအခြေအနေ၊ ဖြစ်နိုင်ခြေ၊ သတိထားရန်နှင့် အကြံပြုချက်များကို မြန်မာလို သဘာဝကျကျ ဟောကြားချက်</small>
+                    </div>
+                </div>
+
+                <!-- Core Prophecy Highlight Banner -->
+                @if (!string.IsNullOrEmpty(Result.CoreProphecy))
+                {
+                    <div class="neu-well-deep p-4 text-center mb-4" style="border-radius: 20px; border: 1.5px solid rgba(212, 175, 55, 0.4);">
+                        <div class="small font-display text-neu-gold text-uppercase fw-bold mb-1">
+                            ✦ ပင်မ ကံကြမ္မာ ဟောကိန်း ✦
+                        </div>
+                        <h4 class="font-display fw-extrabold text-neu-primary mb-0">
+                            @Result.CoreProphecy
                         </h4>
-                        <small class="font-body text-neu-muted">In-Memory Line Contours & Markings</small>
                     </div>
-                    <span class="btn-neu-pill small font-display text-neu-teal fw-bold">
-                        @palm.HandArchetype
-                    </span>
-                </div>
+                }
 
-                <div class="row g-3">
+                <!-- The 4 Distinct Visual Verdict Blocks -->
+                <div class="row g-4">
+                    <!-- ၁။ လက်ရှိအခြေအနေ (Current Situation) -->
                     <div class="col-md-6">
-                        <div class="neu-well p-3 h-100">
-                            <div class="font-display text-neu-accent small fw-bold mb-1"><i class="bi bi-heart me-1"></i>Heart Line</div>
-                            <p class="font-body small text-neu-muted mb-0">@palm.HeartLineInterpretation</p>
+                        <div class="neu-card p-4 h-100" style="border-radius: 22px; border-left: 5px solid var(--neu-teal); background: rgba(14, 22, 38, 0.85); box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.4rem;">🧭</span>
+                                    <h5 class="font-display fw-bold text-neu-teal mb-0">၁။ လက်ရှိအခြေအနေ</h5>
+                                </div>
+                                <span class="badge bg-teal bg-opacity-10 text-neu-teal font-display small">Current Energy</span>
+                            </div>
+                            <div class="small font-display text-neu-muted mb-2">လက်ရှိ စွမ်းအင်များနှင့် ရင်ဆိုင်နေရသော အခိုက်အတန့်</div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.85;">
+                                @steps.CurrentSituation
+                            </p>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="neu-well p-3 h-100">
-                            <div class="font-display text-neu-teal small fw-bold mb-1"><i class="bi bi-lightbulb me-1"></i>Head Line</div>
-                            <p class="font-body small text-neu-muted mb-0">@palm.HeadLineInterpretation</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="neu-well p-3 h-100">
-                            <div class="font-display text-neu-primary small fw-bold mb-1"><i class="bi bi-activity me-1"></i>Life Line</div>
-                            <p class="font-body small text-neu-muted mb-0">@palm.LifeLineInterpretation</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="neu-well p-3 h-100">
-                            <div class="font-display text-neu-accent small fw-bold mb-1"><i class="bi bi-signpost-split me-1"></i>Fate Line</div>
-                            <p class="font-body small text-neu-muted mb-0">@palm.FateLineInterpretation</p>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="neu-well p-3 mt-3">
-                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <div class="small font-display text-neu-muted">
-                            <strong class="text-neu-primary">Mounts:</strong> @palm.MountsAnalysis
+                    <!-- ၂။ ရှေ့ဆက် ဖြစ်နိုင်ခြေ (Future Potential) -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 22px; border-left: 5px solid var(--neu-accent); background: rgba(14, 22, 38, 0.85); box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.4rem;">🌟</span>
+                                    <h5 class="font-display fw-bold text-neu-accent mb-0">၂။ ရှေ့ဆက် ဖြစ်နိုင်ခြေ</h5>
+                                </div>
+                                <span class="badge bg-primary bg-opacity-10 text-neu-accent font-display small">Future Manifestation</span>
+                            </div>
+                            <div class="small font-display text-neu-muted mb-2">ရှေ့ဆက်ဖြစ်ပေါ်လာမည့် အခွင့်အလမ်းနှင့် ရလဒ်များ</div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.85;">
+                                @steps.FuturePotential
+                            </p>
                         </div>
-                        <div class="small font-display text-neu-teal">
-                            <strong>Symbol Found:</strong> @palm.DivineSymbolFound
+                    </div>
+
+                    <!-- ၃။ သတိထားရန် (Cautionary Advice / Pitfalls) -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 22px; border-left: 5px solid #f59e0b; background: rgba(14, 22, 38, 0.85); box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.4rem;">⚠️</span>
+                                    <h5 class="font-display fw-bold text-warning mb-0">၃။ သတိထားဆင်ခြင်ရန်</h5>
+                                </div>
+                                <span class="badge bg-warning bg-opacity-10 text-warning font-display small">Warnings & Shadow</span>
+                            </div>
+                            <div class="small font-display text-neu-muted mb-2">စိန်ခေါ်မှုများ၊ အမှားအယွင်းနှင့် ရှောင်ကြဉ်ရမည့် အချက်များ</div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.85;">
+                                @steps.CautionaryAdvice
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ၄။ အကြံပြုချက် (Actionable Guidance) -->
+                    <div class="col-md-6">
+                        <div class="neu-card p-4 h-100" style="border-radius: 22px; border-left: 5px solid #10b981; background: rgba(14, 22, 38, 0.85); box-shadow: 0 10px 25px rgba(0,0,0,0.4);">
+                            <div class="d-flex align-items-center justify-content-between mb-2 pb-1 border-bottom border-secondary border-opacity-25">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span style="font-size: 1.4rem;">💡</span>
+                                    <h5 class="font-display fw-bold text-success mb-0">၄။ အကြံပြုချက်</h5>
+                                </div>
+                                <span class="badge bg-success bg-opacity-10 text-success font-display small">Actionable Wisdom</span>
+                            </div>
+                            <div class="small font-display text-neu-muted mb-2">လက်တွေ့လိုက်နာ ဆောင်ရွက်ရမည့် ပညာရှိ လမ်းညွှန်ချက်များ</div>
+                            <p class="font-body text-neu-primary small mb-0" style="line-height: 1.85;">
+                                @steps.ActionableGuidance
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -184,7 +560,7 @@
         <div class="row g-3 mb-5">
             <div class="col-md-3 col-6">
                 <div class="neu-card p-3 text-center h-100">
-                    <small class="font-display text-neu-muted text-uppercase">Aura Energy</small>
+                    <small class="font-display text-neu-muted text-uppercase">အိုရာ စွမ်းအင်</small>
                     <div class="display-6 font-display fw-extrabold text-neu-accent my-1">@Result.AuraEnergyScore%</div>
                     <div class="neu-meter-track mt-2">
                         <div class="neu-meter-fill" style="width: @Result.AuraEnergyScore%;"></div>
@@ -194,46 +570,46 @@
 
             <div class="col-md-3 col-6">
                 <div class="neu-card p-3 text-center h-100">
-                    <small class="font-display text-neu-muted text-uppercase">Aura Frequency</small>
+                    <small class="font-display text-neu-muted text-uppercase">အိုရာ အရောင်</small>
                     <div class="fs-4 font-display fw-bold text-neu-accent mt-2">
                         ✦ @Result.AuraColor
                     </div>
-                    <small class="font-body text-neu-muted">Resonance Sealed</small>
+                    <small class="font-body text-neu-muted">စွမ်းအင်လွှမ်းခြုံမှု</small>
                 </div>
             </div>
 
             <div class="col-md-3 col-6">
                 <div class="neu-card p-3 text-center h-100">
-                    <small class="font-display text-neu-muted text-uppercase">Sacred Number</small>
+                    <small class="font-display text-neu-muted text-uppercase">ကံကောင်းစေသော ဂဏန်း</small>
                     <div class="display-6 font-display fw-extrabold text-neu-teal my-1">#@Result.LuckyNumber</div>
-                    <small class="font-body text-neu-muted">Karmic Multiplier</small>
+                    <small class="font-body text-neu-muted">ကံမြှင့်ဂဏန်း</small>
                 </div>
             </div>
 
             <div class="col-md-3 col-6">
                 <div class="neu-card p-3 text-center h-100">
-                    <small class="font-display text-neu-muted text-uppercase">Auspicious Gemstone</small>
+                    <small class="font-display text-neu-muted text-uppercase">မင်္ဂလာရှိသော ကျောက်မျက်</small>
                     <div class="fs-5 font-display fw-bold text-neu-primary mt-2">
                         @Result.AuspiciousGemstone
                     </div>
-                    <small class="font-body text-neu-muted">Talisman of Power</small>
+                    <small class="font-body text-neu-muted">ကံကြမ္မာ အဆောင်</small>
                 </div>
             </div>
         </div>
 
         <!-- Next Actions (New Reading / Close) -->
         <div class="neu-card p-4 text-center">
-            <h4 class="font-display fw-bold text-neu-primary mb-1">Next Celestial Action</h4>
+            <h4 class="font-display fw-bold text-neu-primary mb-1">နောက်ထပ် ဆောင်ရွက်ချက်</h4>
             <p class="font-body text-neu-muted small mb-4">
-                Will you consult the oracle on another inquiry or conclude this sacred session?
+                နောက်ထပ် ဗေဒင်တစ်ခု ထပ်မံဟောကြားလိုပါသလား သို့မဟုတ် အစီအစဉ်ကို ရုပ်သိမ်းလိုပါသလား
             </p>
 
             <div class="d-flex justify-content-center gap-3 flex-wrap">
                 <button class="btn-neu-primary px-5 py-3 fs-5" @onclick="StartNewReading">
-                    <i class="bi bi-arrow-repeat"></i> START A NEW READING
+                    <i class="bi bi-arrow-repeat"></i> ဗေဒင်အသစ် ထပ်မံဟောမည်
                 </button>
                 <button class="btn-neu px-4 py-3 fs-5" @onclick="EndSession">
-                    <i class="bi bi-x-circle"></i> CLOSE / END SESSION
+                    <i class="bi bi-x-circle"></i> ပြီးဆုံးမည်
                 </button>
             </div>
         </div>
@@ -246,18 +622,81 @@
                     <div class="neu-icon-socket mx-auto mb-3" style="width: 70px; height: 70px; font-size: 2.5rem; color: var(--neu-accent);">
                         🕊️
                     </div>
-                    <h3 class="font-display fw-extrabold text-neu-primary mb-2">PEACE GO WITH YOU</h3>
+                    <h3 class="font-display fw-extrabold text-neu-primary mb-2">စိတ်အေးချမ်းသာ ရှိပါစေ</h3>
                     <p class="font-body text-neu-muted mb-4">
-                        May the blessings of Astraea illuminate your footsteps and the celestial stars ever align in your favor.
+                        သင်၏ ရှေ့လျှောက်လှမ်းမည့် ဘဝခရီးလမ်းတွင် အောင်မြင်မှုနှင့် ကံကောင်းခြင်းများ အမြဲလက်တွဲပါစေကြောင်း ဆုမွန်ကောင်းတောင်းအပ်ပါသည်။
                     </p>
-                    <button class="btn-neu-primary w-100 py-3" @onclick='() => Nav.NavigateTo("")'>
-                        Return to Celestial Sanctuary
+                    <button class="btn-neu-primary w-100 py-3" @onclick="ExitToHome">
+                        ပင်မစာမျက်နှာသို့ ပြန်သွားမည်
                     </button>
                 </div>
             </div>
         }
     }
 </div>
+
+<style>
+    .step-num-badge {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+        color: #0d1322;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-display);
+        font-weight: 900;
+        font-size: 1.3rem;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+        flex-shrink: 0;
+    }
+
+    .tarot-art-card {
+        border-radius: 22px;
+        border: 1.5px solid rgba(212, 175, 55, 0.4);
+        background: linear-gradient(180deg, #161f36 0%, #0d1322 100%);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(212, 175, 55, 0.15);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .tarot-art-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(212, 175, 55, 0.25);
+    }
+
+    .card-art-frame {
+        border: 1.5px solid rgba(212, 175, 55, 0.6);
+        border-radius: 16px;
+        background: rgba(7, 11, 18, 0.85);
+        box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.15);
+        padding: 10px;
+    }
+
+    .card-roman-text {
+        font-family: var(--font-display);
+        color: #fef08a;
+        font-weight: bold;
+        font-size: 0.8rem;
+    }
+
+    .card-image-wrapper {
+        width: 145px;
+        height: 240px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1.5px solid #d4af37;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.9);
+        background: #000;
+    }
+
+    .card-authentic-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+</style>
 
 @code {
     private ReadingResponseModel? Result;
@@ -266,16 +705,89 @@
     protected override void OnInitialized()
     {
         Result = State.CurrentResult;
+
+        if (Result?.ReadingType == ReadingType.Tarot && Result.TarotSteps == null && Result.SelectedCards.Count > 0)
+        {
+            Result.TarotSteps = new TarotStepDataModel
+            {
+                TopicTitle = GetBurmeseTopicName(Result.Topic),
+                CurrentSituation = !string.IsNullOrWhiteSpace(Result.DetailedInterpretation) ? Result.DetailedInterpretation : "လက်ရှိအချိန်တွင် ကံကြမ္မာစွမ်းအင်များ အလှည့်အပြောင်းသစ်တစ်ခု စတင်နေပြီ ဖြစ်ပါသည်။",
+                FuturePotential = !string.IsNullOrWhiteSpace(Result.CoreProphecy) ? Result.CoreProphecy : "ရှေ့ဆက်၍ ကြိုးပမ်းအားထုတ်မှုနှင့်အတူ အခွင့်အလမ်းကောင်းများ ပေါ်ပေါက်လာပါမည်။",
+                CautionaryAdvice = !string.IsNullOrWhiteSpace(Result.OpportunitiesAndChallenges) ? Result.OpportunitiesAndChallenges : "မဆင်မခြင် ဆုံးဖြတ်ခြင်းနှင့် စိတ်မရှည်ခြင်းများကို သတိပြုဆင်ခြင်ပါ။",
+                ActionableGuidance = !string.IsNullOrWhiteSpace(Result.CosmicAdvice) ? Result.CosmicAdvice : "စိတ်ကို တည်ငြိမ်စွာထားပြီး အပြုသဘောဆောင်သော ပန်းတိုင်များဆီသို့ လျှောက်လှမ်းပါ။"
+            };
+
+            for (int i = 0; i < Result.SelectedCards.Count; i++)
+            {
+                var c = Result.SelectedCards[i];
+                Result.TarotSteps.CardDetails.Add(new TarotStep2CardDetail
+                {
+                    CardNameEn = c.Card.Name,
+                    CardNameMy = !string.IsNullOrEmpty(c.Card.BurmeseName) ? c.Card.BurmeseName : c.Card.Name,
+                    RomanNumeral = c.Card.RomanNumeral,
+                    ImageUrl = !string.IsNullOrEmpty(c.Card.ImageUrl) ? c.Card.ImageUrl : $"/images/tarot/m{c.Card.Id:D2}.jpg",
+                    PositionName = c.PositionName,
+                    IsReversed = c.IsReversed,
+                    PositiveMeaning = !string.IsNullOrWhiteSpace(c.Card.UprightMeaning) ? c.Card.UprightMeaning : "အပြုသဘောဆောင်သော စွမ်းအင်များနှင့် ကောင်းမွန်သော လမ်းပွင့်လန်းမှုများ ရှိနေပါသည်။",
+                    CautionaryMeaning = !string.IsNullOrWhiteSpace(c.Card.ReversedMeaning) ? c.Card.ReversedMeaning : "အလျင်စလို ဆုံးဖြတ်ခြင်းနှင့် စိတ်မရှည်ခြင်းများကို သတိပြုဆင်ခြင်ရန် လိုအပ်ပါသည်။"
+                });
+
+                Result.TarotSteps.PositionSyntheses.Add(new TarotStep3PositionSynthesis
+                {
+                    PositionIndex = i + 1,
+                    PositionName = c.PositionName,
+                    CardName = $"{c.Card.Name} ({c.Card.BurmeseName}){(c.IsReversed ? " - ပြောင်းပြန်" : " - အဖြောင့်")}",
+                    SynthesisText = $"{c.PositionName} နေရာတွင် ကျရောက်နေပြီး {c.RevealedMeaning}"
+                });
+            }
+        }
     }
 
-    private void StartNewReading()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender && Result?.ReadingType == ReadingType.Palm && string.IsNullOrEmpty(State.PalmImageBase64))
+        {
+            try
+            {
+                var cached = await JS.InvokeAsync<string?>("sessionStorage.getItem", "fortune_captured_palm");
+                if (!string.IsNullOrEmpty(cached))
+                {
+                    State.PalmImageBase64 = cached;
+                    StateHasChanged();
+                }
+            }
+            catch { }
+        }
+    }
+
+    private async Task StartNewReading()
+    {
+        try { await JS.InvokeVoidAsync("fortuneCamera.clearPalmCache"); } catch { }
         State.Reset();
         Nav.NavigateTo("choose-reading");
+    }
+
+    private async Task ExitToHome()
+    {
+        try { await JS.InvokeVoidAsync("fortuneCamera.clearPalmCache"); } catch { }
+        State.Reset();
+        Nav.NavigateTo("");
     }
 
     private void EndSession()
     {
         ShowEndModal = true;
     }
+
+    private string GetBurmeseTopicName(ReadingTopic topic) => topic switch
+    {
+        ReadingTopic.Love => "အချစ်ရေး",
+        ReadingTopic.CareerBusiness => "အလုပ်နှင့် စီးပွားရေး",
+        ReadingTopic.Finance => "ငွေကြေးစီမံမှု",
+        ReadingTopic.Education => "ပညာရေး",
+        ReadingTopic.PersonalGrowth => "ကိုယ်ရည်ကိုယ်သွေး",
+        ReadingTopic.Relationship => "ဆက်ဆံရေး",
+        ReadingTopic.General => "အထွေထွေ",
+        _ => "အထွေထွေ"
+    };
 }

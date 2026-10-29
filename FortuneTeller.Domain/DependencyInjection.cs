@@ -9,6 +9,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddDomainServices(this IServiceCollection services)
     {
+        services.AddHttpClient();
         services.AddSingleton<SpreadCardSelector>();
         services.AddSingleton<PalmImageAnalyzer>();
         services.AddSingleton<AiReadingService>();

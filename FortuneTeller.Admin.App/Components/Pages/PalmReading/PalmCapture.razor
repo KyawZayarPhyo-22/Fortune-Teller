@@ -1,99 +1,229 @@
 @page "/palm-capture"
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@implements IAsyncDisposable
+@inject IWebHostEnvironment Env
 @inject NavigationManager Nav
 @inject FortuneStateService State
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-850 mx-auto">
-    <!-- Neumorphic Stepper -->
-    <div class="neu-stepper">
-        <div class="neu-step-item completed">
-            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Path</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item completed">
-            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Consent</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item active">
-            <div class="neu-step-bubble">3</div>
-            <span>Hand Photo</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item">
-            <div class="neu-step-bubble">4</div>
-            <span>Topic</span>
-        </div>
-    </div>
+<div class="container py-3 max-w-850 mx-auto position-relative">
+    <!-- Radiant Astral Aura Behind Container to illuminate the Frosted Glass Blur -->
+    <div style="position: absolute; inset: -25px; background: radial-gradient(ellipse at 50% 35%, rgba(20, 184, 166, 0.5) 0%, rgba(99, 102, 241, 0.35) 45%, rgba(245, 158, 11, 0.25) 75%, transparent 100%); filter: blur(55px); pointer-events: none; z-index: 0;"></div>
 
-    <div class="neu-card p-4 p-md-5">
-        <div class="text-center mb-4">
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
-                <span class="text-neu-teal">✦</span>
-                <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 2B · Biometric Ingestion</span>
-                <span class="text-neu-teal">✦</span>
-            </div>
-            <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">SELECT HAND PHOTO</h2>
-            <p class="font-body text-neu-muted max-w-600 mx-auto">
-                Upload your hand photograph or choose an archetypal palm to begin in-memory line extraction.
-            </p>
-        </div>
-
+    <div class="neu-card p-3 p-md-4 camera-container-card position-relative"
+         style="background: rgba(14, 22, 38, 0.6) !important; backdrop-filter: blur(30px) saturate(200%) !important; -webkit-backdrop-filter: blur(30px) saturate(200%) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.35), 0 0 50px rgba(20, 184, 166, 0.25) !important; border-radius: 30px; z-index: 1;">
         <!-- Deep Inset Scanner Viewport -->
-        <div class="neu-scanner-well mb-4">
-            @if (!string.IsNullOrEmpty(PreviewImage))
+        <div class="neu-scanner-well mb-2" @onclick="TriggerCapture" style="cursor: pointer; border-radius: 24px; box-shadow: 0 0 30px rgba(20, 184, 166, 0.25), inset 0 0 35px rgba(0, 0, 0, 0.95); border: 1px solid rgba(20, 184, 166, 0.45);">
+            @if (!string.IsNullOrEmpty(PreviewImage) && !IsCameraActive)
             {
-                <img src="@PreviewImage" alt="Palm Preview" style="width: 100%; height: 100%; object-fit: contain; padding: 1rem;" />
+                <img src="@PreviewImage" alt="Palm Preview" style="width: 100%; height: 100%; object-fit: cover; border-radius: inherit;" />
                 <div class="neu-scanner-laser"></div>
-                <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center text-neu-primary small font-display" style="background-color: rgba(224, 229, 236, 0.9); box-shadow: var(--shadow-inset-sm);">
-                    <i class="bi bi-broadcast text-neu-teal me-1"></i> In-Memory Ready (@PhotoSizeKb KB)
+                <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center text-neu-primary small font-display" style="background: rgba(10, 14, 22, 0.85); backdrop-filter: blur(8px); border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                    <i class="bi bi-broadcast text-neu-teal me-1"></i> အဆင်သင့်ဖြစ်ပါပြီ (@PhotoSizeKb KB)
                 </div>
+            }
+            else if (SelectedMode == IngestionMode.Camera)
+            {
+                <video id="palm-camera-feed" class="palm-camera-feed" playsinline autoplay muted style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; @(IsCameraActive ? "opacity: 1;" : "opacity: 0; pointer-events: none;")"></video>
+
+                <!-- Corner Reticles -->
+                <div class="reticle-corner reticle-top-left"></div>
+                <div class="reticle-corner reticle-top-right"></div>
+                <div class="reticle-corner reticle-bottom-left"></div>
+                <div class="reticle-corner reticle-bottom-right"></div>
+
+                @if (IsCameraActive)
+                {
+                    <!-- Anatomical Astral Hand Guide Overlay -->
+                    <div class="palm-guide-overlay">
+                        <!-- Cosmic Mask Cover Layer (masks outside of hand with dark celestial background) -->
+                        <img src="/images/palms/hand-portal-cover.png" 
+                             class="palm-portal-cover" 
+                             alt="Cosmic Portal Cover" />
+
+                        <img src="/images/palms/hand-border-guide.png" 
+                             class="palm-guide-image @(HandAlignmentPercent > 0 ? "aligned" : "")" 
+                             id="palm-border-guide-img"
+                             alt="Hand Border Guide" />
+
+                        <!-- Central Lock-in Reticle with Radial Fill Ring -->
+                        <div class="palm-lock-reticle @(HandAlignmentPercent >= 80 ? "locked" : "")">
+                            <svg class="reticle-lock-svg" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="40" class="reticle-bg" />
+                                <circle cx="50" cy="50" r="40" class="reticle-fill" 
+                                        style="stroke-dashoffset: calc(252px - (252px * @HandAlignmentPercent) / 100);" />
+                                <circle cx="50" cy="50" r="4" class="reticle-core" />
+                            </svg>
+                            @if (HandAlignmentPercent > 0)
+                            {
+                                <span class="reticle-percent-text">@HandAlignmentPercent%</span>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Active Laser Scanner Sweep -->
+                    <div class="neu-scanner-laser"></div>
+
+                    <!-- Live Status Indicator -->
+                    <div class="camera-status-pill">
+                        @if (HandAlignmentPercent >= 100 || IsAutoCapturing)
+                        {
+                            <span class="status-dot-pulse" style="background: #10b981; box-shadow: 0 0 10px #10b981;"></span>
+                            <span class="text-neu-teal fw-bold">နေရာကျပါပြီ! ဓာတ်ပုံရိုက်နေသည်...</span>
+                        }
+                        else if (!string.IsNullOrEmpty(AlignmentStatusHint))
+                        {
+                            <span class="status-dot-pulse" style="background: #f59e0b; box-shadow: 0 0 10px #f59e0b;"></span>
+                            <span class="text-neu-gold fw-bold">@AlignmentStatusHint</span>
+                        }
+                        else if (HandAlignmentPercent >= 60)
+                        {
+                            <span class="status-dot-pulse" style="background: #10b981; box-shadow: 0 0 8px #10b981;"></span>
+                            <span class="text-neu-teal fw-bold">နေရာကျနေပါပြီ · လက်ကို ငြိမ်အောင်ထားပါ @HandAlignmentPercent%</span>
+                        }
+                        else if (HandAlignmentPercent > 0)
+                        {
+                            <span class="status-dot-pulse" style="background: #38bdf8; box-shadow: 0 0 8px #38bdf8;"></span>
+                            <span class="text-neu-primary">ဘယ်လက်ဝါးကို တွေ့ရှိပါပြီ · ပုံစံခွက်အတွင်း အံဝင်အောင် ချိန်ပါ @HandAlignmentPercent%</span>
+                        }
+                        else
+                        {
+                            <span class="status-dot-pulse"></span>
+                            <span>ဘယ်လက် လက်ဖဝါးကို လမ်းညွှန်ပုံစံခွက်အတွင်း ချိန်ထားပါ</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(ErrorMessage))
+                    {
+                        <div class="position-absolute top-0 start-50 translate-middle-x mt-5 p-2 rounded small font-display text-white text-center" style="background: rgba(220, 38, 38, 0.9); backdrop-filter: blur(8px); z-index: 30; max-width: 90%; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
+                            <i class="bi bi-exclamation-triangle-fill me-1"></i> @ErrorMessage
+                        </div>
+                    }
+
+                    <!-- Countdown Overlay -->
+                    @if (IsCountingDown)
+                    {
+                        <div class="countdown-overlay">
+                            <span class="countdown-number">@CountdownSeconds</span>
+                        </div>
+                    }
+
+                    <!-- Flash Layer -->
+                    <div class="camera-flash-layer @(IsFlashing ? "flashing" : "")"></div>
+                }
+                else
+                {
+                    <div class="text-center p-4" style="z-index: 10;">
+                        <div class="neu-icon-socket mb-3" style="width: 72px; height: 72px; font-size: 2.2rem; color: var(--neu-teal); margin: 0 auto;">
+                            <i class="bi bi-camera-video"></i>
+                        </div>
+                        <h5 class="font-display fw-bold text-neu-primary mb-1">ကင်မရာ အသင့်ရှိနေပါပြီ</h5>
+                        <p class="font-body text-neu-muted small mb-3">လက်ဝါးလက္ခဏာ လမ်းကြောင်းများကို စစ်ဆေးရန် လက်ဝါးကို ကင်မရာရှေ့တွင် ပြပါ</p>
+
+                        @if (!string.IsNullOrEmpty(ErrorMessage))
+                        {
+                            <div class="p-2 mb-2 rounded text-danger small font-display text-start" style="background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.3); font-size: 0.75rem; line-height: 1.4;">
+                                <i class="bi bi-exclamation-triangle-fill text-danger me-1"></i> @ErrorMessage
+                            </div>
+                        }
+
+                        @if (IsStartingCamera)
+                        {
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <div class="d-inline-flex align-items-center gap-2 text-neu-teal small font-display">
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                    <span>ကင်မရာသို့ ချိတ်ဆက်နေသည်...</span>
+                                </div>
+                                <small class="text-neu-muted" style="font-size: 0.75rem;">Browser မှ ကင်မရာအသုံးပြုခွင့် တောင်းပါက 'Allow' ကို နှိပ်ပေးပါ။</small>
+                                <button type="button" class="btn-neu-pill small mt-1" @onclick="CancelConnecting">
+                                    <i class="bi bi-x-circle me-1"></i> ပယ်ဖျက်မည်
+                                </button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column align-items-center gap-2">
+                                <button type="button" class="btn-neu-teal px-4 py-2" @onclick="StartCamera">
+                                    <i class="bi bi-camera-video-fill me-1"></i>
+                                    <span>ကင်မရာ စတင်ဖွင့်မည်</span>
+                                </button>
+                                <button type="button" class="btn-neu-pill small text-neu-teal" @onclick="StartVirtualCamera" title="ကင်မရာမရှိပါက သရုပ်ပြနမူနာဖြင့် စမ်းသပ်ကြည့်ရှုနိုင်ပါသည်">
+                                    <i class="bi bi-display me-1"></i> သရုပ်ပြ Demo ကင်မရာ သုံးမည်
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
             }
             else
             {
                 <div class="text-center p-4">
-                    <div class="neu-icon-socket mb-3" style="width: 70px; height: 70px; font-size: 2.5rem; color: var(--neu-muted);">
+                    <div class="neu-icon-socket mb-3" style="width: 70px; height: 70px; font-size: 2.5rem; color: var(--neu-muted); margin: 0 auto;">
                         ✋
                     </div>
-                    <p class="font-display fw-bold text-neu-primary mb-1">No hand photo loaded.</p>
-                    <small class="font-body text-neu-muted">Upload a photo below or select a sample archetype.</small>
+                    <p class="font-display fw-bold text-neu-primary mb-1">လက်ဝါးဓာတ်ပုံ မရှိသေးပါ။</p>
+                    <small class="font-body text-neu-muted">အောက်တွင် ဓာတ်ပုံတင်ပါ သို့မဟုတ် နမူနာပုံစံ ရွေးချယ်ပါ</small>
                 </div>
             }
         </div>
 
-        <!-- Ingestion Controls -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <label class="form-label font-display fw-bold text-neu-primary small">
-                    <i class="bi bi-cloud-arrow-up text-neu-accent me-1"></i> Upload Hand Photo
+        <!-- Contextual Mode Controls -->
+        @if (SelectedMode == IngestionMode.Camera)
+        {
+            @if (IsCameraActive)
+            {
+                <div class="d-flex justify-content-center align-items-center gap-3 mb-4">
+                    <button type="button" class="btn btn-neu-teal px-4 py-2 fs-5 fw-bold d-inline-flex align-items-center gap-2" 
+                            style="border-radius: 50px; box-shadow: 0 0 25px rgba(20, 184, 166, 0.5); background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); color: #000;"
+                            @onclick="TriggerCapture">
+                        <i class="bi bi-camera-fill fs-4"></i> ဓာတ်ပုံရိုက်မည် (Capture Now)
+                    </button>
+                </div>
+            }
+            else if (!string.IsNullOrEmpty(PreviewImage))
+            {
+                <div class="d-flex justify-content-center gap-2 mb-4">
+                    <button type="button" class="btn-neu-pill" @onclick="RetakeWithCamera">
+                        <i class="bi bi-camera-video me-1"></i> ကင်မရာဖြင့် ပြန်လည်ရိုက်မည်
+                    </button>
+                </div>
+            }
+        }
+        else if (SelectedMode == IngestionMode.Upload)
+        {
+            <div class="neu-well p-4 mb-4 text-center">
+                <label class="form-label font-display fw-bold text-neu-primary small mb-2 d-block">
+                    <i class="bi bi-cloud-arrow-up text-neu-accent me-1"></i> လက်ဝါးဓာတ်ပုံဖိုင် ရွေးချယ်ပါ
                 </label>
-                <div class="neu-well p-2">
+                <div class="mx-auto max-w-400">
                     <InputFile OnChange="HandleFileSelected" class="form-control border-0 bg-transparent text-neu-primary font-body small" accept="image/*" />
                 </div>
-                <small class="text-neu-muted font-body" style="font-size: 0.75rem;">Max payload: 5 MB (Gateway enforced)</small>
+                <small class="text-neu-muted font-body d-block mt-2" style="font-size: 0.75rem;">အများဆုံး 5 MB · JPG, PNG, WebP</small>
             </div>
-
-            <div class="col-md-6">
-                <label class="form-label font-display fw-bold text-neu-primary small">
-                    <i class="bi bi-stars text-neu-teal me-1"></i> Or Select Hand Archetype
+        }
+        else if (SelectedMode == IngestionMode.Archetype)
+        {
+            <div class="neu-well p-4 mb-4">
+                <label class="form-label font-display fw-bold text-neu-teal small mb-3 d-block text-center">
+                    <i class="bi bi-stars me-1"></i> လက်ဝါးအမျိုးအစား နမူနာရွေးချယ်ပါ
                 </label>
-                <div class="d-flex flex-wrap gap-2">
-                    <button class="btn-neu-pill" @onclick='() => LoadPreset("Water", "Intuitive Water Hand")'>
-                        💧 Water Hand
+                <div class="d-flex flex-wrap justify-content-center gap-2">
+                    <button type="button" class="btn-neu-pill @(FileName?.Contains("Water") == true ? "active" : "")" @onclick='() => LoadPreset("Water", "ရေဓာတ်လက်ဝါး (စိတ်ခံစားမှုနူးညံ့သော လက်)")'>
+                        💧 ရေဓာတ်လက်ဝါး
                     </button>
-                    <button class="btn-neu-pill" @onclick='() => LoadPreset("Fire", "Dynamic Fire Hand")'>
-                        🔥 Fire Hand
+                    <button type="button" class="btn-neu-pill @(FileName?.Contains("Fire") == true ? "active" : "")" @onclick='() => LoadPreset("Fire", "မီးဓာတ်လက်ဝါး (တက်ကြွထက်မြက်သော လက်)")'>
+                        🔥 မီးဓာတ်လက်ဝါး
                     </button>
-                    <button class="btn-neu-pill" @onclick='() => LoadPreset("Earth", "Grounded Earth Hand")'>
-                        🌿 Earth Hand
+                    <button type="button" class="btn-neu-pill @(FileName?.Contains("Earth") == true ? "active" : "")" @onclick='() => LoadPreset("Earth", "မြေဓာတ်လက်ဝါး (တည်ကြည်ခိုင်မြဲသော လက်)")'>
+                        🌿 မြေဓာတ်လက်ဝါး
                     </button>
-                    <button class="btn-neu-pill" @onclick='() => LoadPreset("Air", "Intellectual Air Hand")'>
-                        💨 Air Hand
+                    <button type="button" class="btn-neu-pill @(FileName?.Contains("Air") == true ? "active" : "")" @onclick='() => LoadPreset("Air", "လေဓာတ်လက်ဝါး (ဉာဏ်ပညာထူးချွန်သော လက်)")'>
+                        💨 လေဓာတ်လက်ဝါး
                     </button>
                 </div>
             </div>
-        </div>
+        }
 
         @if (!string.IsNullOrEmpty(ErrorMessage))
         {
@@ -102,41 +232,396 @@
             </div>
         }
 
-        <!-- Actions -->
-        <div class="d-flex justify-content-between align-items-center mt-4">
-            <a href="palm-permission" class="btn-neu">
-                <i class="bi bi-arrow-left"></i> Privacy Consent
-            </a>
-            <button class="btn-neu-teal px-4 py-2" @onclick="ProceedToTopic">
-                CONFIRM · CHOOSE TOPIC <i class="bi bi-arrow-right"></i>
-            </button>
-        </div>
+        @if (IsCameraActive)
+        {
+            <div class="text-center mt-3">
+                <a href="" class="text-neu-muted small font-display text-decoration-none" style="opacity: 0.65;">
+                    <i class="bi bi-arrow-left"></i> ဗေဒင်ပုံစံ ပြန်ရွေးမည်
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Actions for Upload / Archetype / Inactive Camera -->
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <a href="" class="btn-neu">
+                    <i class="bi bi-arrow-left"></i> ဗေဒင်ပုံစံ ပြန်ရွေးမည်
+                </a>
+                <button type="button" class="btn-neu-teal px-4 py-2" @onclick="ProceedToTopic">
+                    လက်ဝါးလက္ခဏာ ဟောမည် <i class="bi bi-stars ms-1"></i>
+                </button>
+            </div>
+        }
     </div>
 </div>
 
 @code {
+    private enum IngestionMode { Camera, Upload, Archetype }
+    private IngestionMode SelectedMode = IngestionMode.Camera;
+
     private string? PreviewImage;
     private string? FileName;
     private long PhotoSizeKb;
     private string? ErrorMessage;
 
+    private bool IsCameraActive;
+    private bool IsStartingCamera;
+    private bool IsCountingDown;
+    private int CountdownSeconds = 3;
+    private bool IsFlashing;
+    private bool UseTimer = false;
+    private string CurrentFacingMode = "user";
+    private bool HasMultipleCameras = false;
+    private int HandAlignmentPercent = 0;
+    private bool IsHandSteady = false;
+    private string? AlignmentStatusHint;
+    private bool IsAutoCapturing = false;
+    private bool IsCapturingInProgress = false;
+    private DotNetObjectReference<PalmCapture>? _dotNetHelper;
+
     protected override void OnInitialized()
     {
-        if (!State.UserConsentGiven)
-        {
-            Nav.NavigateTo("palm-permission");
-            return;
-        }
+        State.UserConsentGiven = true;
+        _dotNetHelper = DotNetObjectReference.Create(this);
 
         if (!string.IsNullOrEmpty(State.PalmImageBase64))
         {
             PreviewImage = State.PalmImageBase64;
             FileName = State.PalmFileName;
             PhotoSizeKb = (long)(PreviewImage.Length * 0.75 / 1024);
+
+            if (FileName != null && FileName.Contains("Border_Guide"))
+            {
+                SelectedMode = IngestionMode.Archetype;
+            }
+            else if (FileName != null && FileName.StartsWith("Live_Camera"))
+            {
+                SelectedMode = IngestionMode.Camera;
+            }
+            else
+            {
+                SelectedMode = IngestionMode.Upload;
+            }
         }
-        else
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && string.IsNullOrEmpty(PreviewImage) && SelectedMode == IngestionMode.Camera)
         {
-            LoadPreset("Water", "Mystic Water Hand");
+            await StartCamera();
+        }
+    }
+
+    private async Task SwitchMode(IngestionMode mode)
+    {
+        if (SelectedMode == mode) return;
+
+        if (IsCameraActive)
+        {
+            await StopCamera();
+        }
+
+        SelectedMode = mode;
+        ErrorMessage = null;
+        StateHasChanged();
+    }
+
+    private async Task StartCamera()
+    {
+        ErrorMessage = null;
+        IsStartingCamera = true;
+        StateHasChanged();
+
+        try
+        {
+            await Task.Delay(100);
+            var result = await JS.InvokeAsync<CameraResult>("fortuneCamera.startCamera", "palm-camera-feed", CurrentFacingMode);
+            if (result != null && result.Success)
+            {
+                IsCameraActive = true;
+                CurrentFacingMode = result.FacingMode ?? "user";
+                HasMultipleCameras = result.HasMultipleCameras;
+                if (_dotNetHelper != null)
+                {
+                    await JS.InvokeVoidAsync("fortuneCamera.startHandDetection", "palm-camera-feed", _dotNetHelper);
+                }
+            }
+            else if (result != null && result.NoDevicesFound)
+            {
+                // Auto fallback to Virtual Demo Camera
+                ErrorMessage = "No physical camera detected on this PC. Switched to Virtual Demo Camera.";
+                await StartVirtualCamera();
+            }
+            else
+            {
+                ErrorMessage = result?.Error ?? "Unable to initialize camera.";
+                IsCameraActive = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Camera error: {ex.Message}";
+            IsCameraActive = false;
+        }
+        finally
+        {
+            IsStartingCamera = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task StartVirtualCamera()
+    {
+        ErrorMessage = null;
+        IsStartingCamera = true;
+        StateHasChanged();
+
+        try
+        {
+            await Task.Delay(150);
+            var result = await JS.InvokeAsync<CameraResult>("fortuneCamera.startSimulatedCamera", "palm-camera-feed");
+            if (result != null && result.Success)
+            {
+                IsCameraActive = true;
+                CurrentFacingMode = "simulated";
+                HasMultipleCameras = false;
+                if (_dotNetHelper != null)
+                {
+                    await JS.InvokeVoidAsync("fortuneCamera.startHandDetection", "palm-camera-feed", _dotNetHelper);
+                }
+            }
+            else
+            {
+                ErrorMessage = result?.Error ?? "Could not start virtual demo stream.";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Virtual stream error: {ex.Message}";
+        }
+        finally
+        {
+            IsStartingCamera = false;
+            StateHasChanged();
+        }
+    }
+
+    private void CancelConnecting()
+    {
+        IsStartingCamera = false;
+        ErrorMessage = "Camera connection cancelled. Click 'Start Live Camera' to try again or choose 'Virtual Demo Camera'.";
+        StateHasChanged();
+    }
+
+    private async Task SwitchCamera()
+    {
+        ErrorMessage = null;
+        try
+        {
+            var result = await JS.InvokeAsync<CameraResult>("fortuneCamera.switchCamera", "palm-camera-feed");
+            if (result != null && result.Success)
+            {
+                CurrentFacingMode = result.FacingMode ?? "user";
+            }
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Switch camera error: {ex.Message}";
+        }
+    }
+
+    [JSInvokable]
+    public void OnHandAlignmentProgress(int percent, bool isSteady, string? statusHint = null)
+    {
+        HandAlignmentPercent = percent;
+        IsHandSteady = isSteady;
+        AlignmentStatusHint = statusHint;
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task OnAutoCaptureTriggered()
+    {
+        if (IsCameraActive && !IsAutoCapturing && string.IsNullOrEmpty(PreviewImage))
+        {
+            IsAutoCapturing = true;
+            HandAlignmentPercent = 100;
+            AlignmentStatusHint = null;
+            StateHasChanged();
+            await TriggerCapture();
+            IsAutoCapturing = false;
+        }
+    }
+
+    private async Task StopCamera()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("fortuneCamera.stopHandDetection");
+            await JS.InvokeVoidAsync("fortuneCamera.stopCamera", "palm-camera-feed");
+        }
+        catch { }
+        IsCameraActive = false;
+        IsCountingDown = false;
+        HandAlignmentPercent = 0;
+        AlignmentStatusHint = null;
+        IsAutoCapturing = false;
+        StateHasChanged();
+    }
+
+    private async Task RetakeWithCamera()
+    {
+        try { await JS.InvokeVoidAsync("fortuneCamera.clearPalmCache"); } catch { }
+        PreviewImage = null;
+        State.PalmImageBase64 = null;
+        State.PalmFileName = null;
+        AlignmentStatusHint = null;
+        SelectedMode = IngestionMode.Camera;
+        await StartCamera();
+    }
+
+    private void ToggleTimer()
+    {
+        UseTimer = !UseTimer;
+    }
+
+    private async Task StartCaptureWithTimer()
+    {
+        if (!IsCameraActive) return;
+
+        if (!UseTimer)
+        {
+            await TriggerCapture();
+            return;
+        }
+
+        IsCountingDown = true;
+        CountdownSeconds = 3;
+        StateHasChanged();
+
+        for (int i = 3; i > 0; i--)
+        {
+            CountdownSeconds = i;
+            StateHasChanged();
+            await Task.Delay(1000);
+            if (!IsCameraActive) return;
+        }
+
+        IsCountingDown = false;
+        await TriggerCapture();
+    }
+
+    private async Task TriggerCapture()
+    {
+        if (IsCapturingInProgress) return;
+        IsCapturingInProgress = true;
+        ErrorMessage = null;
+        IsFlashing = true;
+        StateHasChanged();
+
+        try
+        {
+            var result = await JS.InvokeAsync<CaptureResult>("fortuneCamera.captureFrame", "palm-camera-feed");
+            await Task.Delay(250); // Flash animation duration
+            IsFlashing = false;
+
+            string? finalDataUrl = result?.Success == true ? result.DataUrl : null;
+
+            if (string.IsNullOrEmpty(finalDataUrl))
+            {
+                // Fallback attempt from sessionStorage
+                try
+                {
+                    finalDataUrl = await JS.InvokeAsync<string?>("sessionStorage.getItem", "fortune_captured_palm");
+                }
+                catch { }
+            }
+
+            if (!string.IsNullOrEmpty(finalDataUrl))
+            {
+                PreviewImage = finalDataUrl;
+                FileName = $"Live_Camera_Palm_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
+                PhotoSizeKb = (long)(PreviewImage.Length * 0.75 / 1024);
+
+                State.PalmImageBase64 = PreviewImage;
+                State.PalmFileName = FileName;
+                State.ReadingType = ReadingType.Palm;
+                State.UserConsentGiven = true;
+                if (State.Topic == 0)
+                {
+                    State.Topic = ReadingTopic.General;
+                }
+
+                await StopCamera();
+
+                // Directly proceed to the fortune reading!
+                await Task.Delay(250);
+                Nav.NavigateTo("reading-progress");
+                return;
+            }
+            else
+            {
+                ErrorMessage = result?.Error ?? "ကင်မရာမှ ဓာတ်ပုံရယူ၍ မရနိုင်ပါ။ ထပ်မံကြိုးစားပေးပါ။";
+                IsCapturingInProgress = false;
+                IsAutoCapturing = false;
+                HandAlignmentPercent = 0;
+                if (_dotNetHelper != null && IsCameraActive)
+                {
+                    await JS.InvokeVoidAsync("fortuneCamera.startHandDetection", "palm-camera-feed", _dotNetHelper);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            // Fallback attempt from sessionStorage if serialization/websocket threw
+            string? fallback = null;
+            try
+            {
+                fallback = await JS.InvokeAsync<string?>("sessionStorage.getItem", "fortune_captured_palm");
+            }
+            catch { }
+
+            if (!string.IsNullOrEmpty(fallback))
+            {
+                PreviewImage = fallback;
+                FileName = $"Live_Camera_Palm_{DateTime.Now:yyyyMMdd_HHmmss}.jpg";
+                PhotoSizeKb = (long)(PreviewImage.Length * 0.75 / 1024);
+
+                State.PalmImageBase64 = PreviewImage;
+                State.PalmFileName = FileName;
+                State.ReadingType = ReadingType.Palm;
+                State.UserConsentGiven = true;
+                if (State.Topic == 0)
+                {
+                    State.Topic = ReadingTopic.General;
+                }
+
+                await StopCamera();
+                await Task.Delay(250);
+                Nav.NavigateTo("reading-progress");
+                return;
+            }
+
+            ErrorMessage = $"ဓာတ်ပုံဖမ်းယူမှု မအောင်မြင်ပါ: {ex.Message}";
+            IsFlashing = false;
+            IsCapturingInProgress = false;
+            IsAutoCapturing = false;
+            HandAlignmentPercent = 0;
+
+            try
+            {
+                if (_dotNetHelper != null && IsCameraActive)
+                {
+                    await JS.InvokeVoidAsync("fortuneCamera.startHandDetection", "palm-camera-feed", _dotNetHelper);
+                }
+            }
+            catch { }
+        }
+        finally
+        {
+            IsFlashing = false;
+            StateHasChanged();
         }
     }
 
@@ -178,43 +663,76 @@
     private void LoadPreset(string archetype, string title)
     {
         ErrorMessage = null;
-        // Clean Neumorphic tone SVG
-        var svg = $@"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400' width='400' height='400'>
-            <rect width='400' height='400' fill='#E0E5EC'/>
-            <!-- Hand Silhouette -->
-            <path d='M130,350 C110,300 80,240 80,180 C80,150 90,120 110,100 C120,90 140,110 150,130 C155,100 165,70 185,60 C195,55 205,75 210,110 C220,80 230,50 250,50 C265,50 270,80 265,120 C280,95 295,95 305,110 C315,130 300,180 280,240 C310,250 330,280 320,310 C300,340 260,360 210,360 Z' fill='#E0E5EC' stroke='#A3B1C6' stroke-width='4' filter='drop-shadow(3px 3px 6px rgba(163,177,198,0.6))'/>
-            <!-- Heart Line -->
-            <path d='M120,180 Q200,160 290,140' fill='none' stroke='#6C63FF' stroke-width='3' stroke-dasharray='4,2'/>
-            <text x='295' y='140' fill='#6C63FF' font-family='sans-serif' font-weight='bold' font-size='11'>Heart Line</text>
-            <!-- Head Line -->
-            <path d='M120,205 Q190,210 270,250' fill='none' stroke='#38B2AC' stroke-width='3' stroke-dasharray='4,2'/>
-            <text x='275' y='255' fill='#38B2AC' font-family='sans-serif' font-weight='bold' font-size='11'>Head Line</text>
-            <!-- Life Line -->
-            <path d='M120,205 Q170,250 160,340' fill='none' stroke='#3D4852' stroke-width='3' stroke-dasharray='4,2'/>
-            <text x='165' y='340' fill='#3D4852' font-family='sans-serif' font-weight='bold' font-size='11'>Life Line</text>
-            <!-- Fate Line -->
-            <path d='M210,350 L210,150' fill='none' stroke='#8B84FF' stroke-width='2' stroke-dasharray='2,2'/>
-            <text x='215' y='160' fill='#8B84FF' font-family='sans-serif' font-weight='bold' font-size='11'>Fate Line</text>
-            <text x='20' y='380' fill='#3D4852' font-family='sans-serif' font-weight='bold' font-size='13'>✦ {title} ({archetype})</text>
-        </svg>";
+        var fileName = $"{archetype.ToLowerInvariant()}-palm.jpg";
+        var localPath = Path.Combine(Env.WebRootPath, "images", "palms", fileName);
 
-        var base64 = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(svg));
-        PreviewImage = $"data:image/svg+xml;base64,{base64}";
-        FileName = $"{archetype}_Hand_Preset.svg";
-        PhotoSizeKb = 4;
+        if (File.Exists(localPath))
+        {
+            var bytes = File.ReadAllBytes(localPath);
+            var base64 = Convert.ToBase64String(bytes);
+            PreviewImage = $"data:image/jpeg;base64,{base64}";
+            FileName = $"{archetype}_Hand_Border_Guide.jpg";
+            PhotoSizeKb = bytes.Length / 1024;
+        }
+        else
+        {
+            PreviewImage = $"/images/palms/{fileName}";
+            FileName = $"{archetype}_Hand_Border_Guide.jpg";
+            PhotoSizeKb = 350;
+        }
 
         State.PalmImageBase64 = PreviewImage;
         State.PalmFileName = FileName;
     }
 
-    private void ProceedToTopic()
+    private async Task ProceedToTopic()
     {
         if (string.IsNullOrEmpty(State.PalmImageBase64))
         {
-            ErrorMessage = "Please select or upload a hand photo before proceeding.";
+            if (IsCameraActive)
+            {
+                await TriggerCapture();
+                return;
+            }
+            ErrorMessage = "Please hold your hand inside the camera border to scan.";
             return;
         }
 
-        Nav.NavigateTo("topic-select");
+        State.ReadingType = ReadingType.Palm;
+        State.UserConsentGiven = true;
+        if (State.Topic == 0)
+        {
+            State.Topic = ReadingTopic.General;
+        }
+        Nav.NavigateTo("reading-progress");
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("fortuneCamera.stopHandDetection");
+            await JS.InvokeVoidAsync("fortuneCamera.stopCamera", "palm-camera-feed");
+        }
+        catch { }
+        _dotNetHelper?.Dispose();
+    }
+
+    public class CameraResult
+    {
+        public bool Success { get; set; }
+        public string? Error { get; set; }
+        public string? FacingMode { get; set; }
+        public bool HasMultipleCameras { get; set; }
+        public bool NoDevicesFound { get; set; }
+    }
+
+    public class CaptureResult
+    {
+        public bool Success { get; set; }
+        public string? Error { get; set; }
+        public string? DataUrl { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
     }
 }

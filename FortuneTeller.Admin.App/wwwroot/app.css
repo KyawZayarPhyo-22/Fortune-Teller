@@ -25,8 +25,8 @@
     --neu-placeholder: #64748B;
 
     /* Typography Tokens */
-    --font-display: 'Plus Jakarta Sans', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
+    --font-display: 'Padauk', 'Plus Jakarta Sans', 'Pyidaungsu', 'Myanmar Text', sans-serif;
+    --font-body: 'Padauk', 'DM Sans', 'Pyidaungsu', 'Myanmar Text', sans-serif;
 
     /* Radius Tokens */
     --radius-card: 32px;
@@ -49,7 +49,6 @@ body.neu-body {
         url('/images/fortune-bg.jpg');
     background-size: cover;
     background-position: center center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
     color: var(--neu-foreground);
     font-family: var(--font-body);
@@ -99,7 +98,6 @@ body.neu-body {
     flex-direction: column;
     background-size: cover;
     background-position: center center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
     transition: background-image 0.6s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.6s ease;
 }
@@ -613,17 +611,35 @@ body.neu-body {
 .neu-scanner-well {
     position: relative;
     width: 100%;
-    max-width: 380px;
-    height: 380px;
+    max-width: 720px;
+    height: 580px;
     margin: 0 auto;
     border-radius: var(--radius-card);
-    background: rgba(8, 12, 20, 0.8);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    box-shadow: inset 6px 6px 18px rgba(0, 0, 0, 0.85);
+    background: #060a12;
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    box-shadow: 0 0 25px rgba(20, 184, 166, 0.2), inset 0 0 30px rgba(0, 0, 0, 0.9);
     overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.camera-container-card {
+    background: rgba(14, 22, 38, 0.6) !important;
+    backdrop-filter: blur(30px) saturate(200%) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(200%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7),
+                inset 0 1px 2px rgba(255, 255, 255, 0.35),
+                0 0 50px rgba(20, 184, 166, 0.25) !important;
+}
+
+@media (max-width: 768px) {
+    .neu-scanner-well {
+        max-width: 100%;
+        height: 480px;
+    }
 }
 
 .neu-scanner-laser {
@@ -715,4 +731,354 @@ body.neu-body {
         width: 145px;
         height: 240px;
     }
+}
+
+/* ========================================================
+   Live Camera & Palmistry Biometric HUD
+   ======================================================== */
+.neu-scanner-well video.palm-camera-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: inherit;
+}
+
+/* Holographic Palm Guide Overlay */
+.palm-guide-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6;
+}
+
+.palm-guide-svg {
+    width: 78%;
+    height: 78%;
+    filter: drop-shadow(0 0 12px rgba(20, 184, 166, 0.65)) drop-shadow(0 0 25px rgba(245, 158, 11, 0.35));
+    animation: palm-guide-pulse 3s ease-in-out infinite alternate;
+}
+
+/* Cosmic Hand Portal Cover - masks outside of hand with dark celestial background */
+.palm-portal-cover {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    z-index: 6;
+    border-radius: inherit;
+}
+
+/* Real Anatomical Hand Guide Image Overlay (Transparent PNG) */
+.palm-guide-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    opacity: 0.90;
+    filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.6));
+    transition: filter 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+    z-index: 7;
+    border-radius: inherit;
+}
+
+.palm-guide-image.aligned {
+    opacity: 1;
+    filter: drop-shadow(0 0 16px #10b981) brightness(1.25);
+    transform: scale(1.01);
+}
+
+/* Biometric Lock-in Reticle with Radial Progress */
+.palm-lock-reticle {
+    position: absolute;
+    width: 76px;
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 8;
+    transition: all 0.3s ease;
+}
+
+.reticle-lock-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.reticle-lock-svg .reticle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.15);
+    stroke-width: 3.5;
+}
+
+.reticle-lock-svg .reticle-fill {
+    fill: none;
+    stroke: var(--neu-teal);
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 252;
+    stroke-dashoffset: 252;
+    transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+    filter: drop-shadow(0 0 6px var(--neu-teal));
+}
+
+.palm-lock-reticle.locked .reticle-lock-svg .reticle-fill {
+    stroke: #10b981;
+    filter: drop-shadow(0 0 10px #10b981);
+}
+
+.reticle-lock-svg .reticle-core {
+    fill: var(--neu-gold);
+    transition: fill 0.3s ease;
+}
+
+.palm-lock-reticle.locked .reticle-lock-svg .reticle-core {
+    fill: #10b981;
+}
+
+.reticle-percent-text {
+    position: absolute;
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #ffd166;
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 209, 102, 0.7);
+    pointer-events: none;
+}
+
+@keyframes palm-guide-pulse {
+    0% {
+        opacity: 0.65;
+        transform: scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1.02);
+    }
+}
+
+/* Biometric HUD Reticles */
+.reticle-corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: var(--neu-teal);
+    border-style: solid;
+    pointer-events: none;
+    z-index: 9;
+    opacity: 0.85;
+}
+
+.reticle-top-left {
+    top: 14px;
+    left: 14px;
+    border-width: 2px 0 0 2px;
+    border-top-left-radius: 6px;
+}
+
+.reticle-top-right {
+    top: 14px;
+    right: 14px;
+    border-width: 2px 2px 0 0;
+    border-top-right-radius: 6px;
+}
+
+.reticle-bottom-left {
+    bottom: 14px;
+    left: 14px;
+    border-width: 0 0 2px 2px;
+    border-bottom-left-radius: 6px;
+}
+
+.reticle-bottom-right {
+    bottom: 14px;
+    right: 14px;
+    border-width: 0 2px 2px 0;
+    border-bottom-right-radius: 6px;
+}
+
+/* Status Pill in Camera Viewport */
+.camera-status-pill {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 16, 28, 0.72);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(20, 184, 166, 0.35);
+    padding: 0.35rem 1rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: var(--neu-teal-light);
+    z-index: 8;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-display);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.status-dot-pulse {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ef4444;
+    animation: status-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes status-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* Shutter Trigger Button */
+.btn-shutter-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    margin-top: 1.25rem;
+}
+
+.btn-shutter-snap {
+    position: relative;
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    border: none;
+    background: radial-gradient(circle at 35% 35%, #2dd4bf, #0f766e);
+    box-shadow: 0 0 20px rgba(20, 184, 166, 0.55), inset 2px 2px 4px rgba(255, 255, 255, 0.4), inset -2px -2px 4px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-shutter-snap:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 28px rgba(20, 184, 166, 0.8), inset 2px 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.btn-shutter-snap:active {
+    transform: scale(0.94);
+    box-shadow: 0 0 10px rgba(20, 184, 166, 0.4);
+}
+
+.btn-shutter-snap::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    border: 2px dashed rgba(20, 184, 166, 0.6);
+    animation: shutter-ring-spin 12s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes shutter-ring-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Shutter Flash Animation */
+.camera-flash-layer {
+    position: absolute;
+    inset: 0;
+    background: #ffffff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.camera-flash-layer.flashing {
+    animation: shutter-flash 0.35s ease-out forwards;
+}
+
+@keyframes shutter-flash {
+    0% { opacity: 0.9; }
+    100% { opacity: 0; }
+}
+
+/* Countdown Overlay */
+.countdown-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9;
+    background: rgba(8, 12, 20, 0.45);
+    backdrop-filter: blur(2px);
+}
+
+.countdown-number {
+    font-size: 5rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: #ffd166;
+    text-shadow: 0 0 30px rgba(255, 209, 102, 0.9);
+    animation: countdown-pop 0.9s cubic-bezier(0.18, 0.89, 0.32, 1.28) infinite;
+}
+
+@keyframes countdown-pop {
+    0% { transform: scale(0.4); opacity: 0; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.9; }
+}
+
+/* Ingestion Mode Segmented Switcher */
+.mode-switcher-container {
+    display: flex;
+    background: var(--neu-base);
+    box-shadow: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+    border-radius: var(--radius-pill);
+    padding: 0.35rem;
+    gap: 0.35rem;
+    max-width: 520px;
+    margin: 0 auto 1.5rem auto;
+}
+
+.mode-switcher-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--neu-muted);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.25s ease;
+    cursor: pointer;
+}
+
+.mode-switcher-btn:hover {
+    color: var(--neu-primary);
+}
+
+.mode-switcher-btn.active {
+    background: var(--neu-base);
+    color: var(--neu-teal);
+    box-shadow: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+    font-weight: 700;
 }

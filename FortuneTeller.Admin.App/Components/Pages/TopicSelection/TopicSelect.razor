@@ -3,27 +3,27 @@
 @inject FortuneStateService State
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-850 mx-auto">
+<div class="container py-4 max-w-950 mx-auto">
     <!-- Neumorphic Stepper -->
     <div class="neu-stepper">
         <div class="neu-step-item completed">
             <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Path</span>
+            <span>အမျိုးအစား</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item completed">
             <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Method</span>
+            <span>နည်းလမ်း</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item active">
             <div class="neu-step-bubble">3</div>
-            <span>Topic & Inquiry</span>
+            <span>မေးမြန်းလိုသည့် ကဏ္ဍ</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item">
             <div class="neu-step-bubble">4</div>
-            <span>Review</span>
+            <span>စစ်ဆေးအတည်ပြုခြင်း</span>
         </div>
     </div>
 
@@ -31,92 +31,152 @@
     <div class="text-center mb-5">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
             <span class="text-neu-accent">✦</span>
-            <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 3 · Sphere of Inquiry</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold">အဆင့် ၃ · မေးမြန်းလိုသော ကဏ္ဍ</span>
             <span class="text-neu-accent">✦</span>
         </div>
-        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">CHOOSE YOUR TOPIC</h2>
+        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">မေးမြန်းလိုသည့် ကဏ္ဍကို ရွေးချယ်ပါ</h2>
         <p class="font-body text-neu-muted max-w-600 mx-auto">
-            Focus the consultation onto the domain of your life seeking clarity.
+            သင်၏ ဘဝကံကြမ္မာ လမ်းညွှန်မှု လိုအပ်နေသော ကဏ္ဍကို ရွေးချယ်ပေးပါ
         </p>
     </div>
 
-    <!-- Topic Grid (Love, Education, Relationship, General) -->
+    <!-- Topic Grid (7 Comprehensive Categories) -->
     <div class="row g-3 mb-4">
         <!-- Love -->
-        <div class="col-6 col-md-3">
-            <div class="p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Love ? "neu-well-deep" : "neu-card neu-card-lift")"
-                 style="cursor: pointer; border-radius: 24px;"
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Love ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
                  @onclick="() => SetTopic(ReadingTopic.Love)">
                 <div>
-                    <div class="neu-icon-socket mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.6rem; color: #f43f5e;">
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: #f43f5e;">
                         💖
                     </div>
-                    <h5 class="font-display fw-bold text-neu-primary mb-1">Love</h5>
-                    <small class="font-body text-neu-muted" style="font-size: 0.75rem;">Romance · Desires</small>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">အချစ်ရေး</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">မေတ္တာရေးရာ · လက်တွဲဖော်</small>
                 </div>
-                <div class="mt-3">
-                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Love ? "active text-neu-accent" : "")">
-                        @(SelectedTopic == ReadingTopic.Love ? "Selected" : "Select")
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Love ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.Love ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Career & Business -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.CareerBusiness ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
+                 @onclick="() => SetTopic(ReadingTopic.CareerBusiness)">
+                <div>
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: #0284c7;">
+                        💼
+                    </div>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">အလုပ်နှင့် စီးပွားရေး</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">Career Path · ကိုယ်ပိုင်လုပ်ငန်း</small>
+                </div>
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.CareerBusiness ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.CareerBusiness ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Finance ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
+                 @onclick="() => SetTopic(ReadingTopic.Finance)">
+                <div>
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: #eab308;">
+                        💰
+                    </div>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">ငွေကြေးစီမံမှု</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">ဓနဥစ္စာ · ရင်းနှီးမြှုပ်နှံမှု</small>
+                </div>
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Finance ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.Finance ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- Education -->
-        <div class="col-6 col-md-3">
-            <div class="p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Education ? "neu-well-deep" : "neu-card neu-card-lift")"
-                 style="cursor: pointer; border-radius: 24px;"
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Education ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
                  @onclick="() => SetTopic(ReadingTopic.Education)">
                 <div>
-                    <div class="neu-icon-socket mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.6rem; color: var(--neu-accent);">
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: var(--neu-accent);">
                         📚
                     </div>
-                    <h5 class="font-display fw-bold text-neu-primary mb-1">Education</h5>
-                    <small class="font-body text-neu-muted" style="font-size: 0.75rem;">Studies · Wisdom</small>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">ပညာရေး</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">စာပေလေ့လာမှု · သင်ယူမှုပုံစံ</small>
                 </div>
-                <div class="mt-3">
-                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Education ? "active text-neu-accent" : "")">
-                        @(SelectedTopic == ReadingTopic.Education ? "Selected" : "Select")
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Education ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.Education ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Personal Growth -->
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.PersonalGrowth ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
+                 @onclick="() => SetTopic(ReadingTopic.PersonalGrowth)">
+                <div>
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: #10b981;">
+                        🌱
+                    </div>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">ကိုယ်ရည်ကိုယ်သွေး</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">အားသာချက် · ဘဝရည်မှန်းချက်</small>
+                </div>
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.PersonalGrowth ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.PersonalGrowth ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- Relationship -->
-        <div class="col-6 col-md-3">
-            <div class="p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Relationship ? "neu-well-deep" : "neu-card neu-card-lift")"
-                 style="cursor: pointer; border-radius: 24px;"
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.Relationship ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
                  @onclick="() => SetTopic(ReadingTopic.Relationship)">
                 <div>
-                    <div class="neu-icon-socket mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.6rem; color: var(--neu-accent-secondary);">
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: var(--neu-accent-secondary);">
                         🤝
                     </div>
-                    <h5 class="font-display fw-bold text-neu-primary mb-1">Bonds</h5>
-                    <small class="font-body text-neu-muted" style="font-size: 0.75rem;">Alliances · Harmony</small>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">ဆက်ဆံရေး</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">မိတ်ဆွေ · မိသားစုဆက်ဆံရေး</small>
                 </div>
-                <div class="mt-3">
-                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Relationship ? "active text-neu-accent" : "")">
-                        @(SelectedTopic == ReadingTopic.Relationship ? "Selected" : "Select")
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.Relationship ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.Relationship ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- General -->
-        <div class="col-6 col-md-3">
-            <div class="p-3 p-md-4 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.General ? "neu-well-deep" : "neu-card neu-card-lift")"
-                 style="cursor: pointer; border-radius: 24px;"
+        <div class="col-6 col-md-4 col-lg-3">
+            <div class="p-3 text-center h-100 d-flex flex-column justify-content-between @(SelectedTopic == ReadingTopic.General ? "neu-well-deep" : "neu-card neu-card-lift")"
+                 style="cursor: pointer; border-radius: 20px;"
                  @onclick="() => SetTopic(ReadingTopic.General)">
                 <div>
-                    <div class="neu-icon-socket mx-auto mb-3" style="width: 54px; height: 54px; font-size: 1.6rem; color: var(--neu-foreground);">
+                    <div class="neu-icon-socket mx-auto mb-2" style="width: 50px; height: 50px; font-size: 1.5rem; color: var(--neu-foreground);">
                         🌌
                     </div>
-                    <h5 class="font-display fw-bold text-neu-primary mb-1">General</h5>
-                    <small class="font-body text-neu-muted" style="font-size: 0.75rem;">Destiny · Karma</small>
+                    <h6 class="font-display fw-bold text-neu-primary mb-1">အထွေထွေ</h6>
+                    <small class="font-body text-neu-muted" style="font-size: 0.72rem;">ဘဝကံကြမ္မာ · အလှည့်အပြောင်း</small>
                 </div>
-                <div class="mt-3">
-                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.General ? "active text-neu-accent" : "")">
-                        @(SelectedTopic == ReadingTopic.General ? "Selected" : "Select")
+                <div class="mt-2">
+                    <span class="btn-neu-pill small font-display @(SelectedTopic == ReadingTopic.General ? "active text-neu-accent" : "")" style="font-size: 0.7rem; padding: 2px 10px;">
+                        @(SelectedTopic == ReadingTopic.General ? "ရွေးချယ်ပြီး" : "ရွေးချယ်မည်")
                     </span>
                 </div>
             </div>
@@ -126,39 +186,60 @@
     <!-- Optional Question Section -->
     <div class="neu-card p-4 mb-4">
         <label class="form-label font-display fw-bold text-neu-primary d-flex align-items-center gap-2 mb-1">
-            <i class="bi bi-question-circle text-neu-accent"></i> Optional Question or Intention
+            <i class="bi bi-question-circle text-neu-accent"></i> မေးမြန်းလိုသည့် မေးခွန်း (စိတ်ကြိုက်)
         </label>
         <p class="small font-body text-neu-muted mb-3">
-            Enter a specific inquiry for the AI Reading Service, or leave blank for a general prophecy.
+            တိကျသော မေးခွန်းတစ်ခု မေးလိုပါက ရေးသားနိုင်ပါသည် (မရေးသားပါကလည်း သက်ဆိုင်ရာ ကဏ္ဍအလိုက် အစုံအလင် ဟောကြားပေးပါမည်)။
         </p>
 
         <textarea class="neu-textarea"
                   rows="3"
-                  placeholder="e.g. What unseen influences surround my upcoming creative venture? Or will our paths realign?"
+                  placeholder="ဥပမာ - ကျွန်ုပ်၏ အလုပ်အကိုင်နှင့် စီးပွားရေး တိုးတက်မှု အခွင့်အလမ်းများအတွက် ကံကြမ္မာက မည်သို့ လမ်းညွှန်ပေးသနည်း။"
                   @bind="QuestionText"></textarea>
 
-        <!-- Quick Inspirations -->
-        <div class="mt-3 d-flex flex-wrap gap-2 align-items-center">
-            <span class="small font-display text-neu-muted me-1">Inspirations:</span>
-            <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("What is the highest lesson I must integrate right now?")'>
-                Highest Lesson
-            </button>
-            <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("What energy will support my upcoming exam and studies?")'>
-                Exam Guidance
-            </button>
-            <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("What truth is blossoming in my current relationship?")'>
-                Relationship Truth
-            </button>
+        <!-- Quick Inspirations based on recommended topics -->
+        <div class="mt-3">
+            <div class="small font-display text-neu-muted mb-2">✦ အကြံပြု မေးခွန်းခေါင်းစဉ်များ:</div>
+            <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("ကျွန်ုပ်၏ ပင်ကိုယ်စွမ်းရည်၊ အားသာချက်များနှင့် ကိုယ့်ကိုယ်ကို တိုးတက်အောင်လုပ်နိုင်မည့် နည်းလမ်းများ။")'>
+                    ပင်ကိုယ်စွမ်းရည်နှင့် တိုးတက်ရေး
+                </button>
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("အလုပ်အကိုင် Career Path နှင့် စီးပွားရေး တိုးတက်မှု အခွင့်အလမ်းများ။")'>
+                    အလုပ်နှင့် စီးပွားရေး အခွင့်အလမ်း
+                </button>
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("ငွေကြေးစီမံခန့်ခွဲမှု၊ အသုံးစရိတ် စိစစ်ခြင်းနှင့် ရေရှည် ဓနဥစ္စာ တိုးပွားရေး။")'>
+                    ငွေကြေးစီမံခန့်ခွဲမှု
+                </button>
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("အချစ်ရေး အခြေအနေနှင့် လက်တွဲဖော်အပေါ် မျှော်လင့်ချက်များ။")'>
+                    အချစ်ရေးနှင့် လက်တွဲဖော်
+                </button>
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("ပညာရေး သင်ယူမှုပုံစံနှင့် စာမေးပွဲ အောင်မြင်နိုင်မည့် လမ်းညွှန်ချက်။")'>
+                    ပညာရေး အောင်မြင်မှု
+                </button>
+                <button class="btn-neu-pill font-display" @onclick='() => SetPresetQuestion("စိတ်ဖိစီးမှုများကို ကျော်လွှားပြီး အတွင်းစိတ် အေးချမ်းတည်ငြိမ်စေမည့် နည်းလမ်းများ။")'>
+                    စိတ်ဖိစီးမှု ကျော်လွှားနည်း
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ethical Notice Banner -->
+    <div class="neu-well p-3 mb-4 rounded-4 text-start font-body small" style="border-left: 3px solid var(--neu-teal); line-height: 1.6;">
+        <div class="fw-bold font-display text-neu-teal mb-1">
+            <i class="bi bi-shield-check me-1"></i> အက်စ်ထရီယာ၏ ကံကြမ္မာဟောကြားမှု ကျင့်ဝတ်စံနှုန်းများ
+        </div>
+        <div class="text-neu-muted">
+            ဤဟောကြားမှုများသည် ဘဝခရီးအတွက် အပြုသဘောဆောင် လမ်းညွှန်ချက်နှင့် စိတ်ခွန်အားပေးရန်သာ ဖြစ်ပါသည်။ ဆေးပညာဆိုင်ရာ ရောဂါအမည်သတ်မှတ်ခြင်း၊ ကံစမ်းမဲ/လောင်းကစားဂဏန်းများ၊ သေချာပေါက်ဖြစ်မည်ဟု အာမခံသော ဘေးအန္တရာယ်နှင့် ခြိမ်းခြောက်စွပ်စွဲချက်များ၊ ကျိန်စာအောက်လမ်း ခြောက်လှန့်မှုများကို လုံးဝရှောင်ကြဉ်ပါသည်။
         </div>
     </div>
 
     <!-- Actions -->
     <div class="d-flex justify-content-between align-items-center mt-4">
         <button class="btn-neu" @onclick="GoBack">
-            <i class="bi bi-arrow-left"></i> Back
+            <i class="bi bi-arrow-left"></i> နောက်သို့
         </button>
         <button class="btn-neu-primary px-4 py-2" @onclick="ProceedToReview">
-            REVIEW CHOICES <i class="bi bi-arrow-right"></i>
+            ရွေးချယ်မှုများ စစ်ဆေးမည် <i class="bi bi-arrow-right"></i>
         </button>
     </div>
 </div>

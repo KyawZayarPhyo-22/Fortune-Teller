@@ -10,12 +10,12 @@
         <div class="mb-4">
             <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
                 <span class="text-neu-accent">✦</span>
-                <span class="font-display text-neu-muted small text-uppercase fw-bold">WebSocket Pipeline</span>
+                <span class="font-display text-neu-muted small text-uppercase fw-bold">ကံကြမ္မာ ဟောကြားမှု</span>
                 <span class="text-neu-accent">✦</span>
             </div>
-            <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">COMMUNING WITH DESTINY</h2>
+            <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">ကံကြမ္မာနှင့် ဆက်သွယ်နေသည်</h2>
             <p class="font-body text-neu-muted small">
-                Transmitting via WebSocket Gateway · Reading Orchestrator In-Memory Execution
+                စနစ်အတွင်း ယာယီ Memory ဖြင့် တိုက်ရိုက်ခွဲခြမ်းစိတ်ဖြာ ဟောကြားနေပါသည်
             </p>
         </div>
 
@@ -28,7 +28,7 @@
 
         <!-- Live Percentage -->
         <div class="fs-4 font-display fw-extrabold text-neu-primary mb-2">
-            @CurrentPercent% Complete
+            @CurrentPercent% ပြီးစီးပါပြီ
         </div>
 
         <!-- Inset Meter Progress Bar -->
@@ -46,26 +46,26 @@
         <div class="text-start max-w-500 mx-auto small text-neu-muted font-display">
             <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 15 ? "text-neu-accent fw-bold" : "opacity-40")">
                 <i class="bi @(CurrentPercent >= 30 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
-                <span>WebSocket Gateway: Validate message, enforce 5MB & rate limits</span>
+                <span>လုံခြုံရေး စိစစ်ချက်နှင့် အချက်အလက်များ အတည်ပြုခြင်း</span>
             </div>
 
             <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 30 ? "text-neu-accent fw-bold" : "opacity-40")">
                 <i class="bi @(CurrentPercent >= 60 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
                 <span>
                     @(State.ReadingType == ReadingType.Tarot
-                        ? "Reading Orchestrator: Select spread and cards in memory"
-                        : "Reading Orchestrator: Analyze palm photo in volatile memory")
+                        ? "တာရော့ကတ်များ ဖြန့်ခင်း၍ အနက်ဖွင့်ခြင်း"
+                        : "လက်ဝါးဓာတ်ပုံမှ အသက်၊ နှလုံး၊ ဦးခေါင်း လမ်းကြောင်းများကို ဖတ်ရှုခြင်း")
                 </span>
             </div>
 
             <div class="d-flex align-items-center gap-2 mb-2 @(CurrentPercent >= 60 ? "text-neu-accent fw-bold" : "opacity-40")">
                 <i class="bi @(CurrentPercent >= 85 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
-                <span>AI Reading Service: Generate prophecy for @State.Topic</span>
+                <span>AI ဗေဒင်ပညာရှင်မှ ကံကြမ္မာဟောကိန်းကို ဖော်ထုတ်ခြင်း</span>
             </div>
 
             <div class="d-flex align-items-center gap-2 @(CurrentPercent >= 85 ? "text-neu-accent fw-bold" : "opacity-40")">
                 <i class="bi @(CurrentPercent >= 100 ? "bi-check-circle-fill text-neu-teal" : "bi-circle")"></i>
-                <span>Format and check response: Seal aura & emit result</span>
+                <span>အိုရာစွမ်းအင် တံဆိပ်ခတ်နှိပ်ပြီး ရလဒ်ထုတ်ပေးခြင်း</span>
             </div>
         </div>
 
@@ -74,7 +74,7 @@
             <div class="neu-well p-3 text-danger font-display small mt-4">
                 <i class="bi bi-exclamation-triangle me-2"></i>@ErrorMessage
                 <div class="mt-2">
-                    <a href="choose-reading" class="btn-neu-pill">Start Over</a>
+                    <a href="choose-reading" class="btn-neu-pill">အစမှ ပြန်လည်စတင်မည်</a>
                 </div>
             </div>
         }
@@ -99,6 +99,20 @@
     {
         try
         {
+            if (State.ReadingType == ReadingType.Palm && string.IsNullOrEmpty(State.PalmImageBase64))
+            {
+                try
+                {
+                    var cached = await JS.InvokeAsync<string?>("sessionStorage.getItem", "fortune_captured_palm");
+                    if (!string.IsNullOrEmpty(cached))
+                    {
+                        State.PalmImageBase64 = cached;
+                        State.PalmFileName = "Live_Camera_Palm.jpg";
+                    }
+                }
+                catch { }
+            }
+
             var request = State.BuildRequest();
             var stream = Client.StreamDivinationAsync(request);
 
@@ -121,7 +135,7 @@
                     StateHasChanged();
 
                     try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
-                    await Task.Delay(600);
+                    await Task.Delay(200);
                     Nav.NavigateTo("reading-result");
                     return;
                 }

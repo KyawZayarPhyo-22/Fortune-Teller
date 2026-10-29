@@ -10,22 +10,22 @@
     <div class="neu-stepper">
         <div class="neu-step-item completed">
             <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Path</span>
+            <span>အမျိုးအစား</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item completed">
             <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Method</span>
+            <span>နည်းလမ်း</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item completed">
             <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Topic</span>
+            <span>ကဏ္ဍ</span>
         </div>
         <div class="neu-step-divider"></div>
         <div class="neu-step-item active">
             <div class="neu-step-bubble">4</div>
-            <span>Review & Consult</span>
+            <span>အတည်ပြုချက်</span>
         </div>
     </div>
 
@@ -33,12 +33,12 @@
     <div class="text-center mb-5">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-2 neu-well-sm">
             <span class="text-neu-accent">✦</span>
-            <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 4 · Confirmation of Intent</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold">အဆင့် ၄ · ရွေးချယ်မှု စစ်ဆေးခြင်း</span>
             <span class="text-neu-accent">✦</span>
         </div>
-        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">REVIEW YOUR INQUIRY</h2>
+        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-1">ရွေးချယ်မှုများကို အတည်ပြုပါ</h2>
         <p class="font-body text-neu-muted max-w-600 mx-auto">
-            The WebSocket Gateway is prepared to orchestrate your reading in volatile memory.
+            သင်၏ ကံကြမ္မာဟောကြားမှုအတွက် အချက်အလက်များ အားလုံး အဆင်သင့်ဖြစ်ပါပြီ
         </p>
     </div>
 
@@ -48,23 +48,23 @@
             <!-- Method Column -->
             <div class="col-md-6">
                 <div class="neu-well p-4 h-100">
-                    <div class="small font-display text-neu-muted text-uppercase mb-2">Divination Method</div>
+                    <div class="small font-display text-neu-muted text-uppercase mb-2">ဗေဒင်ဟောကြားမည့် နည်းလမ်း</div>
                     <div class="d-flex align-items-center gap-3">
                         <div class="neu-icon-socket" style="width: 54px; height: 54px; font-size: 1.8rem;">
                             @(State.ReadingType == ReadingType.Tarot ? "🎴" : "✋")
                         </div>
                         <div>
                             <h4 class="font-display fw-bold text-neu-primary mb-0">
-                                @(State.ReadingType == ReadingType.Tarot ? "Tarot Reading" : "Palmistry Analysis")
+                                @(State.ReadingType == ReadingType.Tarot ? "တာရော့ ဗေဒင်" : "လက်ဝါးလက္ခဏာ ခွဲခြမ်းစိတ်ဖြာမှု")
                             </h4>
                             <small class="text-neu-accent font-display">
                                 @if (State.ReadingType == ReadingType.Tarot)
                                 {
-                                    <span>Spread: @State.SpreadType (@State.SelectedCardIds.Count Cards in Memory)</span>
+                                    <span>ကတ်ပုံစံ: @State.SpreadType (@State.SelectedCardIds.Count ကတ် ရွေးချယ်ပြီး)</span>
                                 }
                                 else
                                 {
-                                    <span>Photo: @(State.PalmFileName ?? "Captured Hand") · In-Memory Ready</span>
+                                    <span>ဓာတ်ပုံ: @(State.PalmFileName ?? "ရိုက်ကူးထားသော လက်ဝါး") · အဆင်သင့်ဖြစ်ပါပြီ</span>
                                 }
                             </small>
                         </div>
@@ -82,14 +82,14 @@
             <!-- Topic Column -->
             <div class="col-md-6">
                 <div class="neu-well p-4 h-100">
-                    <div class="small font-display text-neu-muted text-uppercase mb-2">Focus Topic</div>
+                    <div class="small font-display text-neu-muted text-uppercase mb-2">မေးမြန်းလိုသည့် ကဏ္ဍ</div>
                     <div class="d-flex align-items-center gap-2 mb-3">
                         <span class="btn-neu-pill font-display text-neu-accent fw-bold">
-                            ✦ @State.Topic
+                            ✦ @GetBurmeseTopicName(State.Topic)
                         </span>
                     </div>
 
-                    <div class="small font-display text-neu-muted text-uppercase mb-1">Personal Question</div>
+                    <div class="small font-display text-neu-muted text-uppercase mb-1">မေးမြန်းထားသော မေးခွန်း</div>
                     <div class="neu-well-deep p-3 font-body text-neu-primary small" style="border-radius: 14px;">
                         @if (!string.IsNullOrEmpty(State.OptionalQuestion))
                         {
@@ -97,7 +97,7 @@
                         }
                         else
                         {
-                            <span class="fst-italic text-neu-muted">General alignment (no specific question)</span>
+                            <span class="fst-italic text-neu-muted">အထွေထွေ ကံကြမ္မာဟောကြားမှု (သီးသန့်မေးခွန်း မရှိပါ)</span>
                         }
                     </div>
                 </div>
@@ -108,16 +108,16 @@
         <div class="neu-well p-3 mb-4 small">
             <div class="row g-2 font-display">
                 <div class="col-sm-6 d-flex align-items-center gap-2 text-neu-teal">
-                    <i class="bi bi-shield-check"></i> WebSocket Gateway Payload &lt; 5MB Verified
+                    <i class="bi bi-shield-check"></i> လုံခြုံမှု စိစစ်ချက် အောင်မြင်ပါသည်
                 </div>
                 <div class="col-sm-6 d-flex align-items-center gap-2 text-neu-accent">
-                    <i class="bi bi-cpu"></i> In-Memory Reading Orchestrator Active
+                    <i class="bi bi-cpu"></i> ယာယီ Memory တွင် တိုက်ရိုက်ဆောင်ရွက်နေပါသည်
                 </div>
                 <div class="col-sm-6 d-flex align-items-center gap-2 text-neu-primary">
-                    <i class="bi bi-robot"></i> AI Reading Service Configured
+                    <i class="bi bi-robot"></i> AI ဗေဒင်ပညာရှင် အသင့်ရှိနေပါသည်
                 </div>
                 <div class="col-sm-6 d-flex align-items-center gap-2 text-neu-primary">
-                    <i class="bi bi-check2-all"></i> Response Formatter & Aura Validator Ready
+                    <i class="bi bi-check2-all"></i> ကံကြမ္မာ အိုရာ စွမ်းအင် စစ်ဆေးမှု အဆင်သင့်ဖြစ်ပါပြီ
                 </div>
             </div>
         </div>
@@ -125,10 +125,10 @@
         <!-- Primary Action Button -->
         <div class="text-center py-2">
             <button class="@(State.ReadingType == ReadingType.Tarot ? "btn-neu-gold" : "btn-neu-teal") fs-5 px-5 py-3 w-100 max-w-500 mx-auto" @onclick="InvokeOracle">
-                <i class="bi bi-stars"></i> INVOKE THE CELESTIAL ORACLE
+                <i class="bi bi-stars"></i> ကံကြမ္မာ ဟောကြားချက်ကို ရယူမည်
             </button>
             <div class="small text-neu-muted font-display mt-2">
-                Initiates stream via WebSocket Gateway to the Reading Orchestrator
+                ကံကြမ္မာ ဟောကိန်းကို ချက်ချင်း စတင်ဖတ်ကြားပါမည်
             </div>
         </div>
     </div>
@@ -136,7 +136,7 @@
     <!-- Actions -->
     <div class="d-flex justify-content-between align-items-center">
         <a href="topic-select" class="btn-neu">
-            <i class="bi bi-arrow-left"></i> Edit Topic / Question
+            <i class="bi bi-arrow-left"></i> ကဏ္ဍ / မေးခွန်း ပြန်လည်ပြင်ဆင်မည်
         </a>
     </div>
 </div>
@@ -147,4 +147,16 @@
         try { await JS.InvokeVoidAsync("fortuneAudio.playChime"); } catch { }
         Nav.NavigateTo("reading-progress");
     }
+
+    private string GetBurmeseTopicName(ReadingTopic topic) => topic switch
+    {
+        ReadingTopic.Love => "အချစ်ရေး",
+        ReadingTopic.CareerBusiness => "အလုပ်နှင့် စီးပွားရေး",
+        ReadingTopic.Finance => "ငွေကြေးစီမံမှု",
+        ReadingTopic.Education => "ပညာရေး",
+        ReadingTopic.PersonalGrowth => "ကိုယ်ရည်ကိုယ်သွေး",
+        ReadingTopic.Relationship => "ဆက်ဆံရေး",
+        ReadingTopic.General => "အထွေထွေ",
+        _ => "အထွေထွေ"
+    };
 }

@@ -15,17 +15,17 @@ public class PalmImageAnalyzer
             ? Math.Abs(base64Image.GetHashCode())
             : new Random().Next(1000, 9999);
 
-        // Derive archetypal traits
+        // Derive archetypal traits in Burmese
         var archetypes = new[]
         {
-            ("Water Hand (Intuitive & Empathetic)", "Long palm with delicate, cascading lines. Deep psychic antenna with an affinity for healing and emotional resonance.", "Mount of the Moon (Psychic Resonance)"),
-            ("Fire Hand (Passionate & Dynamic)", "Long palm with shorter fingers and radiant, deep-creased vitality lines. Ambitious leadership fueled by cosmic passion.", "Mount of Apollo (Creative Radiance)"),
-            ("Earth Hand (Grounded & Pragmatic)", "Square palm with sturdy, deep primary lines. Exceptional resilience, reliability, and harmonious connection to material reality.", "Mount of Venus (Vitality & Grounding)"),
-            ("Air Hand (Intellectual & Philosophical)", "Square palm with long fingers and intricate spider-web intellectual webbing. Curious, articulate, seeking cosmic truth.", "Mount of Mercury (Communication & Wit)")
+            ("ရေဓာတ်လက်ဝါး (စိတ်ခံစားမှုနူးညံ့၍ အလိုလိုသိမြင်နိုင်သော လက်)", "ရှည်လျားသော လက်ဝါးပြင်နှင့် သိမ်မွေ့သော လမ်းကြောင်းများ ရှိသည်။ စာနာနားလည်နိုင်စွမ်း မြင့်မားပြီး စိတ်ခံစားမှုကို အခြေခံ၍ ဆုံးဖြတ်တတ်သည်။", "စန္ဒာလကုန်းမို့ (ဆဌမအာရုံ စွမ်းအင်)"),
+            ("မီးဓာတ်လက်ဝါး (တက်ကြွထက်မြက်၍ စိတ်အားထက်သန်သော လက်)", "ရှည်လျားသော လက်ဝါးနှင့် တိုသော လက်ချောင်းများ ရှိပြီး နက်ရှိုင်းသော လမ်းကြောင်းများ ပါရှိသည်။ ခေါင်းဆောင်နိုင်စွမ်းနှင့် စိတ်ဓာတ်ခိုင်မာမှုကို ပြသသည်။", "သူရိယနေကုန်းမို့ (ဖန်တီးမှုနှင့် ထင်ပေါ်ကျော်ကြားမှု)"),
+            ("မြေဓာတ်လက်ဝါး (တည်ကြည်ခိုင်မြဲ၍ လက်တွေ့ဆန်သော လက်)", "လေးထောင့်ကျသော လက်ဝါးနှင့် ခိုင်မာအားကောင်းသော ပင်မလမ်းကြောင်းများ ပါရှိသည်။ ဇွဲလုံ့လကြီးမားပြီး လက်တွေ့ဘဝတွင် အောင်မြင်ခိုင်မြဲသည်။", "သောကြာကုန်းမို့ (ခွန်အားနှင့် ချစ်မေတ္တာ)"),
+            ("လေဓာတ်လက်ဝါး (ဉာဏ်ပညာထူးချွန်၍ အတွေးအခေါ်နက်နဲသော လက်)", "လေးထောင့်ကျသော လက်ဝါးနှင့် ရှည်လျားသော လက်ချောင်းများ ပါရှိသည်။ ထိုးထွင်းသိမြင်နိုင်စွမ်းနှင့် ဉာဏ်ပညာဆိုင်ရာ အောင်မြင်မှုများကို ဆောင်ကြဉ်းပေးသည်။", "ဗုဒ္ဓဟူးကုန်းမို့ (ပြောဆိုဆက်ဆံရေးနှင့် ထိုးထွင်းဉာဏ်)")
         };
 
         var selectedArchetype = archetypes[hash % archetypes.Length];
-        var lineClarity = 85 + (hash % 14); // 85% to 98%
+        var lineClarity = 88 + (hash % 11); // 88% to 98%
 
         var model = new PalmReadingModel
         {
@@ -35,39 +35,92 @@ public class PalmImageAnalyzer
             PrimaryEnergyCenter = selectedArchetype.Item3
         };
 
-        // Interpret the Major Palm Lines tailored to the topic
+        // Thorough, deep line-by-line interpretations in Burmese
         switch (topic)
         {
             case ReadingTopic.Love:
-            case ReadingTopic.Relationship:
-                model.HeartLineInterpretation = "Your Heart Line is deep, sweeping gently toward the Mount of Jupiter. This indicates a noble, devoted capacity for unconditional devotion. A fine upward branch reveals a deep emotional reconciliation or soulmate connection blossoming.";
-                model.LifeLineInterpretation = "The Life Line arcs broadly around the Mount of Venus, showing vibrant vitality and emotional stamina. You recover swiftly from heartache and bring warmth into all unions.";
-                model.HeadLineInterpretation = "A balanced Head Line indicates that while you love passionately, wisdom guides your choices, preventing illusions from blinding your heart.";
-                model.FateLineInterpretation = "A distinct Fate Line rises from the wrist and strengthens at age 28-35, demonstrating that a key relationship or collaborative endeavor anchors your destiny.";
-                model.MountsAnalysis = "The Mount of Venus is lush and full, radiating high warmth and magnetism. The Girdle of Venus shows heightened sensitivity to beauty and romantic harmony.";
-                model.DivineSymbolFound = "A delicate Star of Aphrodite upon the Mount of Jupiter, signifying a blessed, destined union.";
-                model.ProminentMarkings = new() { "Trident of Venus (Magnetic Charm)", "Ascending Passion Branch", "Solomon's Ring of Wisdom" };
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းသည် နက်ရှိုင်းကြည်လင်ပြီး လက်ဖဝါးအစွန်းမှ စတင်ကာ ကြာသပတေး (Jupiter) ကုန်းမို့ဆီသို့ ကွေးညွတ်တက်သွားသည်။ စစ်မှန်သော သစ္စာတရား၊ နက်ရှိုင်းသော စိတ်ခံစားမှုဖော်ပြပုံနှင့် အိမ်ထောင်ဖက်အပေါ် မြင့်မြတ်သော မျှော်လင့်ချက်များကို ပြသနေသည်။ အထက်သို့ ဖြာထွက်သော အကိုင်းအခက်လေးများသည် ဖူးစာရှင်နှင့် တွေ့ဆုံမည့် ကောင်းသော မင်္ဂလာနိမိတ် ဖြစ်သည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းသည် ဟန်ချက်ညီစွာ တည်ရှိသဖြင့် မေတ္တာရေးတွင် မျက်စိစုံမှိတ် မဆုံးဖြတ်ဘဲ ဉာဏ်ပညာဖြင့် မှန်ကန်စွာ ထိန်းကျောင်းနိုင်သူ ဖြစ်သည်။ အဆင်မပြေမှုများ ကြုံလာပါက ဒေါသဖြင့် မတုံ့ပြန်ဘဲ နားလည်ခွင့်လွှတ်မှုဖြင့် အပြုသဘော ညှိနှိုင်းဖြေရှင်းနိုင်မည်။";
+                model.LifeLineInterpretation = "အသက်လမ်းကြောင်းသည် သောကြာကုန်းမို့ကို ကျယ်ပြန့်စွာ ဝန်းရံထားသဖြင့် တက်ကြွသော စိတ်ခွန်အား၊ ကျန်းမာသန်စွမ်းမှုနှင့် မေတ္တာရေးရာ ခံနိုင်ရည်မြင့်မားမှုကို ဖော်ပြနေသည်။ ဘဝခရီးတစ်လျှောက် အားပေးဖေးမမည့် လက်တွဲဖော်နှင့်အတူ ခိုင်မြဲစွာ လျှောက်လှမ်းနိုင်မည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် လက်ကောက်ဝတ်မှ စတင်ကာ စနေကုန်းမို့ဆီသို့ တည့်မတ်စွာ ထိုးတက်နေသည်။ အသက် ၂၈-၃၅ နှစ်ဝန်းကျင်တွင် မေတ္တာရေး သို့မဟုတ် အိမ်ထောင်ဖက်၏ အကူအညီဖြင့် ဘဝကံကြမ္မာ အဆင့်အတန်း ပိုမိုမြင့်မားလာမည့် အခြေအနေကို ညွှန်ပြနေသည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်းသည် နေကုန်းမို့ဆီသို့ အပြိုင်ထိုးတက်နေပြီး လူမှုအသိုင်းအဝိုင်းတွင် ချစ်ခင်နှစ်သက်ခံရမှု၊ နာမည်ဂုဏ်သတင်း ကောင်းမွန်မှုနှင့် မေတ္တာရေးရာ ပြည့်စုံပျော်ရွှင်မှုကို ဆောင်ကြဉ်းပေးသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းက ချစ်ခင်သူနှင့် ပွင့်လင်းရိုးသားစွာ ဆက်ဆံပြောဆိုနိုင်စွမ်းနှင့် နားလည်မှုလွဲမှားခြင်းများကို ဉာဏ်ဖြင့် အေးချမ်းစွာ ဖြေရှင်းနိုင်စွမ်းကို ထောက်ပံ့ပေးသည်။";
+                model.MountsAnalysis = "သောကြာကုန်းမို့ (Venus) သည် ပြည့်ဖြိုးဖောင်းကြွလျက်ရှိပြီး ဆွဲဆောင်မှုနှင့် နွေးထွေးသော မေတ္တာဓာတ်ကို ထုတ်လွှတ်ပေးနေသည်။ ကြာသပတေးကုန်းမို့က မေတ္တာရေးတွင် သစ္စာရှိမှုနှင့် ဂုဏ်သိက္ခာကို မြှင့်တင်ပေးသည်။";
+                model.DivineSymbolFound = "ကြာသပတေးကုန်းမို့ပေါ်တွင် အလွန်မင်္ဂလာရှိသော သောကြာကြယ်ပွင့် သင်္ကေတ (Star of Venus) ထင်ရှားစွာ ပါရှိသည်။";
+                model.ProminentMarkings = new() { "မေတ္တာဆွဲဆောင်မှု ကြယ်ပွင့်", "အထက်တက် မေတ္တာအကိုင်းအခက်", "သစ္စာတရား လမ်းကြောင်း" };
+                break;
+
+            case ReadingTopic.CareerBusiness:
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းသည် ဖြောင့်တန်းတည်ငြိမ်ပြီး လုပ်ငန်းခွင်အတွင်း စိတ်ခံစားမှုနှင့် အလုပ်ကို သီးခြားခွဲခြားစီမံနိုင်စွမ်း၊ လုပ်ဖော်ကိုင်ဖက်များနှင့် အပြန်အလှန် လေးစားမှုရှိသော ဆက်ဆံရေးကို တည်ဆောက်နိုင်စွမ်းကို ပြသနေသည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းသည် တည့်မတ်ဖြောင့်တန်းပြီး လက်တွေ့ဆန်သော စီးပွားရေးအမြင်၊ ဗျူဟာမြောက် ဆုံးဖြတ်ချက်ချမှတ်နိုင်စွမ်းနှင့် ခေါင်းဆောင်မှု အရည်အသွေးကို ထင်ဟပ်နေသည်။ အကျပ်အတည်းကြုံချိန်တွင် အမြော်အမြင်ဖြင့် လမ်းသစ်ရှာဖွေနိုင်သူ ဖြစ်သည်။";
+                model.LifeLineInterpretation = "ကျယ်ပြန့်သော အသက်လမ်းကြောင်းက လုပ်ငန်းခွင် စိန်ခေါ်မှုများကို မမောမပန်း ကြံ့ကြံ့ခံနိုင်သော စိတ်ဓာတ်ခွန်အား၊ ဇွဲသတ္တိနှင့် မဆုတ်မနစ်သော ကြိုးပမ်းမှုကို ထင်ဟပ်စေသည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် လက်ဖဝါးအလယ်မှ စနေကုန်းမို့ဆီသို့ နက်ရှိုင်းစွာ ထိုးတက်နေသည်။ Career Path တွင် ခိုင်မာသော ရာထူးတိုးတက်မှု၊ ကိုယ်ပိုင်စီးပွားရေး အောင်မြင်မှုနှင့် အလုပ်အကိုင် အပြောင်းအလဲများတွင် ပိုမိုမြင့်မားသော အဆင့်သို့ တက်လှမ်းနိုင်မည် ဖြစ်သည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်း (Apollo Line) သည် အလွန်ထင်ရှားစွာ ဖြစ်ပေါ်နေပြီး လုပ်ငန်းခွင်တွင် အထက်လူကြီးများ၏ အသိအမှတ်ပြုခြင်း၊ နာမည်ကျော်ကြားခြင်းနှင့် အောင်မြင်မှု သရဖူဆောင်းနိုင်ခြင်းကို ဖော်ပြသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းသည် ထင်ရှားစွာ ပေါ်ထွန်းပြီး စီးပွားရေး စေ့စပ်ညှိနှိုင်းမှု၊ စျေးကွက်ထိုးထွင်းဉာဏ်နှင့် အမြတ်အစွန်း ထွက်ပေါ်စေမည့် ဆက်သွယ်ရေး အရည်အချင်းကို ပေးစွမ်းသည်။";
+                model.MountsAnalysis = "စနေကုန်းမို့နှင့် နေကုန်းမို့တို့ ဟန်ချက်ညီစွာ ဖောင်းကြွနေသဖြင့် အလုပ်အကိုင်တွင် အာဏာ၊ လုပ်ပိုင်ခွင့်နှင့် အောင်မြင်သော ဂုဏ်ဒြပ်ကို ဆောင်ကြဉ်းပေးသည်။";
+                model.DivineSymbolFound = "ကံကြမ္မာလမ်းကြောင်းထိပ်တွင် သုံးခွလှံ (Trident) သင်္ကေတ အားကောင်းစွာ ပေါ်ပေါက်နေပြီး စီးပွားရေး ထိုးထွင်းအောင်မြင်မှုကို ဆောင်ကြဉ်းပေးသည်။";
+                model.ProminentMarkings = new() { "ခေါင်းဆောင်မှု စနေလမ်းကြောင်း", "စီးပွားရေး အောင်မြင်မှု သုံးခွသင်္ကေတ", "ဗုဒ္ဓဟူး လုပ်ငန်းရှင်လိုင်း" };
+                break;
+
+            case ReadingTopic.Finance:
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းက ငွေကြေးဆိုင်ရာ ကိစ္စများတွင် လောဘ သို့မဟုတ် စိတ်ခံစားမှု မပါဘဲ တည်ငြိမ်စွာ ချင့်ချိန်နိုင်မှုကို ထိန်းညှိပေးပြီး မလိုလားအပ်သော အသုံးစရိတ်များကို ကာကွယ်ပေးသည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းနှင့် ကံကြမ္မာလမ်းကြောင်း ပေါင်းဆုံရာတွင် ငွေကြေးသိုမှီးမှု တြိဂံ (Money Triangle) ပေါ်ပေါက်နေပြီး ဝင်ငွေ၊ ထွက်ငွေ မျှတစွာ စီမံနိုင်စွမ်း၊ ရင်းနှီးမြှုပ်နှံမှု အမြော်အမြင်နှင့် စနစ်တကျ စုဆောင်းနိုင်စွမ်း အလွန်အားကောင်းသည်။";
+                model.LifeLineInterpretation = "အသက်လမ်းကြောင်းမှ အထက်သို့ ထိုးတက်သော အကိုင်းအခက်များသည် ကိုယ်ပိုင်ကြိုးစားအားထုတ်မှုဖြင့် ဥစ္စာဓနနှင့် အိမ်ခြံမြေ ပိုင်ဆိုင်မှုများ တစ်စတစ်စ တိုးပွားလာမည့် နိမိတ်ကို ဖော်ပြသည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် ဓနလမ်းကြောင်းနှင့် ပေါင်းစပ်စီးဆင်းနေပြီး ရေရှည်ငွေကြေးလုံခြုံမှု၊ တည်ငြိမ်သော စီးပွားရေးဝင်ငွေနှင့် စနစ်တကျ စီမံခန့်ခွဲမှုဖြင့် ဥစ္စာဓန တည်တံ့ခိုင်မြဲမည် ဖြစ်သည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်းက ဓနဥစ္စာ ရှာဖွေရာတွင် အထောက်အပံ့ကောင်းများ၊ မိတ်ဖက်ကောင်းများ ရရှိစေပြီး ကြွယ်ဝချမ်းသာသော ကံကြမ္မာကို တွန်းတင်ပေးသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးကုန်းမို့ပေါ်ရှိ ဒေါင်လိုက်ငွေကြေးလမ်းကြောင်းများက ဘဏ္ဍာရေး စီမံခန့်ခွဲမှု၊ အသုံးစရိတ် စိစစ်မှုနှင့် အကျိုးအမြတ်ဖြစ်ထွန်းစေသော စီးပွားရေး ဆုံးဖြတ်ချက်များကို ဖော်ဆောင်ပေးသည်။";
+                model.MountsAnalysis = "ဗုဒ္ဓဟူးကုန်းမို့နှင့် သောကြာကုန်းမို့တို့ ပြည့်ဖြိုးနေသဖြင့် စီးပွားဥစ္စာ ဝင်လမ်းဖြောင့်ဖြူးခြင်းနှင့် ပစ္စည်းဥစ္စာ စုဆောင်းနိုင်ခြင်းကို အထောက်အကူပြုသည်။";
+                model.DivineSymbolFound = "လက်ဖဝါးပြင်အလယ်တွင် ဓနဥစ္စာ တြိဂံသင်္ကေတ (The Great Money Triangle) ရှင်းလင်းစွာ ပိတ်ဆို့ဖွဲ့စည်းထားပြီး ငွေကြေးယိုဖိတ်မှု ကင်းဝေးစေသည်။";
+                model.ProminentMarkings = new() { "ဓနဥစ္စာ တြိဂံသင်္ကေတ", "ဗုဒ္ဓဟူး ဓနလမ်းကြောင်း", "နေမင်း အောင်မြင်မှုလိုင်း" };
                 break;
 
             case ReadingTopic.Education:
-                model.HeadLineInterpretation = "Your Head Line is remarkably long and crystalline, traversing the palm toward the Mount of Moon. This denotes rare analytical brilliance harmonized with creative insight. Complex philosophies and scholarly pursuits are your natural domain.";
-                model.HeartLineInterpretation = "A composed Heart Line shows that you master stress during trials of study and keep your intellect laser-focused on mastery.";
-                model.LifeLineInterpretation = "Steady unbroken vitality line providing unyielding stamina through deep study and cognitive dedication.";
-                model.FateLineInterpretation = "The Fate Line is crisp and ascends directly to the Mount of Saturn, reflecting structured career accolades, academic triumph, and intellectual prestige.";
-                model.MountsAnalysis = "The Mount of Mercury is prominently developed with vertical lines of scholarship (Samaritan Stigmata), marking you as an exceptional communicator and teacher.";
-                model.DivineSymbolFound = "The Triangle of Sacred Intellect formed between the Head and Fate lines, predicting scholarly breakthroughs.";
-                model.ProminentMarkings = new() { "Philosophical Ring of Solomon", "Mercury Scholastic Lines", "Clear Fate Ascendant" };
+                model.HeartLineInterpretation = "တည်ငြိမ်သော နှလုံးလမ်းကြောင်းက စာမေးပွဲများနှင့် လေ့လာမှုများတွင် စိတ်ဖိစီးမှုကို ကျော်လွှားနိုင်ပြီး အာရုံစူးစိုက်မှု ကောင်းမွန်စေသည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းသည် အလွန်ရှည်လျားကြည်လင်ပြီး လကုန်းမို့ဆီသို့ ကွေးဆင်းသွားသည်။ ထူးခြားသော ခွဲခြမ်းစိတ်ဖြာနိုင်စွမ်း၊ စာပေအနုပညာ ထိုးထွင်းဉာဏ်နှင့် လျင်မြန်သော သင်ယူမှုပုံစံကို ပြသနေပြီး ပညာရပ်များကို အလွယ်တကူ ကျွမ်းကျင်တတ်မြောက်နိုင်သူ ဖြစ်သည်။";
+                model.LifeLineInterpretation = "ပြတ်တောက်မှုမရှိသော အသက်လမ်းကြောင်းက စာပေလေ့လာလိုက်စားရာတွင် မမောမပန်းနိုင်သော ဇွဲလုံ့လ၊ ကျန်းမာသန်စွမ်းမှုနှင့် ခွန်အားကို ပေးစွမ်းသည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် စနေကုန်းမို့သို့ တည့်မတ်စွာ ထိုးတက်နေသဖြင့် ပညာရေး အောင်မြင်မှု၊ ဘွဲ့ထူးဂုဏ်ထူးနှင့် ပညာရှင်အဆင့် ရာထူးတိုးတက်မှုများကို ရရှိပါမည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်းက ပညာရေးပြိုင်ပွဲများ၊ စာမေးပွဲများနှင့် ပညာသင်ဆုများတွင် ထိပ်တန်းအဆင့်ဖြင့် အောင်မြင်ကျော်ကြားနိုင်မည့် နိမိတ်ကို ပြသသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းက သင်ယူမှတ်သားနိုင်စွမ်း၊ ဘာသာစကား ကျွမ်းကျင်မှုနှင့် ပညာရပ်ဆိုင်ရာ စာတမ်းပြုစုမှုများတွင် ထူးချွန်စေသည်။";
+                model.MountsAnalysis = "ဗုဒ္ဓဟူးကုန်းမို့နှင့် ကြာသပတေးကုန်းမို့တို့ ထင်ရှားစွာ ဖွံ့ဖြိုးနေပြီး စာပေပညာရှင် လမ်းကြောင်းများ ပါရှိသဖြင့် ပညာဖြန့်ဝေမှုတွင် ထူးချွန်မည် ဖြစ်သည်။";
+                model.DivineSymbolFound = "ဦးခေါင်းလမ်းကြောင်းနှင့် ကံကြမ္မာလမ်းကြောင်းအကြားတွင် ပညာဗဟုသုတ တြိဂံသင်္ကေတ (Triangle of Wisdom) ထင်ရှားစွာ ဖြစ်ပေါ်နေသည်။";
+                model.ProminentMarkings = new() { "ဆော်လမွန် ပညာရှင်လက်စွပ်", "ဗုဒ္ဓဟူး ပညာရှင်လမ်းကြောင်းများ", "ကံကြမ္မာ အထက်တက်လိုင်း" };
+                break;
+
+            case ReadingTopic.Relationship:
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းသည် ကွေးညွတ်ပျော့ပျောင်းပြီး မိတ်ဆွေအပေါင်းအသင်းနှင့် မိသားစုဝင်များအပေါ် စာနာနားလည်နိုင်စွမ်း၊ နွေးထွေးသော သံယောဇဉ်နှင့် လူမှုဆက်ဆံရေး ဟန်ချက်ညီမှုကို ပြသနေသည်။ နယ်နိမိတ် ရှင်းလင်းစွာ ထားရှိပါက စိတ်အနှောင့်အယှက်များမှ ကာကွယ်နိုင်မည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းက ဆက်ဆံရေးတွင် ပွင့်လင်းရိုးသားသော ညှိနှိုင်းမှုနှင့် အပြန်အလှန် လေးစားမှုရှိသော ဆုံးဖြတ်ချက်ချမှတ်ပုံကို ညွှန်ပြသည်။";
+                model.LifeLineInterpretation = "အသက်လမ်းကြောင်းအတွင်းဘက်ရှိ အထောက်အပံ့လိုင်းများက မိသားစုနှင့် စစ်မှန်သော မိတ်ဆွေကောင်းများ၏ အားပေးကူညီမှုကို အမြဲရရှိစေမည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် လူမှုပတ်ဝန်းကျင်၏ ကောင်းမွန်သော ကူညီပံ့ပိုးမှုဖြင့် ရှေ့သို့ အဆင်ပြေချောမွေ့စွာ ချီတက်နေသည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်းက မိတ်ဆွေများကြားတွင် ချစ်ခင်လေးစားခံရခြင်းနှင့် လူချစ်လူခင် ပေါများမှုကို ထင်ဟပ်စေသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းက ဆက်ဆံရေးတွင် သံသယကင်းရှင်းစေသော ရိုးသားပွင့်လင်းသည့် စကားပြောဆိုမှု စွမ်းရည်ကို ပေးစွမ်းသည်။";
+                model.MountsAnalysis = "လကုန်းမို့ (Mount of Moon) သည် သန့်ရှင်းကြည်လင်နေပြီး သူတစ်ပါးအပေါ် စာနာနားလည်မှုနှင့် လူမှုဆက်ဆံရေး ပြေပြစ်မှုကို ဖြစ်ပေါ်စေသည်။";
+                model.DivineSymbolFound = "နှလုံးလမ်းကြောင်းအနီးတွင် သဟဇာတ မိတ်ဆွေသင်္ကေတ (Harmony Cross) ပေါ်ထွန်းနေသည်။";
+                model.ProminentMarkings = new() { "သဟဇာတ မိတ်ဆွေသင်္ကေတ", "မိသားစု အကာအကွယ်လိုင်း", "စာနာနားလည်မှု လမ်းကြောင်း" };
+                break;
+
+            case ReadingTopic.PersonalGrowth:
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းက စိတ်ခံစားမှု ရင့်ကျက်တည်ငြိမ်မှုနှင့် စိတ်ဖိစီးမှု၊ စိုးရိမ်ပူပန်မှုများကို အပြုသဘောဖြင့် ပြေလျော့စေနိုင်စွမ်းကို ဖော်ပြသည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းသည် နက်ရှိုင်းကြည်လင်ပြီး မိမိကိုယ်ကို သိမြင်နားလည်မှု၊ စိတ်စွမ်းအား မြင့်မားမှုနှင့် အားသာချက်/အားနည်းချက်များကို မှန်ကန်စွာ သုံးသပ်နိုင်စွမ်းကို ပြသနေသည်။ အားနည်းချက်များကို လေ့လာသင်ယူမှုဖြင့် အားသာချက်အဖြစ် ပြောင်းလဲနိုင်သောသူ ဖြစ်သည်။";
+                model.LifeLineInterpretation = "အသက်လမ်းကြောင်းသည် ပြတ်တောက်မှုမရှိဘဲ ခိုင်ခံ့စွာ ဝန်းရံထားသဖြင့် ဘဝရည်မှန်းချက် ပန်းတိုင်များကို ရောက်ရှိရန် စိတ်ပိုင်းဆိုင်ရာနှင့် ရုပ်ပိုင်းဆိုင်ရာ ပြည့်စုံသော ခွန်အားရှိသည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် ဘဝအပြောင်းအလဲကြီးများနှင့် အနာဂတ်မသေချာမှုများကို ရင်ဆိုင်ရာတွင် မိမိ၏ ကြိုးစားအားထုတ်မှုဖြင့် လမ်းသစ်ဖောက်နိုင်ကြောင်း ပြသနေသည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်းက မိမိကိုယ်ကို ယုံကြည်မှုနှင့် အတွင်းစိတ် အလင်းရောင်ကို ဖြာထွက်စေပြီး အောင်မြင်ပျော်ရွှင်သော ပုဂ္ဂိုလ်တစ်ဦး ဖြစ်စေသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းက ကိုယ့်ကိုယ်ကို စဉ်ဆက်မပြတ် ဆင်ခြင်သုံးသပ်နိုင်စွမ်းနှင့် အတွေးအခေါ် ရင့်ကျက်မှုကို အားပေးသည်။";
+                model.MountsAnalysis = "ကြာသပတေးကုန်းမို့ (Jupiter) သည် ပြည့်စုံစွာ မြင့်မောက်နေပြီး ကိုယ့်ကိုယ်ကို တန်ဖိုးထားမှု၊ တိုးတက်လိုစိတ်နှင့် မြင့်မြတ်သော ရည်မှန်းချက်များကို ဆောင်ကြဉ်းပေးသည်။";
+                model.DivineSymbolFound = "လက်ဖဝါးအလယ်တွင် စိတ်ဝိညာဉ်နိုးထမှု ကြက်ခြေခတ်သင်္ကေတ (Mystic Cross) ထင်ရှားစွာ ပါရှိသည်။";
+                model.ProminentMarkings = new() { "စိတ်ဝိညာဉ် နိုးထမှုသင်္ကေတ", "ကြာသပတေး တိုးတက်မှုလိုင်း", "အတွင်းစိတ် တည်ငြိမ်မှု လမ်းကြောင်း" };
                 break;
 
             case ReadingTopic.General:
             default:
-                model.LifeLineInterpretation = "A sweeping, uninterrupted Life Line promises exceptional longevity, radiant life-force, and divine ancestral protection across every crossroad.";
-                model.HeartLineInterpretation = "The Heart Line exhibits luminous clarity, balancing empathetic selflessness with healthy sovereign boundaries.";
-                model.HeadLineInterpretation = "The Head Line curves gracefully into the creative realm, allowing you to solve worldly dilemmas with visionary, out-of-the-box mastery.";
-                model.FateLineInterpretation = "Your Fate Line is deeply etched, showing that you are the conscious architect of your own destiny, untangled from karmic traps.";
-                model.MountsAnalysis = "Mount of Apollo radiates golden light, conferring good reputation, artistic gifts, and prosperity in all endeavors.";
-                model.DivineSymbolFound = "The Sacred Mystic Cross located in the quadrangle between Heart and Head lines, denoting supreme sixth sense and spiritual gifts.";
-                model.ProminentMarkings = new() { "Mystic Cross (Occult Sixth Sense)", "Sun Line of Success", "Ancestral Protection Line" };
+                model.HeartLineInterpretation = "နှလုံးလမ်းကြောင်းသည် ရှင်းလင်းတောက်ပနေပြီး အခြားသူများကို စာနာကူညီလိုစိတ်နှင့် မိမိကိုယ်ကို တန်ဖိုးထားမှုတို့ မျှတညီညွတ်နေသည်။ စစ်မှန်သော မေတ္တာသစ္စာနှင့် သဟဇာတရှိသော ဘဝနေထိုင်မှုကို ညွှန်ပြသည်။";
+                model.HeadLineInterpretation = "ဦးခေါင်းလမ်းကြောင်းသည် လှပစွာ ကွေးဆင်းနေပြီး လောကီအခက်အခဲများကို ဆန်းသစ်သော ဉာဏ်ပညာဖြင့် ဖြေရှင်းနိုင်စွမ်း၊ အမြော်အမြင်ကြီးမားမှုနှင့် မှန်ကန်သော ဆုံးဖြတ်ချက်ချမှတ်နိုင်စွမ်းကို ပေးစွမ်းသည်။";
+                model.LifeLineInterpretation = "ကျယ်ပြန့်၍ ပြတ်တောက်မှုမရှိသော အသက်လမ်းကြောင်းက အသက်ရှည်ကျန်းမာခြင်း၊ ဇွဲခွန်အားကြီးမားခြင်း၊ စိတ်ဓာတ်ကြံ့ခိုင်ခြင်းနှင့် ဘေးအန္တရာယ်ခပ်သိမ်းမှ ကင်းလွတ်စေသော ဘိုးဘေးဘီဘင် အစောင့်အရှောက်များကို ဆောင်ကြဉ်းပေးသည်။";
+                model.FateLineInterpretation = "ကံကြမ္မာလမ်းကြောင်းသည် နက်ရှိုင်းစွာ ထင်ရှားနေသဖြင့် မိမိ၏ ကံကြမ္မာကို မိမိကိုယ်တိုင် ပဲ့ကိုင်ဖန်တီးနိုင်သောသူ ဖြစ်ပြီး ကြိုးစားမှုအလျောက် ဘဝအဆင့်အတန်း မြင့်မားလာမည် ဖြစ်သည်။";
+                model.SunLineInterpretation = "နေမင်းလမ်းကြောင်း (Apollo Line) သည် အလင်းရောင်ကဲ့သို့ တောက်ပနေသဖြင့် ဂုဏ်သတင်းကျော်စောမှု၊ လုပ်ငန်းခွင် အောင်မြင်မှုနှင့် ဓနဥစ္စာ ကြွယ်ဝမှုကို အထောက်အပံ့ပြုသည်။";
+                model.MercuryLineInterpretation = "ဗုဒ္ဓဟူးလမ်းကြောင်းက ကူးသန်းရောင်းဝယ်မှု၊ ထိုးထွင်းဉာဏ်နှင့် စကားပြောဆိုဆက်ဆံရေးတွင် လိမ္မာပါးနပ်မှုကို ဖြစ်ထွန်းစေသည်။";
+                model.MountsAnalysis = "နေကုန်းမို့နှင့် ကြာသပတေးကုန်းမို့တို့ ပြည့်ဖြိုးဖောင်းကြွနေသဖြင့် အောင်မြင်မှု၊ ဂုဏ်သိက္ခာနှင့် ခေါင်းဆောင်မှု စွမ်းရည်တို့ကို ဆောင်ကြဉ်းပေးသည်။";
+                model.DivineSymbolFound = "နှလုံးလမ်းကြောင်းနှင့် ဦးခေါင်းလမ်းကြောင်းကြားတွင် ထူးဆန်းသော လျှို့ဝှက်ကြက်ခြေခတ် (Mystic Cross) သင်္ကေတ ပါရှိပြီး အလိုလိုကြိုတင်သိမြင်နိုင်သော ဆဌမအာရုံကို ပိုင်ဆိုင်ထားသည်။";
+                model.ProminentMarkings = new() { "ဆဌမအာရုံ ကြက်ခြေခတ်သင်္ကေတ", "အောင်မြင်မှု နေမင်းလမ်းကြောင်း", "ဘိုးဘေးစောင့်ရှောက်မှု လမ်းကြောင်း" };
                 break;
         }
 

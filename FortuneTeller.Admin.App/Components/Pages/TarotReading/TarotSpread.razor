@@ -4,139 +4,153 @@
 @inject FortuneClientService Client
 @inject IJSRuntime JS
 
-<div class="container py-4 max-w-950 mx-auto">
-    <!-- Neumorphic Stepper -->
-    <div class="neu-stepper">
-        <div class="neu-step-item completed">
-            <div class="neu-step-bubble"><i class="bi bi-check2"></i></div>
-            <span>Path</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item active">
-            <div class="neu-step-bubble">2</div>
-            <span>Select Spread</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item">
-            <div class="neu-step-bubble">3</div>
-            <span>Draw Cards</span>
-        </div>
-        <div class="neu-step-divider"></div>
-        <div class="neu-step-item">
-            <div class="neu-step-bubble">4</div>
-            <span>Topic</span>
-        </div>
-    </div>
-
-    <!-- Title Header -->
+<div class="container py-4 max-w-1000 mx-auto">
+    <!-- Header -->
     <div class="text-center mb-5">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill mb-3 neu-well-sm">
             <span class="text-neu-accent">✦</span>
-            <span class="font-display text-neu-muted small text-uppercase fw-bold">Step 2 · Sacred Spread Configuration</span>
+            <span class="font-display text-neu-muted small text-uppercase fw-bold">တာရော့ ကတ်ဗေဒင်</span>
             <span class="text-neu-accent">✦</span>
         </div>
-        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-2">SELECT YOUR TAROT SPREAD</h2>
-        <p class="font-body text-neu-muted max-w-600 mx-auto">
-            Choose the depth of the inquiry to cast upon the in-memory card orchestrator.
+        <h2 class="font-display fw-extrabold text-neu-primary display-5 mb-2">တာရော့ကတ် ဖြန့်ခင်းမှုပုံစံ ရွေးချယ်ပါ</h2>
+        <p class="font-body text-neu-muted max-w-650 mx-auto">
+            သင်မေးမြန်းလိုသည့် ကံကြမ္မာ အနက်အရှိုင်းအလိုက် ကတ်အရေအတွက် ၄ မျိုးထဲမှ သင့်လျော်ရာကို ရွေးချယ်ပါ
         </p>
     </div>
 
-    <div class="row g-4">
-        <!-- 1 Card Spread -->
-        <div class="col-md-4">
-            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.SingleCard ? "neu-well-deep" : "")"
-                 style="cursor: pointer;"
-                 @onclick="() => SelectSpread(TarotSpreadType.SingleCard)">
+    <!-- 4 Spreads Grid -->
+    <div class="row g-4 mb-4">
+        <!-- 1. Single Card Spread -->
+        <div class="col-lg-6">
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.SingleCard ? "neu-well-deep border-accent" : "")"
+                 style="cursor: pointer; border-radius: 26px; transition: all 0.3s ease;"
+                 @onclick="() => SelectAndProceed(TarotSpreadType.SingleCard)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="btn-neu-pill small font-display">1 Card</span>
-                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="btn-neu-pill small font-display text-neu-teal fw-bold">ကတ် ၁ ကတ် ရွေးခြင်း</span>
+                        <div class="neu-icon-socket" style="width: 52px; height: 52px; font-size: 1.6rem; color: var(--neu-teal);">
                             👁️
                         </div>
                     </div>
-                    <h4 class="font-display fw-bold text-neu-primary mb-2">Oracle's Eye</h4>
-                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
-                        A focused beam of clarity for rapid insight, daily truth, or singular decisions.
+                    <h4 class="font-display fw-bold text-neu-primary mb-1">မေးခွန်းတစ်ခုအတွက်</h4>
+                    <div class="small font-display text-neu-accent mb-2">တိကျသော အဖြေနှင့် ရှင်းလင်းချက်</div>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.7;">
+                        နေ့စဉ် ကံကြမ္မာ လမ်းညွှန်ချက် သို့မဟုတ် မိမိသိလိုသော တိကျသည့် မေးခွန်းတစ်ခုအတွက် လျင်မြန်ရှင်းလင်းသော ကံကြမ္မာအလင်းတန်းကို ဖော်ပြပေးပါသည်။
                     </p>
-                    <div class="neu-well p-3 small text-neu-muted font-display">
-                        <strong class="text-neu-primary">Position:</strong> The Core Revelation
+                    <div class="neu-well p-3 small text-neu-muted font-display" style="border-radius: 16px;">
+                        <strong class="text-neu-primary">ဖြန့်ခင်းပုံ:</strong> ပင်မ အဖြေနှင့် လမ်းညွှန်ချက်
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.SingleCard ? "btn-neu-primary" : "btn-neu") w-100">
-                        Select Single Card
+                    <button class="btn btn-neu-primary w-100 py-2" @onclick:stopPropagation="true" @onclick="() => SelectAndProceed(TarotSpreadType.SingleCard)">
+                        ကတ် ၁ ကတ် ရွေးမည် <i class="bi bi-arrow-right ms-1"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- 3 Cards Spread -->
-        <div class="col-md-4">
-            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.ThreeCards ? "neu-well-deep" : "")"
-                 style="cursor: pointer;"
-                 @onclick="() => SelectSpread(TarotSpreadType.ThreeCards)">
+        <!-- 2. Three Cards Spread -->
+        <div class="col-lg-6">
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.ThreeCards ? "neu-well-deep border-accent" : "")"
+                 style="cursor: pointer; border-radius: 26px; transition: all 0.3s ease;"
+                 @onclick="() => SelectAndProceed(TarotSpreadType.ThreeCards)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="btn-neu-pill small font-display text-neu-accent fw-bold">3 Cards · Recommended</span>
-                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="btn-neu-pill small font-display text-neu-gold fw-bold">ကတ် ၃ ကတ် · လူကြိုက်အများဆုံး</span>
+                        <div class="neu-icon-socket" style="width: 52px; height: 52px; font-size: 1.6rem; color: var(--neu-gold);">
                             ⏳
                         </div>
                     </div>
-                    <h4 class="font-display fw-bold text-neu-primary mb-2">Trinity of Time</h4>
-                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
-                        Connects past root causes, current active forces, and the resulting future destiny.
+                    <h4 class="font-display fw-bold text-neu-primary mb-1">အတိတ်၊ ပစ္စုပ္ပန်၊ အနာဂတ်</h4>
+                    <div class="small font-display text-neu-accent mb-2">ကာလသုံးပါး ကံကြမ္မာဆက်စပ်မှု</div>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.7;">
+                        အတိတ် အကြောင်းတရား၊ လက်ရှိပစ္စုပ္ပန် စွမ်းအင်များနှင့် ရှေ့ဆက်ဖြစ်ပေါ်လာမည့် အနာဂတ် ကံကြမ္မာ အကျိုးရလဒ်များကို ရှင်းလင်းစွာ ချိတ်ဆက်ဖော်ပြပေးပါသည်။
                     </p>
-                    <div class="neu-well p-3 small text-neu-muted font-display">
-                        <strong class="text-neu-primary">Positions:</strong> Past · Present · Destiny
+                    <div class="neu-well p-3 small text-neu-muted font-display" style="border-radius: 16px;">
+                        <strong class="text-neu-primary">ဖြန့်ခင်းပုံ:</strong> အတိတ် (အကြောင်းရင်း) · ပစ္စုပ္ပန် (စွမ်းအင်) · အနာဂတ် (ရလဒ်)
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.ThreeCards ? "btn-neu-primary" : "btn-neu") w-100">
-                        Select 3-Card Trinity
+                    <button class="btn btn-neu-primary w-100 py-2" @onclick:stopPropagation="true" @onclick="() => SelectAndProceed(TarotSpreadType.ThreeCards)">
+                        ကတ် ၃ ကတ် ရွေးမည် <i class="bi bi-arrow-right ms-1"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- 5 Cards Spread -->
-        <div class="col-md-4">
-            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.FiveCards ? "neu-well-deep" : "")"
-                 style="cursor: pointer;"
-                 @onclick="() => SelectSpread(TarotSpreadType.FiveCards)">
+        <!-- 3. Five Cards Spread -->
+        <div class="col-lg-6">
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.FiveCards ? "neu-well-deep border-accent" : "")"
+                 style="cursor: pointer; border-radius: 26px; transition: all 0.3s ease;"
+                 @onclick="() => SelectAndProceed(TarotSpreadType.FiveCards)">
                 <div>
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <span class="btn-neu-pill small font-display">5 Cards</span>
-                        <div class="neu-icon-socket" style="width: 48px; height: 48px; font-size: 1.5rem;">
-                            ⭐
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="btn-neu-pill small font-display text-neu-accent fw-bold">ကတ် ၅ ကတ် ရွေးခြင်း</span>
+                        <div class="neu-icon-socket" style="width: 52px; height: 52px; font-size: 1.6rem; color: var(--neu-accent);">
+                            🌟
                         </div>
                     </div>
-                    <h4 class="font-display fw-bold text-neu-primary mb-2">Celestial Pentagram</h4>
-                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.6;">
-                        An elemental cross analyzing Spirit, Hidden Obstacles, Divine Allies, Subconscious Truth, and Fate.
+                    <h4 class="font-display fw-bold text-neu-primary mb-1">အသေးစိတ် ဖတ်ရှုခြင်း</h4>
+                    <div class="small font-display text-neu-accent mb-2">နက်ရှိုင်းသော ကံကြမ္မာ ခွဲခြမ်းစိတ်ဖြာချက်</div>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.7;">
+                        လက်ရှိအခြေအနေ၊ စိန်ခေါ်မှုနှင့် အတားအဆီး၊ အတိတ်အခြေခံ၊ မဝေးတော့သောအနာဂတ်နှင့် နောက်ဆုံးရလဒ် စသည့် အဆင့် ၅ ဆင့်စလုံးကို နက်ရှိုင်းစွာ အနက်ဖွင့်ဟောကြားပါသည်။
                     </p>
-                    <div class="neu-well p-3 small text-neu-muted font-display">
-                        <strong class="text-neu-primary">Positions:</strong> 5 Elemental Gateways
+                    <div class="neu-well p-3 small text-neu-muted font-display" style="border-radius: 16px;">
+                        <strong class="text-neu-primary">ဖြန့်ခင်းပုံ:</strong> ပစ္စုပ္ပန် · စိန်ခေါ်မှု · အတိတ်အခြေခံ · နီးသောအနာဂတ် · နောက်ဆုံးရလဒ်
                     </div>
                 </div>
                 <div class="mt-4">
-                    <button class="btn @(SelectedSpread == TarotSpreadType.FiveCards ? "btn-neu-primary" : "btn-neu") w-100">
-                        Select Pentagram
+                    <button class="btn btn-neu-primary w-100 py-2" @onclick:stopPropagation="true" @onclick="() => SelectAndProceed(TarotSpreadType.FiveCards)">
+                        ကတ် ၅ ကတ် ရွေးမည် <i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Ten Cards Celtic Cross Spread -->
+        <div class="col-lg-6">
+            <div class="neu-card neu-card-lift p-4 h-100 d-flex flex-column justify-content-between @(SelectedSpread == TarotSpreadType.CelticCross ? "neu-well-deep border-accent" : "")"
+                 style="cursor: pointer; border-radius: 26px; transition: all 0.3s ease; border: 1px solid rgba(245, 158, 11, 0.4);"
+                 @onclick="() => SelectAndProceed(TarotSpreadType.CelticCross)">
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="btn-neu-pill small font-display text-neu-gold fw-bold">ကတ် ၁၀ ကတ် · မဟာဆဲလ်တစ်ခရော့စ်</span>
+                        <div class="neu-icon-socket" style="width: 52px; height: 52px; font-size: 1.6rem; color: #fbbf24;">
+                            👑
+                        </div>
+                    </div>
+                    <h4 class="font-display fw-bold text-neu-primary mb-1">Celtic Cross Reading</h4>
+                    <div class="small font-display text-neu-gold mb-2">အပြည့်စုံဆုံး ကမ္ဘာကျော် တာရော့ဖြန့်ခင်းမှု</div>
+                    <p class="font-body small text-neu-muted mb-3" style="line-height: 1.7;">
+                        ကမ္ဘာကျော် ဆဲလ်တစ်ခရော့စ် — အခြေအနေ၊ စိန်ခေါ်မှု၊ မသိစိတ်၊ အတိတ်၊ အသိစိတ်၊ အနာဂတ်၊ မိမိစိတ်ထား၊ ပတ်ဝန်းကျင်၊ မျှော်လင့်ချက်/စိုးရိမ်မှုနှင့် နောက်ဆုံးအဖြေကို အလုံးစုံ ဟောကြားပေးပါသည်။
+                    </p>
+                    <div class="neu-well p-3 small text-neu-muted font-display" style="border-radius: 16px;">
+                        <strong class="text-neu-gold">ဖြန့်ခင်းပုံ:</strong> ဆဲလ်တစ်ခရော့စ် အပြည့်အစုံ (၁၀ ကတ်)
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-neu-primary w-100 py-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #000; font-weight: bold;" @onclick:stopPropagation="true" @onclick="() => SelectAndProceed(TarotSpreadType.CelticCross)">
+                        Celtic Cross (၁၀ ကတ်) ရွေးမည် <i class="bi bi-arrow-right ms-1"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Actions -->
-    <div class="d-flex justify-content-between align-items-center mt-5">
+    <!-- Back Action -->
+    <div class="d-flex justify-content-start align-items-center mt-3">
         <a href="choose-reading" class="btn-neu">
-            <i class="bi bi-arrow-left"></i> Back to Path
+            <i class="bi bi-arrow-left me-1"></i> ပင်မစာမျက်နှာသို့ ပြန်သွားမည်
         </a>
-        <button class="btn-neu-primary px-4 py-2" @onclick="ProceedToCardDraw">
-            DRAW CARDS <i class="bi bi-arrow-right"></i>
-        </button>
     </div>
 </div>
+
+<style>
+    .border-accent {
+        border: 2px solid var(--neu-teal) !important;
+        box-shadow: 0 0 25px rgba(20, 184, 166, 0.3) !important;
+    }
+</style>
 
 @code {
     private TarotSpreadType SelectedSpread = TarotSpreadType.ThreeCards;
@@ -146,16 +160,13 @@
         SelectedSpread = State.SpreadType;
     }
 
-    private async Task SelectSpread(TarotSpreadType spread)
+    private async Task SelectAndProceed(TarotSpreadType spread)
     {
         SelectedSpread = spread;
         State.SpreadType = spread;
+        State.ReadingType = ReadingType.Tarot;
+        State.SelectedCardIds.Clear();
         try { await JS.InvokeVoidAsync("fortuneAudio.playCardFlip"); } catch { }
-    }
-
-    private void ProceedToCardDraw()
-    {
-        State.SpreadType = SelectedSpread;
         Nav.NavigateTo("tarot-picker");
     }
 }

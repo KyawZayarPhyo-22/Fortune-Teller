@@ -117,9 +117,9 @@ public class ReadingOrchestratorService
             SessionId = sessionId,
             Stage = "Validating",
             ProgressPercent = 15,
-            MysticalMessage = "Connecting to WebSocket Gateway... Validating payload and cosmic rate limits."
+            MysticalMessage = "လုံခြုံရေးနှင့် ကန့်သတ်ချက်များကို စစ်ဆေးနေပါသည်..."
         };
-        await Task.Delay(400, cancellationToken);
+        await Task.Delay(250, cancellationToken);
 
         var validation = _gatewayService.ValidateRequest(request, clientId);
         if (!validation.IsSuccess)
@@ -131,7 +131,7 @@ public class ReadingOrchestratorService
                 ProgressPercent = 100,
                 IsError = true,
                 ErrorMessage = validation.Message,
-                MysticalMessage = $"Gateway alert: {validation.Message}"
+                MysticalMessage = $"စစ်ဆေးမှု သတိပေးချက်: {validation.Message}"
             };
             yield break;
         }
@@ -141,9 +141,9 @@ public class ReadingOrchestratorService
             SessionId = sessionId,
             Stage = "Validated",
             ProgressPercent = 30,
-            MysticalMessage = "Celestial clearance granted. Initiating in-memory orchestrator sequence."
+            MysticalMessage = "စစ်ဆေးမှု အောင်မြင်ပါသည်။ ကံကြမ္မာဟောကြားမှု လုပ်ငန်းစဉ် စတင်နေပါသည်..."
         };
-        await Task.Delay(400, cancellationToken);
+        await Task.Delay(250, cancellationToken);
 
         // Step 2: In-memory analysis branch
         List<SelectedCardModel> selectedCards = new();
@@ -156,7 +156,7 @@ public class ReadingOrchestratorService
                 SessionId = sessionId,
                 Stage = "SelectingCards",
                 ProgressPercent = 50,
-                MysticalMessage = "Shuffling sacred astral deck in memory... Drawing archetypal spread."
+                MysticalMessage = "တာရော့ကတ်များကို မွှေနှောက်နေသည်... ကံကြမ္မာကတ်များကို ရွေးချယ်နေပါသည်..."
             };
             await Task.Delay(500, cancellationToken);
 
@@ -172,7 +172,7 @@ public class ReadingOrchestratorService
                 SessionId = sessionId,
                 Stage = "AnalyzingPalm",
                 ProgressPercent = 50,
-                MysticalMessage = "Processing palm photo in volatile memory... Tracing life, heart, and fate contours."
+                MysticalMessage = "လက်ဝါးဓာတ်ပုံကို ခွဲခြမ်းစိတ်ဖြာနေသည်... အသက်၊ နှလုံး၊ ဦးခေါင်းနှင့် ကံကြမ္မာ လမ်းကြောင်းများကို ဖတ်ရှုနေပါသည်..."
             };
             await Task.Delay(500, cancellationToken);
 
@@ -189,7 +189,7 @@ public class ReadingOrchestratorService
             SessionId = sessionId,
             Stage = "ConsultingOracle",
             ProgressPercent = 75,
-            MysticalMessage = $"Consulting AI Reading Service for {request.Topic} prophecy and cosmic resonance..."
+            MysticalMessage = "AI ဗေဒင်ပညာရှင်မှ ကံကြမ္မာဟောကိန်းကို ဖွဲ့စည်းသီကုံးနေပါသည်..."
         };
         await Task.Delay(600, cancellationToken);
 
@@ -206,9 +206,9 @@ public class ReadingOrchestratorService
             SessionId = sessionId,
             Stage = "Formatting",
             ProgressPercent = 90,
-            MysticalMessage = "Formatting response, checking celestial integrity, and sealing sacred aura..."
+            MysticalMessage = "အိုရာစွမ်းအင်ကို တံဆိပ်ခတ်နှိပ်နေသည်... ဗေဒင်ဟောကိန်း အဆင်သင့်ဖြစ်ပါပြီ။"
         };
-        await Task.Delay(300, cancellationToken);
+        await Task.Delay(400, cancellationToken);
 
         var finalResult = _formatterService.FormatAndCheckResponse(
             request,

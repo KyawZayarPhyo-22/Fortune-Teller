@@ -30,13 +30,13 @@ public class WebSocketGatewayService
         if (limitEntry.Count > DevCode.RateLimitPerMinute)
         {
             Interlocked.Increment(ref _blockedRateCount);
-            return ResultModel.Failure($"Cosmic rate limit exceeded. The oracle allows {DevCode.RateLimitPerMinute} consultations per minute. Please pause and breathe.");
+            return ResultModel.Failure($"မေးမြန်းမှု အကြိမ်ရေများလွန်းနေပါသည်။ တစ်မိနစ်လျှင် {DevCode.RateLimitPerMinute} ကြိမ်သာ မေးမြန်းနိုင်ပါသည်။ ခေတ္တခဏစောင့်ဆိုင်းပေးပါ။");
         }
 
         // 2. Validate Reading Type
         if (!Enum.IsDefined(typeof(ReadingType), request.ReadingType))
         {
-            return ResultModel.Failure("Invalid divination path selected.");
+            return ResultModel.Failure("မှန်ကန်သော ဗေဒင်ပုံစံ မဟုတ်ပါ။");
         }
 
         // 3. Enforce Size Limit for Palm Photo
@@ -44,7 +44,7 @@ public class WebSocketGatewayService
         {
             if (string.IsNullOrWhiteSpace(request.PalmImageBase64))
             {
-                return ResultModel.Failure("Please provide a hand photo to read the lines of fate.");
+                return ResultModel.Failure("လက်ဝါးလက္ခဏာ ဖတ်ရှုရန်အတွက် လက်ဝါးဓာတ်ပုံ ပေးပို့ပေးပါ။");
             }
 
             // Approximate byte size from Base64 string
@@ -52,16 +52,16 @@ public class WebSocketGatewayService
             if (approxBytes > DevCode.MaxPhotoSizeBytes)
             {
                 Interlocked.Increment(ref _blockedSizeCount);
-                return ResultModel.Failure($"Image exceeds the maximum allowed celestial buffer of {DevCode.MaxPhotoSizeBytes / (1024 * 1024)} MB.");
+                return ResultModel.Failure($"ဓာတ်ပုံဖိုင်ဆိုဒ်သည် သတ်မှတ်ထားသော {DevCode.MaxPhotoSizeBytes / (1024 * 1024)} MB ထက် ကျော်လွန်နေပါသည်။");
             }
 
             if (!request.UserConsentGiven)
             {
-                return ResultModel.Failure("Consent is required to read your palm lines in memory.");
+                return ResultModel.Failure("လက်ဝါးလက္ခဏာ ခွဲခြမ်းစိတ်ဖြာရန်အတွက် သဘောတူညီချက် လိုအပ်ပါသည်။");
             }
         }
 
-        return ResultModel.Success("Celestial gateway validation passed.");
+        return ResultModel.Success("စိစစ်ချက် အောင်မြင်ပါသည်။");
     }
 
     public (int BlockedRate, int BlockedSize) GetBlockedCounters()

@@ -8,6 +8,8 @@ public class PalmReadingModel
     public string HeartLineInterpretation { get; set; } = string.Empty;
     public string HeadLineInterpretation { get; set; } = string.Empty;
     public string FateLineInterpretation { get; set; } = string.Empty;
+    public string SunLineInterpretation { get; set; } = string.Empty;
+    public string MercuryLineInterpretation { get; set; } = string.Empty;
     public string MountsAnalysis { get; set; } = string.Empty;
     public int LineClarityPercentage { get; set; } = 88;
     public string PrimaryEnergyCenter { get; set; } = "Heart & Intuition";
